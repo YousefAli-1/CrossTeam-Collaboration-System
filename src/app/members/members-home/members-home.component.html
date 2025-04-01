@@ -1,139 +1,88 @@
-    <div class="photo-card">
-        <img src="\assets\team-member.png" alt="Welcome Image" class="photo-card-img" />
-        <div class="photo-card-text">
-            <h1>Welcome to Your Home Page</h1>
-            <p>Here you can manage your tasks and collaborate with your team effectively.</p>
+<div class="photo-card">
+    <img src="\assets\team-member.png" alt="Welcome Image" class="photo-card-img" />
+    <div class="photo-card-text">
+        <h1>Welcome to Your Home Page</h1>
+        <p>Here you can manage your tasks and collaborate with your team effectively.</p>
+    </div>
+</div>
+    <div class="sidebar">
+        <div class="profile-box" *ngIf="currentUser">
+            <h3>Team Member Profile</h3>
+            <p><strong>Name:</strong> {{ currentUser.name }}</p>
+            <p><strong>Id:</strong> {{ currentUser.userID }}</p>
+            <p><strong>Email:</strong> {{ currentUser.email }}</p>
         </div>
     </div>
 
+    <div *ngIf="currentUser?.canSubmitTask; else approverView">
+        <div class="team-member-home">
+            <div class="tasks-section">
+                <h2>Your Tasks</h2>
+                <div class="task-table-container">
+                    <table class="task-table" *ngIf="tasks.length > 0; else noTasks">
+                        <thead>
+                            <tr>
+                                <th>Project</th>
+                                <th>Title</th>
+                                <th>Description</th>    
+                                <th>Due Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let task of tasks">
+                                <td>{{ task.project.projectName }}</td>
+                                <td>{{ task.taskName }}</td>
+                                <td>{{ task.taskDescription }}</td>
+                                <td>{{ task.deadline }}</td>
 
-    <div class="team-member-home">
-        <div class="tasks-section">
-            <h2>Your Assigned Tasks</h2>
-            <div class="task-table-container">
-                <table class="task-table">
-                    <thead>
-                        <tr>
-                            <th>Project</th>
-                            <th>Status</th>
-                            <th>Title</th>
-                            <th>Due Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Project Alpha</td>
-                            <td>In Progress</td>
-                            <td>Design Homepage</td>
-                            <td>2023-10-15</td>
-                            <td>
-                                <button class="btn btn-success">Update Status</button>
-                                <button class="btn btn-primary">Submit for Approval</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Project Beta</td>
-                            <td>Completed</td>
-                            <td>Write Documentation</td>
-                            <td>2023-10-10</td>
-                            <td>
-                                <button class="btn btn-success">Update Status</button>
-                                <button class="btn btn-primary">Submit for Approval</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Project Alpha</td>
-                            <td>Pending</td>
-                            <td>Fix Bugs</td>
-                            <td>2023-10-20</td>
-                            <td>
-                                <button class="btn btn-success">Update Status</button>
-                                <button class="btn btn-primary">Submit for Approval</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Project Gamma</td>
-                            <td>In Review</td>
-                            <td>Test Application</td>
-                            <td>2023-10-18</td>
-                            <td>
-                                <button class="btn btn-success">Update Status</button>
-                                <button class="btn btn-primary">Submit for Approval</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                <td>
+                                    <button class="btn btn-primary">Submit for Approval</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <ng-template #noTasks>
+                        <p>No tasks assigned yet.</p>
+                    </ng-template>
+                </div>
             </div>
         </div>
     </div>
-    <div class="projects-section">
-        <h2>Your Projects</h2>
-        <div class="project-cards">
-            <div class="project-card">
-                <h3>Project Alpha</h3>
-                <p>Description: A project focused on designing and developing the homepage.</p>
-            </div>
-            <div class="project-card">
-                <h3>Project Beta</h3>
-                <p>Description: A project for writing and maintaining documentation.</p>
-            </div>
-            <div class="project-card">
-                <h3>Project Gamma</h3>
-                <p>Description: A project for testing and reviewing the application.</p>
-            </div>
-        </div>
-    </div>
-    <div class="approver-home">
-        <div class="review-section">
-            <h2>Pending Reviews</h2>
-            <div class="task-table-container">
-                <table class="task-table">
-                    <thead>
-                        <tr>
-                            <th>Project</th>
-                            <th>Title</th>
-                            <th>Description</th>
-                            <th>Submitted by</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Project Alpha</td>
-                            <td>Design Homepage</td>
-                            <td>Design the homepage layout</td>
-                            <td>John</td>
-                            <td>
-                                <button class="btn btn-success">Approve</button>
-                                <button class="btn btn-primary">Reject</button>
-                                <button class="btn btn-info">Provide Feedback</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Project Beta</td>
-                            <td>API Development</td>
-                            <td>Develop REST API</td>
-                            <td>Alice</td>
-                            <td>
-                                <button class="btn btn-success">Approve</button>
-                                <button class="btn btn-primary">Reject</button>
-                                <button class="btn btn-info">Provide Feedback</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Project Gamma</td>
-                            <td>UI Design</td>
-                            <td>Create Dashboard UI</td>
-                            <td>Mike</td>
-                            <td>
-                                <button class="btn btn-success">Approve</button>
-                                <button class="btn btn-primary">Reject</button>
-                                <button class="btn btn-info">Provide Feedback</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+
+    <ng-template #approverView >
+        <div class="approver-home">
+            <div class="review-section">
+                <h2>Pending Reviews</h2>
+                <div class="task-table-container">
+                    <table class="task-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Submitted by</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let task of tasks">
+                                <div *ngIf="task.isSubmitted===true else noTasks">
+                                <td>{{ task.taskName }}</td>
+                                <td>{{ task.taskDescription }}</td>
+                                <td>{{ task.submittedBy.name }}</td>
+                                <td>
+                                    <button class="btn btn-success">Approve</button>
+                                    <button class="btn btn-primary">Reject</button>
+                                    <button class="btn btn-info">Provide Feedback</button>
+                                </td>
+                                </div>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <ng-template #noTasks>
+                        <h3 class="no-tasks-message">No tasks to Review yet.</h3>
+                    </ng-template>
+                </div>
             </div>
         </div>
-    </div>
+    </ng-template>

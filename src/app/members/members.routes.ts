@@ -12,7 +12,6 @@ const ProjectResolver: ResolveFn<{name: String, description: String}>=(route)=>{
     console.log(route.paramMap.get('projectId'));
     return inject(MembersService).getProjectById(Number.parseInt(route.paramMap.get('projectId')!));
 };
-
 export const membersRoutes: Routes=[
     {
         pathMatch:'full',

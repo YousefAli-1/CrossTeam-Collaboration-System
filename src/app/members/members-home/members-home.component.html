@@ -8,9 +8,9 @@
     <div class="sidebar">
         <div class="profile-box" *ngIf="currentUser">
             <h3>Team Member Profile</h3>
-            <p><strong>Name:</strong> {{ currentUser.name }}</p>
-            <p><strong>Id:</strong> {{ currentUser.userID }}</p>
-            <p><strong>Email:</strong> {{ currentUser.email }}</p>
+            <p><strong>Name:</strong> {{ currentUser?.name }}</p>
+            <p><strong>Id:</strong> {{ currentUser?.userID }}</p>
+            <p><strong>Email:</strong> {{ currentUser?.email }}</p>
         </div>
     </div>
 

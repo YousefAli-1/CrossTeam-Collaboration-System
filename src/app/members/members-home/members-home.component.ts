@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 @Component({
     selector: 'app-members-home',
     imports: [CommonModule],
-    templateUrl: './members-home.component.html',
+    templateUrl: './members-home.component.html', 
     styleUrls: ['./members-home.component.scss']
 })
 export class MembersHomeComponent implements OnInit {

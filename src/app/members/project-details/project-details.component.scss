@@ -1,0 +1,273 @@
+.team-member-home {
+    padding: 5%;
+    background-color: #F2F2F2;
+    border-radius: 8px;
+
+    h1 {
+        font-size: 2em;
+        color: #333;
+        margin-bottom: 2%;
+    }
+
+    p {
+        font-size: 1em;
+        color: #666;
+        margin-bottom: 4%;
+    }
+
+    .tasks-section {
+        margin-bottom: 6%;
+
+        h2 {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 3%;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+
+            li {
+                margin-bottom: 3%;
+
+                .task-card {
+                    padding: 3%;
+                    background-color: #fff;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
+
+                    h3 {
+                        font-size: 1.25em;
+                        color: #333;
+                        margin-bottom: 1%;
+                    }
+
+                    p {
+                        font-size: 0.9em;
+                        color: #555;
+                        margin-bottom: 1%;
+                    }
+
+                    .btn {
+                        margin-right: 2%;
+
+                        &.btn-success,
+                        &.btn-primary,
+                        &.btn-info {
+                            background-color: #FE7F0E;
+                            color: #fff;
+                            border: none;
+
+                            &:hover {
+                                background-color: #FE7F0E;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .notifications-section {
+        h2 {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 3%;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+
+            li {
+                margin-bottom: 3%;
+
+                .notification-card {
+                    padding: 2%;
+                    background-color: #fff;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
+
+                    p {
+                        font-size: 0.9em;
+                        color: #555;
+                        margin: 0;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.approver-home {
+    padding: 4%;
+    background-color: #F9F9F9;
+    border-radius: 6px;
+
+    .review-section {
+        margin-bottom: 4%;
+
+        h2 {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 2%;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+
+            li {
+                margin-bottom: 2%;
+
+                .review-card {
+                    padding: 2%;
+                    background-color: #fff;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    box-shadow: 0 0.4em 0.8em rgba(0, 0, 0, 0.1);
+
+                    h3 {
+                        font-size: 1.2em;
+                        color: #333;
+                        margin-bottom: 0.8%;
+                    }
+
+                    p {
+                        font-size: 0.85em;
+                        color: #555;
+                        margin-bottom: 0.8%;
+                    }
+
+                    .btn {
+                        margin-right: 1.5%;
+
+                        &.btn-success {
+                            background-color: #FE7F0E;
+                            color: #fff;
+                            border: none;
+
+                            &:hover {
+                                background-color: #FE7F0E;
+                            }
+                        }
+
+                        &.btn-danger {
+                            background-color: #FE7F0E;
+                            color: #fff;
+                            border: none;
+
+                            &:hover {
+                                background-color: #FE7F0E;
+                            }
+                        }
+
+                        &.btn-info {
+                            background-color: #FE7F0E;
+                            color: #fff;
+                            border: none;
+
+                            &:hover {
+                                background-color: #FE7F0E;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.task-table-container {
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-bottom: 4%;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.task-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+        position: sticky;
+        top: 0;
+        background-color: #0F121B;
+        z-index: 1;
+    }
+
+    th, td {
+        padding: 1em;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        color: #ffffff;
+    }
+
+    tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    .btn {
+        margin-right: 0.5em;
+        padding: 0.5em 1em;
+        font-size: 0.9em;
+        border-radius: 4px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        cursor: pointer;
+
+        &.btn-success {
+            background-color: #FE7F0E;
+            color: #fff;
+            border: none;
+
+            &:hover {
+                background-color: #FE7F0E;
+                transform: scale(1.05);
+            }
+        }
+
+        &.btn-primary {
+            background-color: #FE7F0E;
+            color: #fff;
+            border: none;
+
+            &:hover {
+                background-color: #FE7F0E;
+                transform: scale(1.05);
+            }
+        }
+
+        &.btn-info {
+            background-color: #FE7F0E;
+            color: #fff;
+            border: none;
+
+            &:hover {
+                background-color: #FE7F0E;
+                transform: scale(1.05);
+            }
+        }
+    }
+}
+
+.task-table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.task-table-container::-webkit-scrollbar-thumb {
+    background-color: #0F121B;
+    border-radius: 4px;
+}
+
+.task-table-container::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+}

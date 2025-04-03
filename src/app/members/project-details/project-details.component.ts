@@ -2,11 +2,10 @@ import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-project-details',
-  standalone: true,
-  imports: [],
-  templateUrl: './project-details.component.html',
-  styleUrl: './project-details.component.scss',
+    selector: 'app-project-details',
+    imports: [],
+    templateUrl: './project-details.component.html',
+    styleUrl: './project-details.component.scss'
 })
 export class ProjectDetailsComponent {
   Project = signal<{ name: String; description: String }>({

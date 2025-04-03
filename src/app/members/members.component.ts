@@ -7,11 +7,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 
 @Component({
-  selector: 'app-members',
-  standalone: true,
-  imports: [RouterOutlet, MatSidenavModule, MatButtonModule, RouterLink, RouterLinkActive],
-  templateUrl: './members.component.html',
-  styleUrl: './members.component.scss',
+    selector: 'app-members',
+    imports: [RouterOutlet, MatSidenavModule, MatButtonModule, RouterLink, RouterLinkActive],
+    templateUrl: './members.component.html',
+    styleUrl: './members.component.scss'
 })
 export class MembersComponent {
   isOpened: boolean = false;

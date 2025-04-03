@@ -4,6 +4,7 @@ import { type TeamMember, type Task } from '../../app.model'
 import { CommonModule } from '@angular/common';
 @Component({
     selector: 'app-members-home',
+    standalone: true,
     imports: [CommonModule],
     templateUrl: './members-home.component.html', 
     styleUrls: ['./members-home.component.scss']

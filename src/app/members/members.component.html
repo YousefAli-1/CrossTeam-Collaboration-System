@@ -21,7 +21,16 @@
     <h3>
         Your projects
     </h3>
-    
+    @for(project of projects; track project.projectID){
+      <a [routerLink]='"/teamMember/projects/"+project.projectID' routerLinkActive="active" mat-button>
+        <label>
+          {{project.projectName}}
+        </label>
+    </a>
+    }
+    @empty{
+      <p>You didn't join any project yet</p>
+    }
   </mat-drawer>
   <mat-drawer-content>
     <button mat-icon-button (click)="toggleDrawer()" [class]="{'isOpened': isOpened,'isClosed': !isOpened}">

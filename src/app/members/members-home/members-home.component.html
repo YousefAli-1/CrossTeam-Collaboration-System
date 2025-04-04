@@ -1,21 +1,25 @@
 <div class="photo-card">
-    <img src="\assets\team-member.png" alt="Welcome Image" class="photo-card-img" />
-    <div class="photo-card-text">
-        <h1>Welcome to Your Home Page</h1>
-        <p>Here you can manage your tasks and collaborate with your team effectively.</p>
-    </div>
+  <img
+    src="\assets\team-member.png"
+    alt="Welcome Image"
+    class="photo-card-img"
+  />
+  <div class="photo-card-text">
+    <h1>Welcome to Your Home Page</h1>
+    <p>
+      Here you can manage your tasks and collaborate with your team effectively.
+    </p>
+  </div>
 </div>
 <div class="sidebar">
-    <div class="profile-box" *ngIf="currentUser">
-        <h3>Team Member Profile</h3>
-        <p><strong>Name:</strong> {{ currentUser.name }}</p>
-        <p><strong>Id:</strong> {{ currentUser.userID }}</p>
-        <p><strong>Email:</strong> {{ currentUser.email }}</p>
-    </div>
+  <div class="profile-box">
+    <h3>Team Member Profile</h3>
+    <p><strong>Name:</strong> {{ currentUser()?.name }}</p>
+    <p><strong>Id:</strong> {{ currentUser()?.userID }}</p>
+    <p><strong>Email:</strong> {{ currentUser()?.email }}</p>
+  </div>
 </div>
-@for (task of userTasks(); track task.taskID) {
-    <app-tasks [task]="task"></app-tasks>
-    }
-    @empty {
-    <div class="no-projects">No tasks found</div>
-    } 
+
+
+<app-members-submission-table />
+<app-members-approval-table />

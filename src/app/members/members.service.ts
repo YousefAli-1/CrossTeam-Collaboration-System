@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { Observable, of } from 'rxjs';
 import { dummyTeamMembers, dummyProjects, dummyTasks } from "./dummy-members";
 import { type TeamMember, type Project,type Task } from "../app.model";
 
@@ -7,13 +8,17 @@ import { type TeamMember, type Project,type Task } from "../app.model";
 })
 export class MembersService {
     private readonly teamMembers = dummyTeamMembers;
-    private readonly projects = dummyProjects;
+     readonly projects = dummyProjects;
     private readonly tasks = dummyTasks;
 
     getProjectById(id: number){
         return{name: 'Project1', description: 'This is a project Demo'};
     }
-
+    getProjectsByUserId(userId: number): Project[] {
+        return this.projects.filter(project =>
+            project.members.some(member => member.userID === userId && member.isInviteAccepted)
+        );
+    }
     getMembers(): TeamMember[] {
         return this.teamMembers;
     }
@@ -36,16 +41,13 @@ export class MembersService {
         }
     }
 
-    getCurrentUser(): any {
-        const currentUser = this.teamMembers[1];
-        return {
-            subscribe: (callback: (user: TeamMember | null) => void) => {
-                callback(currentUser || null);
-            }
-        };
+    getCurrentUser(): Observable<TeamMember | null> {
+        const currentUser = this.teamMembers[1]; 
+        return of(currentUser); 
     }
 
-    getTasksForUser(userID: number): any {
+
+    getTasksForUser(userID: number): Task[] {
         const currentUser = this.teamMembers.find(member => member.userID === userID);
         const userTasks = this.tasks.filter(task => task.assigned.teamMembers.some(member => member.userID === userID));
 
@@ -59,11 +61,7 @@ export class MembersService {
             userTasks.push(...reviewableTasks);
         }
 
-        return {
-            subscribe: (callback: (tasks: Task[]) => void) => {
-                callback(userTasks);
-            }
-        };
+        return userTasks;
     }
  
 }

@@ -70,20 +70,17 @@ export const dummyTasks: Task[] = [
         }, 
         isSubmitted: true,
         submittedBy: dummyTeamMembers[0],
-        approvalWorkflow: dummyTeamMembers
-            .filter(
-                (member) => member.canReviewTask && member.userID !== dummyTeamMembers[0].userID
-            )
-            .map((member) => ({
+        approvalWorkflow: [{
                 approvalRequestID: Math.random(), 
                 comments: [], 
                 status: 'Pending',
-                reviewedBy: member,
+                assigned: dummyTeams[0],
+                reviewedBy: null,
                 createdAt: new Date(),
                 updatedAt: new Date(),
-            })), 
-            createdAt: new Date(),
-            updatedAt: new Date(),
+        }],
+        createdAt: new Date(),
+        updatedAt: new Date()
     },
 ];
 

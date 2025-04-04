@@ -64,11 +64,14 @@ export class MembersService {
       (task) =>
         task.approvalWorkflow.filter((request) =>
           this.isUserAssignedReviewerInApprovalWorkflow(user, request)
-        ).length > 0
+        ).length > 0 && task.isSubmitted
     );
   }
 
-  private filterTasksWaitingForReviewerDecision(userTasks: Task[], reviewer: User | null): Task[] {
+  private filterTasksWaitingForReviewerDecision(
+    userTasks: Task[],
+    reviewer: User | null
+  ): Task[] {
     return userTasks.filter((task) => {
       let subWorkflow = task.approvalWorkflow.slice(
         0,
@@ -84,6 +87,9 @@ export class MembersService {
   getReviewTasksForLoggedInUser(): Task[] {
     const userTasks: Task[] = this.getAllReviewerTasks(this.loggedInUser());
 
-    return this.filterTasksWaitingForReviewerDecision(userTasks, this.loggedInUser());
+    return this.filterTasksWaitingForReviewerDecision(
+      userTasks,
+      this.loggedInUser()
+    );
   }
 }

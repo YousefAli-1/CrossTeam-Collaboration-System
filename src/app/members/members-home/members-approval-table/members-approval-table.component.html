@@ -18,7 +18,7 @@
             <td>{{ task.project.projectName }}</td>
             <td>{{ task.taskName }}</td>
             <td>{{ task.taskDescription }}</td>
-            <td>{{ task.submittedBy.name }}</td>
+            <td>{{ task.submittedBy?.name}}</td>
             <td>
               <button class="btn btn-success">Approve</button>
               <button class="btn btn-primary">Reject</button>

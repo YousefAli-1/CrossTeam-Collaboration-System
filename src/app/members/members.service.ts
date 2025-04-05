@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
-import { dummyTeamMembers, dummyProjects, dummyTasks } from './dummy-members';
+import { dummyTeamMembers, dummyProjects, dummyTasks,dummyProjectManagers } from './dummy-members';
+import { Subject } from 'rxjs';
 import {
   type TeamMember,
   type User,
@@ -8,7 +9,8 @@ import {
   type ApprovalRequest,
   type Invitation,
   ProjectMember,
-  type InvitationStatus
+  type InvitationStatus,
+  type ProjectManager
 } from '../app.model';
 
 @Injectable({
@@ -16,10 +18,11 @@ import {
 })
 export class MembersService {
   private readonly teamMembers = dummyTeamMembers;
+  private readonly ProjectManager =dummyProjectManagers;
   private readonly projects = dummyProjects;
   private readonly tasks = dummyTasks;
-
-  private loggedInUserWritableSignal = signal<User | null>(this.teamMembers[1]);
+  projectsChanged = new Subject<void>()
+  private loggedInUserWritableSignal = signal<User | null>(this.ProjectManager[0]);
   loggedInUser = this.loggedInUserWritableSignal.asReadonly();
 
   getProjectByProjectId(id: number): Project | null {
@@ -51,7 +54,16 @@ export class MembersService {
       this.isUserAssignedInTask(this.loggedInUser(), task)
     );
   }
+  checkUserRole(): 'ProjectManager' | 'TeamMember' | 'User' {
+    const user = this.loggedInUser();
+  
+    if (!user) return 'User';
 
+    const isTeamMember = 'canSubmitTask' in user;
+    if (isTeamMember) return 'TeamMember';
+  
+    return 'User';
+  }
   private isUserAssignedReviewerInApprovalWorkflow(
     user: User | null,
     request: ApprovalRequest
@@ -113,7 +125,17 @@ export class MembersService {
         const invitedUser = invitation.member as ProjectMember;
         invitedUser.isInviteAccepted = true;
         project.members.push(invitedUser);
+        
+        if (invitedUser.Projects) {
+          invitedUser.Projects.push(project);
+        } else {
+          invitedUser.Projects = [project];
+        }
+        
+
+        this.projectsChanged.next();
       }
     }
   }
 }
+

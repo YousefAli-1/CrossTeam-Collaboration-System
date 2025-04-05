@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { MembersService } from '../members.service'; 
 import { type TeamMember, type Task } from '../../app.model' 
 import { CommonModule } from '@angular/common';
+import { type User } from '../../app.model' ;
+
 @Component({
     selector: 'app-members-home',
     standalone: true,

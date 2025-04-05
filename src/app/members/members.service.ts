@@ -49,7 +49,7 @@ export class MembersService {
   }
 
   getSubmissionTasksForLoggedInUser(): Task[] {
-    return this.tasks.filter((task) =>
+    return this.tasks().filter((task) =>
       this.isUserAssignedInTask(this.loggedInUser(), task)&&
     !task.isSubmitted
     );
@@ -205,12 +205,12 @@ export class MembersService {
       })
     );
   }
-}
+
   submitTask(taskID: number): void {
     const user = this.loggedInUser();
     if (!user) return;
 
-    const task = this.tasks.find((t) => t.taskID === taskID);
+    const task = this.tasks().find((t) => t.taskID === taskID);
 
     if (!task) {
       console.warn('Task not found');

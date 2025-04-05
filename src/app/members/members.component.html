@@ -16,7 +16,7 @@
     <h2>
         Your projects
     </h2>
-    @for(project of projects; track project.projectID){
+    @for (project of userProjects; track project.projectID) {
       <a [routerLink]='"/teamMember/projects/"+project.projectID' routerLinkActive="active" class="horizontal-link" mat-button>
         <label>
           {{project.projectName}}
@@ -26,6 +26,12 @@
     @empty{
       <p>You didn't join any project yet</p>
     }
+    <div class="logout-section">
+      <button mat-button class="horizontal-link logout-btn" (click)="logout()">
+        <span class="material-icons icon">logout</span>
+        <label>Logout</label>
+      </button>
+    </div>
   </mat-drawer>
   <mat-drawer-content style="overflow-y: hidden;">
     <button mat-icon-button (click)="toggleDrawer()" [class]="{'isOpened': isOpened,'isClosed': !isOpened}">

@@ -1,0 +1,26 @@
+.unauthorized-container{
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 300px;
+  margin-top: 50px;
+}
+h1{
+  justify-self: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  color:rgb(75, 75, 75);
+  font-size: 100px;
+  margin-top: 200px;
+  margin-bottom: 150px;
+  text-shadow: 0px 8px 5px rgba(92, 92, 92, 0.8);
+}
+p,a{
+  justify-self: center;
+  padding-bottom: 15px;
+  font-size: 30px;
+}
+a{
+  color:#E65100;
+  text-decoration: none;
+}

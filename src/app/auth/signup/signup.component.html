@@ -1,0 +1,97 @@
+<app-navbar></app-navbar>
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title class="login-title">Create Account</mat-card-title>
+      <mat-card-subtitle style="color: #616161;">Please enter your details</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="login-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Full Name</mat-label>
+          <input matInput formControlName="name">
+          <mat-icon matSuffix style="color: #9E9E9E;">person_outline</mat-icon>
+          <mat-error *ngIf="name?.hasError('required')">Name is required</mat-error>
+          <mat-error *ngIf="name?.hasError('minlength')">
+            Minimum 2 characters
+          </mat-error>
+          <mat-error *ngIf="name?.hasError('pattern')">
+            Only letters and spaces allowed
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email">
+          <mat-icon matSuffix style="color: #9E9E9E;">email</mat-icon>
+          <mat-error *ngIf="email?.hasError('required')">Email is required</mat-error>
+          <mat-error *ngIf="email?.hasError('email') || email?.hasError('pattern')">
+            Please enter a valid email (e.g., user&#64;example.com)
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password" 
+                [type]="hidePassword ? 'password' : 'text'">
+          <button mat-icon-button matSuffix 
+                 (click)="hidePassword = !hidePassword"
+                 [style.color]="'#9E9E9E'">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-hint>Must contain uppercase, lowercase, and number</mat-hint>
+          <mat-error *ngIf="password?.hasError('required')">Password is required</mat-error>
+          <mat-error *ngIf="password?.hasError('minlength')">
+            Minimum 8 characters
+          </mat-error>
+          <mat-error *ngIf="password?.hasError('pattern')">
+            Requires 1 uppercase, 1 lowercase, and 1 number
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput formControlName="confirmPassword" 
+                [type]="hideConfirmPassword ? 'password' : 'text'">
+          <button mat-icon-button matSuffix 
+                 (click)="hideConfirmPassword = !hideConfirmPassword"
+                 [style.color]="'#9E9E9E'">
+            <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="confirmPassword?.hasError('required')">
+            Please confirm your password
+          </mat-error>
+          <mat-error *ngIf="signupForm.hasError('mismatch') && confirmPassword?.valid">
+            Passwords don't match
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Date of Birth</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="dob"
+                [min]="minDate" [max]="maxDate">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="dob?.hasError('required')">Date of birth is required</mat-error>
+          <mat-hint>Must be at least 16 years old</mat-hint>
+        </mat-form-field>
+        <div class="user-type-toggle">
+          <span [class.active]="userType === 'member'">Team Member</span>
+          <button mat-button-toggle 
+                  #toggleBtn
+                  (click)="toggleUserType()"
+                  [class.active]="userType === 'manager'"
+                  class="toggle-button"
+                  type="button">
+            <div class="toggle-handle" [class.manager]="userType === 'manager'"></div>
+          </button>
+          
+          <span [class.active]="userType === 'manager'">Team Manager</span>
+        </div>
+        <a class="login" routerLink="/login">
+          Already have an account?
+          </a>
+        <button mat-raised-button class="login-button" type="submit"
+                [disabled]="!signupForm.valid">
+          SIGN UP
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

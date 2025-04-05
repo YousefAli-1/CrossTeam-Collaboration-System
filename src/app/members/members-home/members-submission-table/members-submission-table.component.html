@@ -20,7 +20,7 @@
             <td>{{ task.taskDescription }}</td>
             <td>{{ task.deadline }}</td>
             <td>
-              <button class="btn btn-primary">Submit for Approval</button>
+              <button (click)="submitTask(task.taskID)" class="btn btn-primary">Submit for Approval</button>
             </td>
           </tr>
           } @empty {

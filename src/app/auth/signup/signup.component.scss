@@ -59,3 +59,53 @@
 .login:hover {
   color: #FF6D00 !important;
 }
+
+.user-type-toggle {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.toggle-button {
+  width: 60px;
+  height: 30px;
+  border-radius: 15px;
+  background: #e0e0e0;
+  position: relative;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.toggle-button.active {
+  background: rgba(255, 109, 0, 0.2);
+}
+
+.toggle-handle {
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #757575;
+  transition: all 0.3s ease;
+}
+
+.toggle-handle.manager {
+  left: calc(100% - 27px);
+  background: #FF6D00;
+}
+
+.user-type-toggle span {
+  color: #bdbdbd;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.user-type-toggle span.active {
+  color: #212121;
+  font-weight: 600;
+}

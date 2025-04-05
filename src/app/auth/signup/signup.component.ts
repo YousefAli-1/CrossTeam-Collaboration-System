@@ -9,12 +9,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { RouterLink } from '@angular/router';
+import { NavbarComponent } from '../../navbar/navbar.component';
 
-// Custom validator function
 function passwordMatchValidator(control: AbstractControl) {
   const password = control.get('password')?.value;
   const confirmPassword = control.get('confirmPassword')?.value;
-  return password === confirmPassword ? null : { mismatch: true };
+  
+  if (password && confirmPassword && password !== confirmPassword) {
+    control.get('confirmPassword')?.setErrors({ mismatch: true });
+    return { mismatch: true };
+  } else {
+    control.get('confirmPassword')?.setErrors(null);
+    return null;
+  }
 }
 
 @Component({
@@ -29,7 +36,8 @@ function passwordMatchValidator(control: AbstractControl) {
     MatButtonModule,
     MatIconModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    NavbarComponent
   ],
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss']
@@ -39,7 +47,7 @@ export class SignupComponent {
   hideConfirmPassword = true;
   minDate = new Date(1900, 0, 1);
   maxDate = new Date(new Date().setFullYear(new Date().getFullYear() - 16));
-
+  userType: 'member' | 'manager' = 'member';
   signupForm = new FormGroup({
     name: new FormControl('', [
       Validators.required,
@@ -51,6 +59,9 @@ export class SignupComponent {
       Validators.email,
       Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)
     ]),
+    dob: new FormControl<Date | null>(null, [
+      Validators.required
+    ]),
     password: new FormControl('', [
       Validators.required,
       Validators.minLength(8),
@@ -59,9 +70,7 @@ export class SignupComponent {
     confirmPassword: new FormControl('', [
       Validators.required
     ]),
-    dob: new FormControl<Date | null>(null, [
-      Validators.required
-    ])
+    userType: new FormControl<'member' | 'manager'>('member', Validators.required)
   }, { validators: passwordMatchValidator });
 
   get name() { return this.signupForm.get('name'); }
@@ -72,8 +81,15 @@ export class SignupComponent {
 
   onSubmit() {
     if (this.signupForm.valid) {
-      console.log('Form submitted:', this.signupForm.value);
-      // Add your signup logic here
+      const formData = {
+        ...this.signupForm.value,
+        userType: this.userType
+      };
+      console.log('Form submitted:', formData);
     }
+  }
+  toggleUserType() {
+    this.userType = this.userType === 'member' ? 'manager' : 'member';
+    this.signupForm.patchValue({ userType: this.userType });
   }
 }

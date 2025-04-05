@@ -1,7 +1,9 @@
-.not-found-container{
+.unauthorized-container{
   display: grid;
   justify-content: center;
   align-items: center;
+  margin-bottom: 300px;
+  margin-top: 50px;
 }
 h1{
   justify-self: center;
@@ -20,7 +22,5 @@ p,a{
 }
 a{
   color:#E65100;
-  padding-top: 50px;
-  margin-left: 850px;
   text-decoration: none;
 }

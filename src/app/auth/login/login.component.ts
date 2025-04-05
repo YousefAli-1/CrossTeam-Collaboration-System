@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
+import { NavbarComponent } from "../../navbar/navbar.component";
 
 @Component({
   standalone: true,
@@ -18,8 +19,9 @@ import { RouterLink } from '@angular/router';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatIconModule
-  ],
+    MatIconModule,
+    NavbarComponent
+],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })

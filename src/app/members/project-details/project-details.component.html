@@ -1,119 +1,21 @@
-<h1>
-    {{Project().name}}
-</h1>
-<p>
-    {{Project().description}}
-</p>
-<div class="team-member-home">
-    <div class="tasks-section">
-        <h2>Your Assigned Tasks</h2>
-        <div class="task-table-container">
-            <table class="task-table">
-                <thead>
-                    <tr>
-                        <th>Project</th>
-                        <th>Status</th>
-                        <th>Title</th>
-                        <th>Due Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Project Alpha</td>
-                        <td>In Progress</td>
-                        <td>Design Homepage</td>
-                        <td>2023-10-15</td>
-                        <td>
-                            <button class="btn btn-success">Update Status</button>
-                            <button class="btn btn-primary">Submit for Approval</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Project Beta</td>
-                        <td>Completed</td>
-                        <td>Write Documentation</td>
-                        <td>2023-10-10</td>
-                        <td>
-                            <button class="btn btn-success">Update Status</button>
-                            <button class="btn btn-primary">Submit for Approval</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Project Alpha</td>
-                        <td>Pending</td>
-                        <td>Fix Bugs</td>
-                        <td>2023-10-20</td>
-                        <td>
-                            <button class="btn btn-success">Update Status</button>
-                            <button class="btn btn-primary">Submit for Approval</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Project Gamma</td>
-                        <td>In Review</td>
-                        <td>Test Application</td>
-                        <td>2023-10-18</td>
-                        <td>
-                            <button class="btn btn-success">Update Status</button>
-                            <button class="btn btn-primary">Submit for Approval</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+<div class="sidebar">
+    <div class="profile-box">
+        <h1 class="project-title">
+            {{ project()?.projectName }}
+        </h1>
+        <p class="project-description">
+           Created By: {{ project()?.createdBy?.name }}
+        </p>
+        <p class="project-description">
+            {{ project()?.projectDescription }}
+        </p>
+        <ul class="project-members-list">
+            @for (member of project()?.members; track member) {
+            <li class="project-member-item"> {{ member.name || 'Unknown Member' }} </li>
+            }
+        </ul>
     </div>
 </div>
-<div class="approver-home">
-    <div class="review-section">
-        <h2>Pending Reviews</h2>
-        <div class="task-table-container">
-            <table class="task-table">
-                <thead>
-                    <tr>
-                        <th>Project</th>
-                        <th>Title</th>
-                        <th>Description</th>
-                        <th>Submitted by</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Project Alpha</td>
-                        <td>Design Homepage</td>
-                        <td>Design the homepage layout</td>
-                        <td>John</td>
-                        <td>
-                            <button class="btn btn-success">Approve</button>
-                            <button class="btn btn-primary">Reject</button>
-                            <button class="btn btn-info">Provide Feedback</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Project Beta</td>
-                        <td>API Development</td>
-                        <td>Develop REST API</td>
-                        <td>Alice</td>
-                        <td>
-                            <button class="btn btn-success">Approve</button>
-                            <button class="btn btn-primary">Reject</button>
-                            <button class="btn btn-info">Provide Feedback</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Project Gamma</td>
-                        <td>UI Design</td>
-                        <td>Create Dashboard UI</td>
-                        <td>Mike</td>
-                        <td>
-                            <button class="btn btn-success">Approve</button>
-                            <button class="btn btn-primary">Reject</button>
-                            <button class="btn btn-info">Provide Feedback</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+
+<app-members-submission-table  [filterProjectName]="project()?.projectName || ''" />
+<app-members-approval-table  [filterProjectName]="project()?.projectName || ''" />

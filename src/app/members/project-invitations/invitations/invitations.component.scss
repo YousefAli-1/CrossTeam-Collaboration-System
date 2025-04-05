@@ -1,0 +1,39 @@
+
+
+.invitation-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+}
+
+.invitation-card h3 {
+    margin: 0 0 10px;
+}
+
+.invitation-card p {
+    margin: 0 0 10px;
+}
+
+.invitation-card button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.invitation-card button:first-of-type {
+    background-color:#FE7F0E;
+    color: white;
+}
+
+.invitation-card button:last-of-type {
+    background-color:#FE7F0E;
+    color: white;
+}
+
+.invitation-card button:hover {
+    opacity: 0.9;
+}

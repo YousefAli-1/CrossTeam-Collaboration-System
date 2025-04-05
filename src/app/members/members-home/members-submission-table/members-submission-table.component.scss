@@ -69,37 +69,6 @@
             }
         }
     }
-
-    .notifications-section {
-        h2 {
-            font-size: 1.5em;
-            color: #333;
-            margin-bottom: 3%;
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-
-            li {
-                margin-bottom: 3%;
-
-                .notification-card {
-                    padding: 2%;
-                    background-color: #fff;
-                    border: 1px solid #ddd;
-                    border-radius: 5px;
-                    box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
-
-                    p {
-                        font-size: 0.9em;
-                        color: #555;
-                        margin: 0;
-                    }
-                }
-            }
-        }
-    }
 }
 
 .task-table-container {
@@ -205,7 +174,7 @@
     box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
     width: 70vh;
     position: absolute;
-    top: 86%;
+    margin-bottom: 2em;
     left: 50%;
     transform: translate(-50%, 2em);
 }

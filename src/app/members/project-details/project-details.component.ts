@@ -1,4 +1,4 @@
-import { Component, inject, input, computed,signal, Signal, OnInit } from '@angular/core';
+import { Component, inject, input, computed,signal, Signal, OnInit, DestroyRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { type User, type Project } from '../../app.model'
 import { MembersSubmissionTableComponent } from '../members-home/members-submission-table/members-submission-table.component';
@@ -13,13 +13,17 @@ import { MembersService } from '../members.service';
 export class ProjectDetailsComponent implements OnInit{
   private route = inject(ActivatedRoute);
   private membersService = inject(MembersService);
+  private destroyRef=inject(DestroyRef);
 
   currentProjectId= signal<number>(-1);
 
   ngOnInit(): void {
-      this.route.url.subscribe({next: (currentRoute)=>{
+      const subscribtion=this.route.url.subscribe({next: (currentRoute)=>{
         this.currentProjectId.set(Number(currentRoute[0]) || -1);
       }});
+      this.destroyRef.onDestroy(()=>{
+        subscribtion.unsubscribe();
+      });
   }
 
   project = computed<Project | null>(()=>this.membersService.getProjectByProjectId(this.currentProjectId()));

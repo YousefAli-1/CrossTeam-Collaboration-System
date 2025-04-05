@@ -1,0 +1,80 @@
+.navbar {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #212121;
+  }
+  
+  .logo-icon {
+    color: #FF6D00;
+    margin-right: 0.5rem;
+    font-size: 1.8rem;
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+  }
+  
+  .nav-link {
+    color: #424242;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+    position: relative;
+  }
+  
+  .nav-link:hover {
+    color: #FF6D00;
+  }
+  
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #FF6D00;
+    transition: width 0.3s;
+  }
+  
+  .nav-link:hover::after {
+    width: 100%;
+  }
+  
+  .auth-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .login-btn {
+    color: #424242 !important;
+    border-color: #e0e0e0 !important;
+  }
+  
+  .signup-btn {
+    background-color: #FF6D00 !important;
+    color: white !important;
+  }

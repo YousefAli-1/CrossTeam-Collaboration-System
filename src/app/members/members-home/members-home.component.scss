@@ -37,51 +37,6 @@
     height: 100%;
 }
 
-.projects-section {
-    margin-top: 4%;
-    padding: 4%;
-    background-color: #F9F9F9;
-    border-radius: 6px;
-
-    h2 {
-        font-size: 1.5em;
-        color: #333;
-        margin-bottom: 3%;
-    }
-
-    .project-cards {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 2%;
-
-        .project-card {
-            flex: 1 1 calc(33.333% - 2%);
-            padding: 2%;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            max-width: 40%;
-            h3 {
-                font-size: 1.25em;
-                color: #333;
-                margin-bottom: 1%;
-            }
-
-            p {
-                font-size: 0.9em;
-                color: #555;
-                margin-bottom: 0;
-            }
-
-            &:hover {
-                transform: scale(1.03);
-                box-shadow: 0 0.8em 1.5em rgba(0, 0, 0, 0.15);
-            }
-        }
-    }
-}
 .sidebar {
     width: 96%;
     background-color: #0F121B;

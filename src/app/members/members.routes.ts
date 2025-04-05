@@ -22,7 +22,7 @@ export const membersAuthGuard: CanActivateFn = () => {
     if (role === 'TeamMember' ) {
       return true;
     }
-    return router.navigateByUrl('/unAuthorized');
+    return router.navigateByUrl('/unauthorized');
   };
 export const membersRoutes: Routes=[
     {

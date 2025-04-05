@@ -1,4 +1,4 @@
-import { type TeamMember,type Project,type Task,type Team,type ProjectManager, type Invitation} from "../app.model"
+import { type TeamMember,type Project,type Task,type Team, type Invitation} from "../app.model"
 // Dummy data for Team Members
 export const dummyTeamMembers: TeamMember[] = [
     {
@@ -33,21 +33,6 @@ export const dummyTeams:Team[] = [
 
 
 
-// Dummy data for Project Managers
-export const dummyProjectManagers: ProjectManager[] = [
-    {
-        userID: 5,
-        name: 'Eve Adams',
-        email: 'eve.adams@example.com',
-        Projects: [],
-    },
-    {
-        userID: 6,
-        name: 'Charlie Brown',
-        email: 'charlie.brown@example.com',
-        Projects: [],
-    },
-];
 
 // Dummy data for Projects
 export const dummyProjects: Project[] = [
@@ -56,12 +41,14 @@ export const dummyProjects: Project[] = [
         invitations: [],
         projectName: 'Project Alpha',
         projectDescription: 'A top-secret project.',
-        createdBy: dummyProjectManagers[0],
-        tasks: [],
-        members: [
-            { ...dummyTeamMembers[0], isInviteAccepted: true },
-            { ...dummyTeamMembers[1], isInviteAccepted: true },
-        ],
+        createdBy: {
+            userID: 5,
+            name: 'Eve Adams',
+            email: 'eve.adams@example.com',
+            Projects: [],
+        },
+        tasks: [], 
+        members: [{ ...dummyTeamMembers[0], isInviteAccepted: true },{ ...dummyTeamMembers[1], isInviteAccepted: true }],
         teams: [],
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -71,12 +58,14 @@ export const dummyProjects: Project[] = [
         invitations: [],
         projectName: 'Project Beta',
         projectDescription: 'A secondary project for testing.',
-        createdBy: dummyProjectManagers[1],
+        createdBy: {
+            userID: 6,
+            name: 'Charlie Brown',
+            email: 'charlie.brown@example.com',
+            Projects: [],
+        },
         tasks: [],
-        members: [
-            { ...dummyTeamMembers[0], isInviteAccepted: true },
-            { ...dummyTeamMembers[1], isInviteAccepted: false },
-        ],
+        members: [{ ...dummyTeamMembers[0], isInviteAccepted: true }, { ...dummyTeamMembers[1], isInviteAccepted: false }],
         teams: [],
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -91,48 +80,53 @@ export const dummyTasks: Task[] = [
         taskName: 'Task 1',
         taskDescription: 'Complete the initial setup.',
         deadline: new Date(),
-        assigned: dummyTeams[0],
+        assigned: {
+            teamID: 301,
+            teamName: 'Team Alpha',
+            teamDescription: 'Alpha team description.',
+            teamMembers: dummyTeamMembers,
+        }, 
         isSubmitted: true,
         submittedBy: dummyTeamMembers[0],
-        approvalWorkflow: [
-            {
-                approvalRequestID: Math.random(),
-                comments: [],
+        approvalWorkflow: [{
+                approvalRequestID: Math.random(), 
+                comments: [], 
                 status: 'Pending',
                 assigned: dummyTeams[0],
                 reviewedBy: null,
                 createdAt: new Date(),
                 updatedAt: new Date(),
-            },
-        ],
+        }],
         createdAt: new Date(),
-        updatedAt: new Date(),
+        updatedAt: new Date()
     },
     {
-        project: dummyProjects[1],
+        project:dummyProjects[1],
         taskID: 202,
         taskName: 'Task 2',
         taskDescription: 'Develop the core module.',
         deadline: new Date(),
-        assigned: dummyTeams[0],
+        assigned: {
+            teamID: 301,
+            teamName: 'Team Alpha',
+            teamDescription: 'Alpha team description.',
+            teamMembers: dummyTeamMembers,
+        }, 
         isSubmitted: false,
         submittedBy: null,
-        approvalWorkflow: [
-            {
-                approvalRequestID: Math.random(),
-                comments: [],
+        approvalWorkflow: [{
+                approvalRequestID: Math.random(), 
+                comments: [], 
                 status: 'Pending',
                 assigned: dummyTeams[0],
                 reviewedBy: null,
                 createdAt: new Date(),
                 updatedAt: new Date(),
-            },
-        ],
+        }],
         createdAt: new Date(),
-        updatedAt: new Date(),
+        updatedAt: new Date()
     },
 ];
-
 // Dummy data for Invitations
 export const dummyInvitations: Invitation[] = [
     {
@@ -158,7 +152,5 @@ export const dummyInvitations: Invitation[] = [
 // Link invitations to projects
 dummyProjects[0].invitations = [dummyInvitations[0]];
 dummyProjects[1].invitations = [dummyInvitations[1]];
-
 // Link tasks to projects after both are declared
 dummyProjects[0].tasks = [dummyTasks[0]];
-dummyProjects[1].tasks = [dummyTasks[1]];

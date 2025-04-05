@@ -11,8 +11,16 @@ import { Task } from '../../../app.model';
 
 
 export class MembersSubmissionTableComponent {
-  private allSubmissionTasks: Task[] = inject(MembersService).getSubmissionTasksForLoggedInUser();
+    private membersService = inject(MembersService);
+  private allSubmissionTasks: Task[] = this.membersService.getSubmissionTasksForLoggedInUser();
 
+  ngOnInit() {
+    this.loadSubmissionTasks();
+  }
+  
+  loadSubmissionTasks() {
+    this.submissionTasks = this.membersService.getSubmissionTasksForLoggedInUser();
+  }
   private _filterProjectName: String = '';
 
   @Input() 
@@ -35,5 +43,9 @@ export class MembersSubmissionTableComponent {
     } else {
       this.submissionTasks = this.allSubmissionTasks;
     }
+  }
+  submitTask(taskID:any){
+    this.membersService.submitTask(taskID);
+    this.loadSubmissionTasks();
   }
 }

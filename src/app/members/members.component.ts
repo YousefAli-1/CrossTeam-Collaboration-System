@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet,Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatMenuModule } from '@angular/material/menu';
@@ -38,7 +38,11 @@ export class MembersComponent implements OnInit, OnDestroy {
       this.membersService.loggedInUser()?.userID || -1
     );
   }
-
+  private router=inject(Router);
+  logout() {
+    this.membersService.logout(); 
+    this.router.navigate(['/']); 
+  }
   toggleDrawer(): void {
     this.isOpened = !this.isOpened;
   }

@@ -1,5 +1,10 @@
 $arrow-transition-duration: 400ms;
 :host{
+    @include mat.elevation-classes();
+    @include mat.app-background();
+    @include mat.sidenav-overrides((
+        container-text-color: orange,
+    ));
     width: 100%;
     height: 100%;
 }

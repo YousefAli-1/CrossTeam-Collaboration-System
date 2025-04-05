@@ -47,10 +47,7 @@ export const dummyProjects: Project[] = [
             Projects: [],
         },
         tasks: [], 
-        members: dummyTeamMembers.map((member) => ({
-            ...member,
-            isInviteAccepted: true,
-        })),
+        members: [{ ...dummyTeamMembers[0], isInviteAccepted: true },{ ...dummyTeamMembers[1], isInviteAccepted: true }],
         teams: [],
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -71,25 +68,22 @@ export const dummyTasks: Task[] = [
             teamDescription: 'Alpha team description.',
             teamMembers: dummyTeamMembers,
         }, 
-        isSubmitted: false,
+        isSubmitted: true,
         submittedBy: dummyTeamMembers[0],
-        approvalWorkflow: dummyTeamMembers
-            .filter(
-                (member) => member.canReviewTask && member.userID !== dummyTeamMembers[0].userID
-            )
-            .map((member) => ({
+        approvalWorkflow: [{
                 approvalRequestID: Math.random(), 
                 comments: [], 
                 status: 'Pending',
-                reviewedBy: member,
+                assigned: dummyTeams[0],
+                reviewedBy: null,
                 createdAt: new Date(),
                 updatedAt: new Date(),
-            })), 
-            createdAt: new Date(),
-            updatedAt: new Date(),
+        }],
+        createdAt: new Date(),
+        updatedAt: new Date()
     },
 ];
 
 // Link tasks to projects after both are declared
 dummyProjects[0].tasks = [dummyTasks[0]];
-
+dummyTeamMembers[0].Projects = dummyProjects;

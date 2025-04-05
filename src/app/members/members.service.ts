@@ -24,6 +24,10 @@ export class MembersService {
   projectsChanged = new Subject<void>()
   loggedInUser = this.loggedInUserWritableSignal.asReadonly();
 
+  logIn(user: User){
+    this.loggedInUserWritableSignal.set(user);
+  }
+
   getProjectByProjectId(id: number): Project | null {
     return this.projects.find((project) => project.projectID === id) || null;
   }
@@ -54,15 +58,13 @@ export class MembersService {
     !task.isSubmitted
     );
   }
-  checkUserRole(): 'ProjectManager' | 'TeamMember' | 'User' {
-    const user = this.loggedInUser();
-
-    if (!user) return 'User';
-
-    const isTeamMember = 'canSubmitTask' in user;
-    if (isTeamMember) return 'TeamMember';
-
-    return 'User';
+  isUserLoggedIn(): boolean {
+    if (this.loggedInUser()) {
+      return true;
+    }
+    else{
+      return false;
+    }
   }
   private isUserAssignedReviewerInApprovalWorkflow(
     user: User | null,
@@ -132,7 +134,7 @@ export class MembersService {
   getInvitationsForUser(userID: number): Invitation[] {
     return this.projects
       .flatMap((project) => project.invitations || [])
-      .filter((invitation) => invitation.member.userID === userID);
+      .filter((invitation) => invitation.member.userID === userID && invitation.status==='Pending');
   }
 
   updateInvitationStatus(invitationID: number, status: InvitationStatus): void {

@@ -37,6 +37,9 @@ $CrossTeam-Collaboration-System-theme: mat.m2-define-light-theme((
 @include mat.all-component-themes($CrossTeam-Collaboration-System-theme);
 
 /* You can add global styles to this file, and also import other style files */
+html {
+  scroll-behavior: smooth;
+}
 body{
   margin: 0px;
 }

@@ -20,9 +20,14 @@
             <td>{{ task.taskDescription }}</td>
             <td>{{ task.submittedBy?.name}}</td>
             <td>
-              <button class="btn btn-success">Approve</button>
-              <button class="btn btn-primary">Reject</button>
-              <button class="btn btn-info">Provide Feedback</button>
+              @if (DoesNeedAction(task)) {
+                <button (click)="acceptTask(task.taskID)" class="btn btn-success">Approve</button>
+                <button (click)="rejectTask(task.taskID)" class="btn btn-primary">Reject</button>
+                <button class="btn btn-info">Download Submitted Files</button>
+              }
+              @else {
+                <p>Team has {{currentTaskStatus(task)?.toLowerCase()}} the task</p>
+              }
             </td>
           </tr>
           } @empty {

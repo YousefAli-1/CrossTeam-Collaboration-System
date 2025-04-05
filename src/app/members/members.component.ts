@@ -5,10 +5,9 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { MembersService } from './members.service';
-
 @Component({
   selector: 'app-members',
-  imports: [RouterOutlet, MatSidenavModule, MatButtonModule,MatDividerModule, MatMenuModule, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, MatSidenavModule, MatButtonModule, MatDividerModule, MatMenuModule, RouterLink, RouterLinkActive],
   templateUrl: './members.component.html',
   styleUrl: './members.component.scss'
 })

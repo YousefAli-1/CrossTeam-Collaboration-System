@@ -16,6 +16,8 @@ export class ProjectDetailsComponent implements OnInit{
   private destroyRef=inject(DestroyRef);
 
   currentProjectId= signal<number>(-1);
+  project = computed<Project | null>(()=>this.membersService.getProjectByProjectId(this.currentProjectId()));
+  currentUser = signal<User | null>(this.membersService.loggedInUser()); 
 
   ngOnInit(): void {
       const subscribtion=this.route.url.subscribe({next: (currentRoute)=>{
@@ -26,6 +28,11 @@ export class ProjectDetailsComponent implements OnInit{
       });
   }
 
-  project = computed<Project | null>(()=>this.membersService.getProjectByProjectId(this.currentProjectId()));
-  currentUser = signal<User | null>(this.membersService.loggedInUser()); 
+  hasSubmissionAuthority() : boolean{
+    return this.project()?.members.find((teamMember)=>teamMember.userID===this.currentUser()?.userID)?.canSubmitTask || false;
+  }
+
+  hasApprovalAuthority() : boolean{
+    return this.project()?.members.find((teamMember)=>teamMember.userID===this.currentUser()?.userID)?.canAcceptOrRejectTask || false;
+  }
 }

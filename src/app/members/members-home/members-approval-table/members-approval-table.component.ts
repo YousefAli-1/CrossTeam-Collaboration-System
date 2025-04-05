@@ -1,6 +1,6 @@
 import { Component, inject,Input } from '@angular/core';
 import { MembersService } from '../../members.service';
-import { Task } from '../../../app.model';
+import { ApprovalRequestStatus, Task } from '../../../app.model';
 @Component({
   selector: 'app-members-approval-table',
   standalone: true,
@@ -9,7 +9,8 @@ import { Task } from '../../../app.model';
   styleUrl: './members-approval-table.component.scss'
 })
 export class MembersApprovalTableComponent {
-   private allReviewTasks: Task[] = inject(MembersService).getReviewTasksForLoggedInUser();
+  private membersService=inject(MembersService);
+   private allReviewTasks: Task[] = this.membersService.getReviewTasksForLoggedInUser();
  
    private _filterProjectName: String = '';
  
@@ -34,4 +35,32 @@ export class MembersApprovalTableComponent {
        this.reviewTasks = this.allReviewTasks;
      }
    }
+
+   DoesNeedAction(task: Task): boolean{
+    return this.membersService.getPendingApprovalRequest(task)?.status==='Pending';
+  }
+
+  currentTaskStatus(task: Task): ApprovalRequestStatus | undefined{
+    return this.membersService.getPendingApprovalRequest(task)?.status;
+  }
+
+  currentTeamReviewing(task: Task): String | undefined{
+    return this.membersService.getPendingApprovalRequest(task)?.assigned.teamName;
+  }
+
+  acceptTask(taskId: number){
+    if(confirm("Are you sure you want to accept this Task? \nThis action is irreversable!")){
+      this.membersService.acceptTask(taskId);
+      this.allReviewTasks=this.membersService.getReviewTasksForLoggedInUser();
+      this.applyFilter();
+    };
+  }
+
+  rejectTask(taskId: number){
+    if(confirm("Are you sure you want to reject this Task? \nThis action is irreversable!")){
+      this.membersService.rejectTask(taskId);
+      this.allReviewTasks=this.membersService.getReviewTasksForLoggedInUser();
+      this.applyFilter();
+    };
+  }
 }

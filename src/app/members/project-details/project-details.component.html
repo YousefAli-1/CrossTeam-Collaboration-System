@@ -17,5 +17,10 @@
     </div>
 </div>
 
-<app-members-submission-table  [filterProjectName]="project()?.projectName || ''" />
-<app-members-approval-table  [filterProjectName]="project()?.projectName || ''" />
+@if (hasSubmissionAuthority())  {
+    <app-members-submission-table  [filterProjectName]="project()?.projectName || ''" />
+}
+
+@if (hasApprovalAuthority()) {
+    <app-members-approval-table  [filterProjectName]="project()?.projectName || ''" />
+}

@@ -14,7 +14,7 @@ export type Team={readonly teamID: number, teamName: String, teamDescription: St
 
 export type ApprovalRequestStatus= 'Accepted' | 'Rejected' | 'Pending';
 
-export type ApprovalRequest={readonly approvalRequestID: number, comments: Comment[], status: ApprovalRequestStatus, assigned: Team, reviewedBy: TeamMember | null, createdAt: Date, updatedAt: Date};
+export type ApprovalRequest={readonly approvalRequestID: number, comments: Comment[], status: ApprovalRequestStatus, assigned: Team, reviewedBy: ProjectMember | null, createdAt: Date, updatedAt: Date};
 
 export type Comment={readonly commentID: number, commentText: String, createdAt: Date};
 

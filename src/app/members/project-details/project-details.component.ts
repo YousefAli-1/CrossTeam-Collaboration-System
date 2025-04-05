@@ -1,4 +1,4 @@
-import { Component, inject, input, computed,signal } from '@angular/core';
+import { Component, inject, input, computed,signal, Signal, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { type User, type Project } from '../../app.model'
 import { MembersSubmissionTableComponent } from '../members-home/members-submission-table/members-submission-table.component';
@@ -10,13 +10,18 @@ import { MembersService } from '../members.service';
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
-export class ProjectDetailsComponent {
+export class ProjectDetailsComponent implements OnInit{
   private route = inject(ActivatedRoute);
   private membersService = inject(MembersService);
 
-  currentProjectId = Number(this.route.snapshot.paramMap.get('projectId') || -1);
-  project = signal<Project | null>(
-    this.membersService.getProjectByProjectId(this.currentProjectId)
-  );
+  currentProjectId= signal<number>(-1);
+
+  ngOnInit(): void {
+      this.route.url.subscribe({next: (currentRoute)=>{
+        this.currentProjectId.set(Number(currentRoute[0]) || -1);
+      }});
+  }
+
+  project = computed<Project | null>(()=>this.membersService.getProjectByProjectId(this.currentProjectId()));
   currentUser = signal<User | null>(this.membersService.loggedInUser()); 
 }

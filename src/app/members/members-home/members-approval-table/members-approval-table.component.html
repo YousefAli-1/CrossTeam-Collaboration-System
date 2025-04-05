@@ -26,7 +26,7 @@
                 <button class="btn btn-info">Download Submitted Files</button>
               }
               @else {
-                <p>Team has {{currentTaskStatus(task)?.toLowerCase()}} the task</p>
+                {{currentTeamReviewing(task)}} Team has {{currentTaskStatus(task)?.toLowerCase()}} the task
               }
             </td>
           </tr>

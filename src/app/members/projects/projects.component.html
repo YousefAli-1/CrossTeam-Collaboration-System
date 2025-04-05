@@ -1,8 +1,7 @@
-<ul><li><h1>Your Projects</h1></li></ul>
+<h1>Your Projects</h1>
   
   <div class="projects-container">
     @for (project of userProjects(); track project.projectID) {
-      <app-project-card [project]="project"></app-project-card>
       <app-project-card [project]="project"></app-project-card>
     }
     @empty {

@@ -52,7 +52,9 @@
     object-fit: cover;
     transition: opacity 0.3s;
   }
-  
+  .hover-img {
+    display: none;
+  }
   .project-card {
     &:hover {
         transform: scale(1.05);

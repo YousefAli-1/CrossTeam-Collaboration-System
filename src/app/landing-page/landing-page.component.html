@@ -1,0 +1,76 @@
+<app-navbar></app-navbar>
+<div class="landing-container">
+    <section class="hero">
+      <div class="hero-content">
+        <div class="tagline">TEAM COLLABORATION REIMAGINED</div>
+        <h1>Break Barriers, <span class="highlight">Build Together</span></h1>
+        <p class="subtitle">The ultimate platform for cross-functional teamwork with real-time synchronization and intelligent workflow automation</p>
+        
+        <div class="cta-container">
+          <button mat-raised-button class="cta-primary" routerLink="/signup">
+            Start Free Trial
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-image">
+        <img src="assets/team.jpg" alt="Team collaboration 3D illustration">
+      </div>
+    </section>
+    <div class="sec">
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-number">10K+</div>
+        <div class="stat-label">Teams Connected</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-number">85%</div>
+        <div class="stat-label">Faster Onboarding</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-number">4.9★</div>
+        <div class="stat-label">Average Rating</div>
+      </div>
+    </div>
+    <div class="hero-image" id="stat-img">
+    <img src="assets/success.jpg" alt="success rate">
+  </div>
+  </div>
+    <section class="features">
+      <h2>Designed for <span class="highlight">Seamless</span> Collaboration</h2>
+      <p class="section-subtitle">Everything your team needs in one unified platform</p>
+      
+      <div class="feature-grid">
+        <div class="feature-card" *ngFor="let feature of features">
+          <div class="feature-icon-container">
+            <mat-icon [fontIcon]="feature.icon"></mat-icon>
+          </div>
+          <h3>{{feature.title}}</h3>
+          <p>{{feature.description}}</p>
+        </div>
+      </div>
+    </section>
+    <section class="testimonials">
+      <div class="testimonial-card">
+        <div class="testimonial-content">
+          <mat-icon class="quote-icon">format_quote</mat-icon>
+          <p>This platform eliminated 80% of our inter-departmental emails and reduced project completion time by 40%.</p>
+        </div>
+        <div class="testimonial-author">
+          <img src="assets/team.jpg" alt="Alex Morgan" class="author-avatar">
+          <div>
+            <div class="author-name">Alex Morgan</div>
+            <div class="author-title">Head of Product, TechSphere</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    </section>
+  </div>

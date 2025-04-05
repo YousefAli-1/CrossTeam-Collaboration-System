@@ -1,13 +1,10 @@
 <mat-drawer-container  hasBackdrop="false">
   <mat-drawer style="width: 22%;" class="drawer" mode="side" position="start" [opened]="isOpened">
-    <h3>
-        Tabs
-    </h3>
     <a routerLink="/teamMember/homepage" routerLinkActive="active" mat-button class="horizontal-link">
       <span class="material-icons icon">home</span>
       <label>Homepage</label>
     </a>
-    <a routerLink="/teamMember/projects" routerLinkActive="active" mat-button class="horizontal-link">
+    <a routerLink="/teamMember/projects" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active" mat-button class="horizontal-link">
       <span class="material-icons icon">workspaces</span>
       <label>Projects</label>
     </a>
@@ -16,11 +13,11 @@
       <label>Project Invitations</label>
     </a>
     <hr>
-    <h3>
+    <h2>
         Your projects
-    </h3>
-    @for(project of projects; track project.projectID){
-      <a [routerLink]='"/teamMember/projects/"+project.projectID' routerLinkActive="active" mat-button>
+    </h2>
+    @for (project of userProjects; track project.projectID) {
+      <a [routerLink]='"/teamMember/projects/"+project.projectID' routerLinkActive="active" class="horizontal-link" mat-button>
         <label>
           {{project.projectName}}
         </label>
@@ -29,6 +26,12 @@
     @empty{
       <p>You didn't join any project yet</p>
     }
+    <div class="logout-section">
+      <button mat-button class="horizontal-link logout-btn" (click)="logout()">
+        <span class="material-icons icon">logout</span>
+        <label>Logout</label>
+      </button>
+    </div>
   </mat-drawer>
   <mat-drawer-content style="overflow-y: hidden;">
     <button mat-icon-button (click)="toggleDrawer()" [class]="{'isOpened': isOpened,'isClosed': !isOpened}">

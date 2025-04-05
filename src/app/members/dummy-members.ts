@@ -65,7 +65,7 @@ export const dummyProjects: Project[] = [
             Projects: [],
         },
         tasks: [],
-        members: [{ ...dummyTeamMembers[0], isInviteAccepted: false }, { ...dummyTeamMembers[1], isInviteAccepted: true }],
+        members: [{ ...dummyTeamMembers[0], isInviteAccepted: true }, { ...dummyTeamMembers[1], isInviteAccepted: false }],
         teams: [],
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -145,7 +145,7 @@ export const dummyInvitations: Invitation[] = [
         project: dummyProjects[1],
         member: dummyTeamMembers[1],
         invitedBy: dummyProjects[1].createdBy,
-        status: 'Accepted',
+        status: 'Pending',
     },
 ];
 
@@ -154,4 +154,3 @@ dummyProjects[0].invitations = [dummyInvitations[0]];
 dummyProjects[1].invitations = [dummyInvitations[1]];
 // Link tasks to projects after both are declared
 dummyProjects[0].tasks = [dummyTasks[0]];
-dummyTeamMembers[0].Projects = dummyProjects;

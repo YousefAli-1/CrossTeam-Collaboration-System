@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { dummyTeamMembers, dummyProjects, dummyTasks } from './dummy-members';
+import { Subject } from 'rxjs';
 import {
   type TeamMember,
   type User,
@@ -18,8 +19,8 @@ export class MembersService {
   private readonly teamMembers = dummyTeamMembers;
   private readonly projects = dummyProjects;
   private readonly tasks = dummyTasks;
-
-  private loggedInUserWritableSignal = signal<User | null>(this.teamMembers[1]);
+  projectsChanged = new Subject<void>()
+  private loggedInUserWritableSignal = signal<User | null>(this.teamMembers[0]);
   loggedInUser = this.loggedInUserWritableSignal.asReadonly();
 
   getProjectByProjectId(id: number): Project | null {
@@ -48,10 +49,20 @@ export class MembersService {
 
   getSubmissionTasksForLoggedInUser(): Task[] {
     return this.tasks.filter((task) =>
-      this.isUserAssignedInTask(this.loggedInUser(), task)
+      this.isUserAssignedInTask(this.loggedInUser(), task)&&
+    !task.isSubmitted
     );
   }
+  checkUserRole(): 'ProjectManager' | 'TeamMember' | 'User' {
+    const user = this.loggedInUser();
 
+    if (!user) return 'User';
+
+    const isTeamMember = 'canSubmitTask' in user;
+    if (isTeamMember) return 'TeamMember';
+
+    return 'User';
+  }
   private isUserAssignedReviewerInApprovalWorkflow(
     user: User | null,
     request: ApprovalRequest
@@ -100,12 +111,12 @@ export class MembersService {
       .flatMap((project) => project.invitations || [])
       .filter((invitation) => invitation.member.userID === userID);
   }
-  
+
   updateInvitationStatus(invitationID: number, status: InvitationStatus): void {
     const invitation = this.projects
       .flatMap((project) => project.invitations || [])
       .find((invitation) => invitation.invitationID === invitationID);
-  
+
     if (invitation) {
       invitation.status = status;
       if (status === 'Accepted') {
@@ -113,7 +124,46 @@ export class MembersService {
         const invitedUser = invitation.member as ProjectMember;
         invitedUser.isInviteAccepted = true;
         project.members.push(invitedUser);
+
+        if (invitedUser.Projects) {
+          invitedUser.Projects.push(project);
+        } else {
+          invitedUser.Projects = [project];
+        }
+
+
+        this.projectsChanged.next();
       }
     }
   }
+
+  submitTask(taskID: number): void {
+    const user = this.loggedInUser();
+    if (!user) return;
+
+    const task = this.tasks.find((t) => t.taskID === taskID);
+
+    if (!task) {
+      console.warn('Task not found');
+      return;
+    }
+    const isAssigned = this.isUserAssignedInTask(user, task);
+    if (!isAssigned) {
+      console.warn('User is not assigned to this task');
+      return;
+    }
+    task.isSubmitted = true;
+    task.submittedBy = user as TeamMember;
+    task.updatedAt = new Date(); 
+
+    console.log(`Task ${taskID} submitted by ${user.name}`);
+
+    
+    this.projectsChanged.next();
+
+  }
+  logout(): void {
+    this.loggedInUserWritableSignal.set(null);
+  }
 }
+

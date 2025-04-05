@@ -1,3 +1,5 @@
+@use '@angular/material' as mat;
+
 $arrow-transition-duration: 400ms;
 :host{
     @include mat.elevation-classes();
@@ -21,6 +23,7 @@ label{
     padding: 2px;
 }
 .active{
+    background-color: orange;
 }
 .isOpened{
     transform: rotate(180deg);
@@ -32,9 +35,10 @@ label{
 }
 .horizontal-link {
     display: flex;
+    font-size: 1.5em;
     align-items: center;
-    justify-content: flex-start;
-  }
+    justify-content:center;
+}
   
   .icon {
     display: inline-block;

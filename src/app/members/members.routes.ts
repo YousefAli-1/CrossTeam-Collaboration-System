@@ -2,6 +2,7 @@ import { ActivatedRouteSnapshot, MaybeAsync, RedirectCommand, Router, RouterStat
 import { MembersHomeComponent } from "./members-home/members-home.component";
 import { ProjectsComponent } from "./projects/projects.component";
 import { ProjectDetailsComponent } from "./project-details/project-details.component";
+import { ProjectInvitationsComponent } from "./project-invitations/project-invitations.component";
 import { inject } from "@angular/core";
 import { MembersService } from "./members.service";
 import { Project } from "../app.model";
@@ -10,7 +11,6 @@ import { Project } from "../app.model";
 
 type ResolveFn<T> = (  route: ActivatedRouteSnapshot,  state: RouterStateSnapshot) => MaybeAsync<T | RedirectCommand>
 const ProjectResolver: ResolveFn<Project>=(route)=>{
-    console.log(route.paramMap.get('projectId'));
     return inject(MembersService).getProjectByProjectId(Number.parseInt(route.paramMap.get('projectId')!)) || new RedirectCommand(inject(Router).parseUrl('/error404'));
 };
 export const membersRoutes: Routes=[
@@ -24,6 +24,10 @@ export const membersRoutes: Routes=[
         component: MembersHomeComponent
     },
     {
+        path: 'invitations',
+        component: ProjectInvitationsComponent
+    },
+    {
         path:'projects',
         children: [{
                 path: '',
@@ -33,7 +37,7 @@ export const membersRoutes: Routes=[
                 path: ':projectId',
                 component: ProjectDetailsComponent,
                 resolve: {Project: ProjectResolver}
-            }
+            },
         ]
     }
 ];

@@ -25,3 +25,16 @@ label{
     transform: rotate(0deg);
     transition-duration: $arrow-transition-duration;
 }
+.horizontal-link {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  .icon {
+    display: inline-block;
+    width: 5vh;
+    text-align: center;
+    margin-right: 0.2em;
+  }
+  

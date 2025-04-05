@@ -5,7 +5,10 @@ import {
   type User,
   type Project,
   type Task,
-  ApprovalRequest,
+  type ApprovalRequest,
+  type Invitation,
+  ProjectMember,
+  type InvitationStatus
 } from '../app.model';
 
 @Injectable({
@@ -19,8 +22,8 @@ export class MembersService {
   private loggedInUserWritableSignal = signal<User | null>(this.teamMembers[1]);
   loggedInUser = this.loggedInUserWritableSignal.asReadonly();
 
-  getProjectByProjectId(id: number) {
-    return this.projects.find((project) => project.projectID === id);
+  getProjectByProjectId(id: number): Project | null {
+    return this.projects.find((project) => project.projectID === id) || null;
   }
 
   getProjectsByUserId(userId: number): Project[] {
@@ -91,5 +94,26 @@ export class MembersService {
       userTasks,
       this.loggedInUser()
     );
+  }
+  getInvitationsForUser(userID: number): Invitation[] {
+    return this.projects
+      .flatMap((project) => project.invitations || [])
+      .filter((invitation) => invitation.member.userID === userID);
+  }
+  
+  updateInvitationStatus(invitationID: number, status: InvitationStatus): void {
+    const invitation = this.projects
+      .flatMap((project) => project.invitations || [])
+      .find((invitation) => invitation.invitationID === invitationID);
+  
+    if (invitation) {
+      invitation.status = status;
+      if (status === 'Accepted') {
+        const project = invitation.project;
+        const invitedUser = invitation.member as ProjectMember;
+        invitedUser.isInviteAccepted = true;
+        project.members.push(invitedUser);
+      }
+    }
   }
 }

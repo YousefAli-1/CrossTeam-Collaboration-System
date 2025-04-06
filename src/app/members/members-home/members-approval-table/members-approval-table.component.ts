@@ -1,4 +1,4 @@
-import { Component, inject,Input } from '@angular/core';
+import { Component, computed, inject,input, signal } from '@angular/core';
 import { MembersService } from '../../members.service';
 import { ApprovalRequestStatus, Task } from '../../../app.model';
 @Component({
@@ -10,29 +10,22 @@ import { ApprovalRequestStatus, Task } from '../../../app.model';
 })
 export class MembersApprovalTableComponent {
   private membersService=inject(MembersService);
-   private allReviewTasks: Task[] = this.membersService.getReviewTasksForLoggedInUser();
+   private allReviewTasks=signal(this.membersService.getReviewTasksForLoggedInUser());
+   filterProjectName= input<String>('');
  
-   private _filterProjectName: String = '';
- 
-   @Input() 
-   set filterProjectName(value: String) {
-     this._filterProjectName = value;
-     this.applyFilter();
-   }
-   get filterProjectName(): String {
-     return this._filterProjectName;
-   }
- 
-   reviewTasks: Task[] = this.allReviewTasks;
+   reviewTasks=computed<Task[]>(()=>{
+    this.allReviewTasks()
+    return this.applyFilter(this.filterProjectName())
+  });
  
  
-   private applyFilter(): void {
-     if (this.filterProjectName) {
-       this.reviewTasks = this.allReviewTasks.filter(task =>
-         task.project.projectName === this.filterProjectName
+   private applyFilter(filterProjectName: String) {
+     if (filterProjectName!=='') {
+       return this.allReviewTasks().filter(task =>
+         task.project.projectName === filterProjectName
        );
      } else {
-       this.reviewTasks = this.allReviewTasks;
+       return this.allReviewTasks();
      }
    }
 
@@ -51,16 +44,14 @@ export class MembersApprovalTableComponent {
   acceptTask(taskId: number){
     if(confirm("Are you sure you want to accept this Task? \nThis action is irreversable!")){
       this.membersService.acceptTask(taskId);
-      this.allReviewTasks=this.membersService.getReviewTasksForLoggedInUser();
-      this.applyFilter();
+      this.allReviewTasks.set(this.membersService.getReviewTasksForLoggedInUser());
     };
   }
 
   rejectTask(taskId: number){
     if(confirm("Are you sure you want to reject this Task? \nThis action is irreversable!")){
       this.membersService.rejectTask(taskId);
-      this.allReviewTasks=this.membersService.getReviewTasksForLoggedInUser();
-      this.applyFilter();
+      this.allReviewTasks.set(this.membersService.getReviewTasksForLoggedInUser());
     };
   }
 }

@@ -1,4 +1,4 @@
-import { Component, inject,Input,OnChanges } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { MembersService } from '../../members.service';
 import { Task } from '../../../app.model';
 @Component({
@@ -6,46 +6,34 @@ import { Task } from '../../../app.model';
   standalone: true,
   imports: [],
   templateUrl: './members-submission-table.component.html',
-  styleUrl: './members-submission-table.component.scss'
+  styleUrl: './members-submission-table.component.scss',
 })
-
-
 export class MembersSubmissionTableComponent {
-    private membersService = inject(MembersService);
-  private allSubmissionTasks: Task[] = this.membersService.getSubmissionTasksForLoggedInUser();
+  private membersService = inject(MembersService);
+  private allSubmissionTasks = signal(
+    this.membersService.getSubmissionTasksForLoggedInUser()
+  );
 
-  ngOnInit() {
-    this.loadSubmissionTasks();
-  }
-  
-  loadSubmissionTasks() {
-    this.submissionTasks = this.membersService.getSubmissionTasksForLoggedInUser();
-  }
-  private _filterProjectName: String = '';
+  filterProjectName = input<String>('');
 
-  @Input() 
-  set filterProjectName(value: String) {
-    this._filterProjectName = value;
-    this.applyFilter();
-  }
-  get filterProjectName(): String {
-    return this._filterProjectName;
-  }
+  submissionTasks = computed<Task[]>(() => {
+    this.allSubmissionTasks();
+    return this.applyFilter(this.filterProjectName());
+  });
 
-  submissionTasks: Task[] = this.allSubmissionTasks;
-
-
-  private applyFilter(): void {
-    if (this.filterProjectName) {
-      this.submissionTasks = this.allSubmissionTasks.filter(task =>
-        task.project.projectName === this.filterProjectName
+  private applyFilter(filterProjectName: String) {
+    if (filterProjectName !== '') {
+      return this.allSubmissionTasks().filter(
+        (task) => task.project.projectName === filterProjectName
       );
     } else {
-      this.submissionTasks = this.allSubmissionTasks;
+      return this.allSubmissionTasks();
     }
   }
-  submitTask(taskID:any){
+  submitTask(taskID: any) {
     this.membersService.submitTask(taskID);
-    this.loadSubmissionTasks();
+    this.allSubmissionTasks.set(
+      this.membersService.getSubmissionTasksForLoggedInUser()
+    );
   }
 }

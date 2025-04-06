@@ -10,6 +10,7 @@ import { Router, RouterLink } from '@angular/router';
 import { NavbarComponent } from "../../navbar/navbar.component";
 import { dummyProjectManager, dummyTeamMembers } from '../../members/dummy-members';
 import { MembersService } from '../../members/members.service';
+import { ProjectManagerService } from '../../project-manager/project-manager.service';
 
 @Component({
   standalone: true,
@@ -44,6 +45,7 @@ export class LoginComponent {
   get password() { return this.loginForm.get('password'); }
   private router=inject(Router);
   private memberservice=inject(MembersService);
+  private managerservice =inject(ProjectManagerService)
   onSubmit() {
     console.log(dummyTeamMembers);
     if (this.loginForm.valid) {
@@ -61,7 +63,7 @@ export class LoginComponent {
         this.router.navigate(['/teamMember']);
       }else if(manager){
         console.log('Login successful:', manager);
-        this.memberservice.logIn(manager);
+        this.managerservice.logIn(manager);
         this.router.navigate(['/projectManager']);
       }
     }

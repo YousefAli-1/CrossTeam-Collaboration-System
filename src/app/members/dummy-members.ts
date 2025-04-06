@@ -1,4 +1,5 @@
-import { type TeamMember,type Project,type Task,type Team, type Invitation} from "../app.model"
+import { type TeamMember,type Project,type Task,type Team} from "../app.model"
+import { type ProjectManager } from "../app.model";
 // Dummy data for Team Members
 export const dummyTeamMembers: TeamMember[] = [
     {
@@ -18,6 +19,23 @@ export const dummyTeamMembers: TeamMember[] = [
         canSubmitTask: false,
         canReviewTask: true,
         canAcceptOrRejectTask: true,
+    },
+];
+
+// Dummy data for project manager
+
+export const dummyProjectManager: ProjectManager[] =[
+    {
+        userID: 1,
+        name: 'Alice Johnson',
+        email: 'alice.johnson@example.com',
+        Projects: []
+    },
+    {
+        userID: 2,
+        name: 'Bob Smith',
+        email: 'bob.smith@example.com',
+        Projects: []
     },
 ];
 
@@ -41,12 +59,7 @@ export const dummyProjects: Project[] = [
         invitations: [],
         projectName: 'Project Alpha',
         projectDescription: 'A top-secret project.',
-        createdBy: {
-            userID: 5,
-            name: 'Eve Adams',
-            email: 'eve.adams@example.com',
-            Projects: [],
-        },
+        createdBy: dummyProjectManager[0],
         tasks: [], 
         members: [{ ...dummyTeamMembers[0], isInviteAccepted: true },{ ...dummyTeamMembers[1], isInviteAccepted: true }],
         teams: [],

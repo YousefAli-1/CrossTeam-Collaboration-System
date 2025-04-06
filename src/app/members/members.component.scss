@@ -3,6 +3,7 @@
 $orange-color: #FE7F0E;
 $dark-grey-color: #1C1F2A;
 $arrow-transition-duration: 400ms;
+@use '@angular/material' as mat;
 :host{
     @include mat.sidenav-overrides((
         container-text-color: white,

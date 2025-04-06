@@ -1,0 +1,33 @@
+<div class="team-member-home">
+  <div class="tasks-section">
+    <h2>Your Tasks</h2>
+    <div class="task-table-container">
+      <table class="task-table">
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Due Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (task of submissionTasks; track task.taskID) {
+          <tr>
+            <td>{{ task.project.projectName }}</td>
+            <td>{{ task.taskName }}</td>
+            <td>{{ task.taskDescription }}</td>
+            <td>{{ task.deadline }}</td>
+            <td>
+              <button (click)="submitTask(task.taskID)" class="btn btn-primary">Submit for Approval</button>
+            </td>
+          </tr>
+          } @empty {
+          <p class="no-tasks-message">No tasks found</p>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

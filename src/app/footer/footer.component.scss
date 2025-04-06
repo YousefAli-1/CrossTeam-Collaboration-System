@@ -1,0 +1,197 @@
+@use '@angular/material' as mat;
+$orange-color: #f5691eb6;
+ :host{
+  @include mat.form-field-overrides((
+    filled-focus-label-text-color: $orange-color,
+    filled-focus-active-indicator-color: $orange-color
+  ));
+ }
+.footer {
+    background: #212121;
+    color: white;
+    padding: 4rem 0 0;
+  }
+  
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 4rem;
+    margin-bottom: 3rem;
+  }
+  
+  /* About Column */
+  .about-column {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  
+  .footer-logo .logo-icon {
+    color: #FF6D00;
+    margin-right: 0.5rem;
+    font-size: 1.8rem;
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+  
+  .footer-description {
+    color: #bdbdbd;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    max-width: 500px;
+  }
+  
+  .company-info {
+    margin-bottom: 2rem;
+  }
+  
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+    color: #bdbdbd;
+  }
+  
+  .info-item mat-icon {
+    color: #FF6D00;
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  
+  .social-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .social-link {
+    color: #bdbdbd;
+    transition: color 0.2s;
+    display: flex;
+  }
+  .social-link i {
+    font-size: 1.3rem;
+    text-decoration: none;
+  }
+  
+  .social-link:hover {
+    color: #FF6D00;
+  }
+  
+  .social-link mat-icon {
+    font-size: 1.5rem;
+  }
+  
+  /* Contact Column */
+  .contact-column {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .footer-heading {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: white;
+  }
+  
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  mat-form-field {
+    width: 100%;
+  }
+  
+  ::ng-deep .footer .mat-form-field-appearance-outline .mat-form-field-outline {
+    color: #424242;
+  }
+  
+  ::ng-deep .footer .mat-form-field-label {
+    color: #bdbdbd !important;
+  }
+  
+  ::ng-deep .footer .mat-input-element {
+    color: white !important;
+    caret-color: #FF6D00;
+  }
+  
+  .submit-btn {
+    background-color: #FF6D00 !important;
+    color: white !important;
+    align-self: flex-start;
+    padding: 0.5rem 2rem;
+  }
+  
+  .submit-btn mat-icon {
+    margin-left: 0.5rem;
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  
+  /* Footer Bottom */
+  .footer-bottom {
+    border-top: 1px solid #424242;
+    padding: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .copyright {
+    color: #bdbdbd;
+    font-size: 0.9rem;
+  }
+  
+  .legal-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .legal-link {
+    color: #bdbdbd;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+  
+  .legal-link:hover {
+    color: #FF6D00;
+  }
+  
+  .whi{
+    color:white;
+  }
+  /* Responsive */
+  @media (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+    
+    .footer-description {
+      max-width: 100%;
+    }
+    
+    .submit-btn {
+      width: 100%;
+    }
+  }

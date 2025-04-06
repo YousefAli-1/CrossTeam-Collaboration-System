@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Project Manager - Manage Teams</title>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Manage Teams</h2>
+
+    <form id="teamForm">
+      <div class="form-group">
+        <label for="teamName">Team Name</label>
+        <input type="text" id="teamName" name="teamName" required />
+      </div>
+
+      <div class="form-group">
+        <label for="teamDesc">Team Description</label>
+        <textarea id="teamDesc" name="teamDesc" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="teamLead">Team Lead</label>
+        <input type="text" id="teamLead" name="teamLead" />
+      </div>
+
+      <button type="submit">Create Team</button>
+    </form>
+
+    <div class="project-list">
+      <h3>Existing Teams</h3>
+      <div class="project">
+        <strong>Frontend Wizards</strong>
+        <p>Handles all UI development for the app.</p>
+        <p><strong>Lead:</strong> Alice Johnson</p>
+        <a href="#">View Details <span class="arrow isClosed">▼</span></a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.project a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const arrow = link.querySelector('.arrow');
+        arrow.classList.toggle('isClosed');
+        arrow.classList.toggle('isOpened');
+      });
+    });
+
+    document.getElementById('teamForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('Team created! (implement logic here)');
+    });
+  </script>
+
+</body>
+</html>

@@ -1,10 +1,12 @@
 import { Component, inject, computed } from '@angular/core';
 import { ProjectManagerService } from '../project-manager.service';
 import { type User } from '../../app.model' ;
+import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-project-manager-home',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './project-manager-home.component.html',
   styleUrl: './project-manager-home.component.scss'
 })

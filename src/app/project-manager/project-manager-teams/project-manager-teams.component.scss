@@ -1,0 +1,112 @@
+:root {
+    --arrow-transition-duration: 400ms;
+    --primary-color: #673ab7;
+    --primary-hover: #5e35b1;
+    --accent-color: #ff9800;
+    --background-color: #f4f6f8;
+    --card-color: #ffffff;
+  }
+  
+  body {
+    margin: 0;
+    font-family: Roboto, sans-serif;
+    background-color: var(--background-color);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .container {
+    background-color: var(--card-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    margin: 20px auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 800px;
+  }
+  
+  h2 {
+    margin-top: 0;
+    color: var(--primary-color);
+  }
+  
+  h3 {
+    color: var(--accent-color);
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    padding: 2px;
+    color: var(--accent-color);
+  }
+  
+  input[type="text"],
+  textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+  }
+  
+  button {
+    margin-left: 3px;
+    background-color: #ffa500;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #a56c03;
+  }
+  
+  .project-list {
+    margin-top: 30px;
+  }
+  
+  .project {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    background-color: #fafafa;
+  }
+  
+  .project p {
+    margin: 4px 0;
+  }
+  
+  a {
+    width: 100%;
+    display: inline-block;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .arrow {
+    display: inline-block;
+    transition-duration: var(--arrow-transition-duration);
+  }
+  
+  .isOpened {
+    transform: rotate(180deg);
+    transition-duration: var(--arrow-transition-duration);
+  }
+  
+  .isClosed {
+    transform: rotate(0deg);
+    transition-duration: var(--arrow-transition-duration);
+  }
+  

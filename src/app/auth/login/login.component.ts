@@ -8,8 +8,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { NavbarComponent } from "../../navbar/navbar.component";
-import { dummyTeamMembers } from '../../members/dummy-members';
+import { dummyProjectManager, dummyTeamMembers } from '../../members/dummy-members';
 import { MembersService } from '../../members/members.service';
+import { ProjectManagerService } from '../../project-manager/project-manager.service';
 
 @Component({
   standalone: true,
@@ -44,6 +45,7 @@ export class LoginComponent {
   get password() { return this.loginForm.get('password'); }
   private router=inject(Router);
   private memberservice=inject(MembersService);
+  private managerservice =inject(ProjectManagerService)
   onSubmit() {
     console.log(dummyTeamMembers);
     if (this.loginForm.valid) {
@@ -52,10 +54,17 @@ export class LoginComponent {
       const user = dummyTeamMembers.find(member => 
         member.email === email
       );
+      const manager = dummyProjectManager.find(member => 
+        member.email === email
+      );
       if (user) {
         console.log('Login successful:', user);
         this.memberservice.logIn(user);
         this.router.navigate(['/teamMember']);
+      }else if(manager){
+        console.log('Login successful:', manager);
+        this.managerservice.logIn(manager);
+        this.router.navigate(['/projectManager']);
       }
     }
   }

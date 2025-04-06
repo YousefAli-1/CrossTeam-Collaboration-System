@@ -18,7 +18,7 @@ export class ProjectManagerService {
   private readonly projects = dummyProjects;
   private readonly tasks = dummyTasks;
 
-  private loggedInUserWritableSignal = signal<User | null>(this.projectManagers[1]);
+  private loggedInUserWritableSignal = signal<User | null>(null);
   loggedInUser = this.loggedInUserWritableSignal.asReadonly();
 
   getProjectByProjectId(id: number) {
@@ -31,7 +31,9 @@ export class ProjectManagerService {
     );
     //
   }
-
+  logIn(user: User){
+    this.loggedInUserWritableSignal.set(user);
+  }
   getMembersByProjectId(id: number): TeamMember[] {
     return (
       this.projects.find((project) => project.projectID === id)?.members || []

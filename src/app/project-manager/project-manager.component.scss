@@ -1,0 +1,33 @@
+$arrow-transition-duration: 400ms;
+@use '@angular/material' as mat;
+:host{
+    @include mat.elevation-classes();
+    @include mat.app-background();
+    @include mat.sidenav-overrides((
+        container-text-color: orange,
+    ));
+    width: 100%;
+    height: 100%;
+}
+
+button{
+    margin-left: 3px;
+}
+
+a{
+    width: 100%;
+}
+
+label{
+    padding: 2px;
+}
+.active{
+}
+.isOpened{
+    transform: rotate(180deg);
+    transition-duration: $arrow-transition-duration;
+}
+.isClosed{
+    transform: rotate(0deg);
+    transition-duration: $arrow-transition-duration;
+}

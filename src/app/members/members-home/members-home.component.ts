@@ -1,5 +1,7 @@
 import { Component, inject, computed } from '@angular/core';
 import { MembersService } from '../members.service'; 
+import { type TeamMember, type Task } from '../../app.model' 
+import { CommonModule } from '@angular/common';
 import { type User } from '../../app.model' 
 import { MembersSubmissionTableComponent } from './members-submission-table/members-submission-table.component';
 import { MembersApprovalTableComponent } from './members-approval-table/members-approval-table.component';

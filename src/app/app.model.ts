@@ -4,7 +4,7 @@ export type ProjectManager = User;
 
 export type TeamMember= User & {canSubmitTask: boolean, canReviewTask: boolean, canAcceptOrRejectTask: boolean};
 
-export type ProjectMember= TeamMember & {isInviteAccepted: boolean};
+export type ProjectMember = TeamMember & {isInviteAccepted: boolean};
 
 export type Project= {readonly projectID: number, projectName: String, projectDescription: String, createdBy: ProjectManager,invitations: Invitation[], tasks: Task[], members: ProjectMember[], teams: Team[], createdAt: Date, updatedAt: Date};
 

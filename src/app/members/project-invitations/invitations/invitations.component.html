@@ -1,25 +1,8 @@
-<ul>
-    @if (invitation().status === 'Pending') {
-        <li>
-            <div class="invitation-card">
-                <h3>{{ invitation().project.projectName }}</h3>
-                <p>{{ invitation().invitedBy.name }}</p>
-                <button (click)="acceptInvitation()">Accept</button>
-                <button (click)="rejectInvitation()">Decline</button>
-            </div>
-        </li>
-    }
-</ul>
-
-
-@if (invitation().status === 'Accepted') {
-    <div class="confirmation-message">
-        You have accepted the invitation to {{ invitation().project.projectName }}.
-    </div>
-}
-
-@if (invitation().status === 'Rejected') {
-    <div class="confirmation-message">
-        You have declined the invitation to {{ invitation().project.projectName }}.
-    </div>
+@if (invitation().status === 'Pending') {
+<div class="invitation-card">
+  <h3>{{ invitation().project.projectName }}</h3>
+  <p>{{ invitation().invitedBy.name }}</p>
+  <button (click)="acceptInvitation()">Accept</button>
+  <button (click)="rejectInvitation()">Decline</button>
+</div>
 }

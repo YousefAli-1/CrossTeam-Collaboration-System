@@ -1,68 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Project Manager - Manage Tasks</title>
-</head>
-<body>
+<form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+  <label>
+    Task Name:
+    <input formControlName="taskName" />
+  </label>
 
-  <div class="container">
-    <h2>Manage Tasks</h2>
+  <label>
+    Task Description:
+    <textarea formControlName="taskDescription"></textarea>
+  </label>
 
-    <form id="taskForm">
-      <div class="form-group">
-        <label for="taskName">Task Name</label>
-        <input type="text" id="taskName" name="taskName" required />
-      </div>
+  <label>
+    Deadline:
+    <input type="date" formControlName="deadline" />
+  </label>
 
-      <div class="form-group">
-        <label for="taskDesc">Task Description</label>
-        <textarea id="taskDesc" name="taskDesc" rows="4"></textarea>
-      </div>
+  <label>
+    Assigned Team:
+    <input formControlName="assigned" />
+  </label>
 
-      <div class="form-group">
-        <label for="taskDueDate">Due Date</label>
-        <input type="date" id="taskDueDate" name="taskDueDate" />
-      </div>
+  <label>
+    Submitted By (if applicable):
+    <input formControlName="submittedBy" />
+  </label>
 
-      <div class="form-group">
-        <label for="taskPriority">Priority</label>
-        <select id="taskPriority" name="taskPriority">
-          <option value="low">Low</option>
-          <option value="medium" selected>Medium</option>
-          <option value="high">High</option>
-        </select>
-      </div>
-
-      <button type="submit">Create Task</button>
-    </form>
-
-    <div class="project-list">
-      <h3>Existing Tasks</h3>
-      <div class="project">
-        <strong>Design Landing Page</strong>
-        <p>Finish the UI/UX design for the landing page.</p>
-        <p><strong>Due:</strong> 2025-04-10</p>
-        <p><strong>Priority:</strong> High</p>
-        <a href="#">View Details <span class="arrow isClosed">▼</span></a>
-      </div>
+  <div formArrayName="approvalWorkflow" class="form-array">
+    <label>Approval Workflow:</label>
+    <div *ngFor="let approval of approvalWorkflow.controls; let i = index">
+      <input [formControlName]="i" placeholder="Approval Request" />
     </div>
+    <button type="button" (click)="addApprovalRequest()" class="add-button">+ Add Approval Request</button>
   </div>
 
-  <script>
-    document.querySelectorAll('.project a').forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const arrow = link.querySelector('.arrow');
-        arrow.classList.toggle('isClosed');
-        arrow.classList.toggle('isOpened');
-      });
-    });
+  <label>
+    Project:
+    <input formControlName="project" />
+  </label>
 
-    document.getElementById('taskForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert('Task created! (connect logic here)');
-    });
-  </script>
-</body>
-</html>
+  <button type="submit">Create Task</button>
+</form>

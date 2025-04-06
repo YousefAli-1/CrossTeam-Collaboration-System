@@ -1,4 +1,4 @@
-import { type TeamMember,type Project,type Task,type Team} from "../app.model"
+import { type TeamMember,type Project,type Task,type Team, Invitation} from "../app.model"
 import { type ProjectManager } from "../app.model";
 // Dummy data for Team Members
 export const dummyTeamMembers: TeamMember[] = [
@@ -27,14 +27,14 @@ export const dummyTeamMembers: TeamMember[] = [
 export const dummyProjectManager: ProjectManager[] =[
     {
         userID: 1,
-        name: 'Alice Johnson',
-        email: 'alice.johnson@example.com',
+        name: 'Salooha',
+        email: 'salah@example.com',
         Projects: []
     },
     {
         userID: 2,
-        name: 'Bob Smith',
-        email: 'bob.smith@example.com',
+        name: 'Mervat',
+        email: 'moddy@example.com',
         Projects: []
     },
 ];

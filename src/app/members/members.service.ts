@@ -20,7 +20,7 @@ export class MembersService {
   private readonly teamMembers = dummyTeamMembers;
   private readonly projects = dummyProjects;
   private tasks = signal<Task[]>(dummyTasks);
-  private loggedInUserWritableSignal = signal<User | null>(this.teamMembers[1]);
+  private loggedInUserWritableSignal = signal<User | null>(null);
   projectsChanged = new Subject<void>()
   loggedInUser = this.loggedInUserWritableSignal.asReadonly();
 

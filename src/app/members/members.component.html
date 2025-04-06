@@ -1,29 +1,39 @@
-<mat-drawer-container hasBackdrop="false">
-  <mat-drawer class="drawer" mode="side" position="start" [opened]="isOpened">
-    <h3>
-        Tabs
-    </h3>
-    <a routerLink="/teamMember/homepage" routerLinkActive="active" mat-button>
-      <span class="material-icons"> home </span>
-      <label>
-        Homepage
-      </label>
+<mat-drawer-container  hasBackdrop="false">
+  <mat-drawer style="width: 22%;" class="drawer" mode="side" position="start" [opened]="isOpened">
+    <a routerLink="/teamMember/homepage" routerLinkActive="active" mat-button class="horizontal-link">
+      <span class="material-icons icon">home</span>
+      <label>Homepage</label>
     </a>
-    <a routerLink="/teamMember/projects" routerLinkActive="active" mat-button>
-        <span class="material-icons">
-            workspaces
-        </span>
+    <a routerLink="/teamMember/projects" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active" mat-button class="horizontal-link">
+      <span class="material-icons icon">workspaces</span>
+      <label>Projects</label>
+    </a>
+    <a routerLink="/teamMember/invitations" routerLinkActive="active" mat-button class="horizontal-link">
+      <span class="material-icons icon">mail_outline</span>
+      <label>Project Invitations</label>
+    </a>
+    <mat-divider></mat-divider>
+    <h2>
+        Your projects
+    </h2>
+    @for (project of userProjects; track project.projectID) {
+      <a [routerLink]='"/teamMember/projects/"+project.projectID' routerLinkActive="active" class="horizontal-link" mat-button>
         <label>
-            Projects
+          {{project.projectName}}
         </label>
     </a>
-    <hr>
-    <h3>
-        Your projects
-    </h3>
-    
+    }
+    @empty{
+      <p>You didn't join any project yet</p>
+    }
+    <div class="logout-section">
+      <button mat-button class="horizontal-link logout-btn" (click)="logout()">
+        <span class="material-icons icon">logout</span>
+        <label>Logout</label>
+      </button>
+    </div>
   </mat-drawer>
-  <mat-drawer-content>
+  <mat-drawer-content style="overflow-y: hidden;">
     <button mat-icon-button (click)="toggleDrawer()" [class]="{'isOpened': isOpened,'isClosed': !isOpened}">
         <span class="material-icons">
             double_arrow

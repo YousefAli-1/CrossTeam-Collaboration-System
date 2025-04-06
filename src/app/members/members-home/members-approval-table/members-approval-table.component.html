@@ -1,0 +1,40 @@
+<div class="approver-home">
+  <div class="review-section">
+    <h2>Pending Reviews</h2>
+    <div class="task-table-container">
+      <table class="task-table">
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Submitted by</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (task of reviewTasks; track task.taskID) {
+          <tr>
+            <td>{{ task.project.projectName }}</td>
+            <td>{{ task.taskName }}</td>
+            <td>{{ task.taskDescription }}</td>
+            <td>{{ task.submittedBy?.name}}</td>
+            <td>
+              @if (DoesNeedAction(task)) {
+                <button (click)="acceptTask(task.taskID)" class="btn btn-success">Approve</button>
+                <button (click)="rejectTask(task.taskID)" class="btn btn-primary">Reject</button>
+                <button class="btn btn-info">Download Submitted Files</button>
+              }
+              @else {
+                {{currentTeamReviewing(task)}} Team has {{currentTaskStatus(task)?.toLowerCase()}} the task
+              }
+            </td>
+          </tr>
+          } @empty {
+          <p class="no-tasks-message">No tasks to Review yet.</p>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

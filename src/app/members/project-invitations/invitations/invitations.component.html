@@ -1,0 +1,8 @@
+@if (invitation().status === 'Pending') {
+<div class="invitation-card">
+  <h3>{{ invitation().project.projectName }}</h3>
+  <p>{{ invitation().invitedBy.name }}</p>
+  <button (click)="acceptInvitation()">Accept</button>
+  <button (click)="rejectInvitation()">Decline</button>
+</div>
+}

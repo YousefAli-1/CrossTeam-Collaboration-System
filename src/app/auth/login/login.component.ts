@@ -43,19 +43,19 @@ export class LoginComponent {
   get email() { return this.loginForm.get('email'); }
   get password() { return this.loginForm.get('password'); }
   private router=inject(Router);
+  private memberservice=inject(MembersService);
   onSubmit() {
+    console.log(dummyTeamMembers);
     if (this.loginForm.valid) {
-      const email = this.loginForm.value.email!;
-      const password = this.loginForm.value.password!;
-
-      // Find user in dummy data
+      const email = this.loginForm.value.email;
+      const password = this.loginForm.value.password;
       const user = dummyTeamMembers.find(member => 
         member.email === email
       );
       if (user) {
         console.log('Login successful:', user);
-        this.router.navigate(['/dashboard']);
-
+        this.memberservice.logIn(user);
+        this.router.navigate(['/teamMember']);
       }
     }
   }

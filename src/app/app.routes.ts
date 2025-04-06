@@ -8,6 +8,7 @@ import { NotFoundComponent } from './auth/not-found/not-found.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { inject } from '@angular/core';
 import { MembersService } from './members/members.service';
+import { AboutusComponent } from './aboutus/aboutus.component';
 
 export const membersAuthGuard: CanActivateFn = () => {
     const service = inject(MembersService);
@@ -33,6 +34,9 @@ export const routes: Routes = [
     { 
         path: 'signup', 
         component: SignupComponent 
+    },{
+        path:'aboutus',
+        component:AboutusComponent
     },
     { 
         path: 'unauthorized', 

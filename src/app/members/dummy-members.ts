@@ -1,23 +1,73 @@
-import { type TeamMember,type Project,type Task,type Team, type Invitation} from "../app.model"
+import { type TeamMember,type Project,type Task,type Team, Invitation,User,ProjectManager} from "../app.model"
 // Dummy data for Team Members
-export const dummyTeamMembers: TeamMember[] = [
+const dummyUsers: User[] =[
     {
         userID: 1,
         name: 'Alice Johnson',
         email: 'alice.johnson@example.com',
         Projects: [],
-        canSubmitTask: true,
-        canReviewTask: false,
-        canAcceptOrRejectTask: false,
     },
     {
         userID: 2,
         name: 'Bob Smith',
         email: 'bob.smith@example.com',
         Projects: [],
+    },
+    {
+        userID: 3,
+        name: 'Hossam Hassan',
+        email: 'hossam.hassan@example.com',
+        Projects: [],
+    },
+    {
+        userID: 4,
+        name: 'Ibrahim Hassan',
+        email: 'ibrahim.hassan@example.com',
+        Projects: [],
+    }
+];
+
+export const dummyTeamMembers: TeamMember[] = [
+    {
+        ...dummyUsers[0],
+        canSubmitTask: true,
+        canReviewTask: false,
+        canAcceptOrRejectTask: false,
+    },
+    {
+        ...dummyUsers[1],
         canSubmitTask: false,
-        canReviewTask: true,
+        canReviewTask: false,
         canAcceptOrRejectTask: true,
+    },
+    {
+        ...dummyUsers[2],
+        canSubmitTask: true,
+        canReviewTask: false,
+        canAcceptOrRejectTask: true,
+    },
+    {
+        ...dummyUsers[3],
+        canSubmitTask: false,
+        canReviewTask: false,
+        canAcceptOrRejectTask: true,
+    },
+];
+
+// Dummy data for project manager
+
+export const dummyProjectManager: ProjectManager[] =[
+    {
+        userID: 1,
+        name: 'Salooha',
+        email: 'salah@example.com',
+        Projects: []
+    },
+    {
+        userID: 2,
+        name: 'Mervat',
+        email: 'moddy@example.com',
+        Projects: []
     },
 ];
 
@@ -25,10 +75,22 @@ export const dummyTeamMembers: TeamMember[] = [
 export const dummyTeams:Team[] = [
     {
         teamID: 301,
-        teamName: 'Team Alpha',
-        teamDescription: 'Alpha team description.',
-        teamMembers: dummyTeamMembers,
+        teamName: 'Design',
+        teamDescription: 'This team is responsible for design',
+        teamMembers: [dummyTeamMembers[0],dummyTeamMembers[1]],
     },
+    {
+        teamID: 302,
+        teamName: 'Development',
+        teamDescription: 'This team is responsible for implementation',
+        teamMembers: [dummyTeamMembers[2]],
+    },
+    {
+        teamID: 303,
+        teamName: 'Testers',
+        teamDescription: 'This team is responsible for testing',
+        teamMembers: [dummyTeamMembers[3]],
+    }
 ];
 
 
@@ -41,15 +103,10 @@ export const dummyProjects: Project[] = [
         invitations: [],
         projectName: 'Project Alpha',
         projectDescription: 'A top-secret project.',
-        createdBy: {
-            userID: 5,
-            name: 'Eve Adams',
-            email: 'eve.adams@example.com',
-            Projects: [],
-        },
+        createdBy: dummyProjectManager[0],
         tasks: [], 
-        members: [{ ...dummyTeamMembers[0], isInviteAccepted: true },{ ...dummyTeamMembers[1], isInviteAccepted: true }],
-        teams: [],
+        members: [{ ...dummyTeamMembers[0], isInviteAccepted: true },{ ...dummyTeamMembers[2], isInviteAccepted: true }],
+        teams: [dummyTeams[0],dummyTeams[1],dummyTeams[3]],
         createdAt: new Date(),
         updatedAt: new Date(),
     },
@@ -65,8 +122,8 @@ export const dummyProjects: Project[] = [
             Projects: [],
         },
         tasks: [],
-        members: [{ ...dummyTeamMembers[0], isInviteAccepted: true }, { ...dummyTeamMembers[1], isInviteAccepted: false }],
-        teams: [],
+        members: [{ ...dummyTeamMembers[0], isInviteAccepted: true },{ ...dummyTeamMembers[1], isInviteAccepted: true },{ ...dummyTeamMembers[2], isInviteAccepted: true },{ ...dummyTeamMembers[3], isInviteAccepted: true}],
+        teams: [dummyTeams[0],dummyTeams[1],dummyTeams[3]],
         createdAt: new Date(),
         updatedAt: new Date(),
     },
@@ -80,19 +137,22 @@ export const dummyTasks: Task[] = [
         taskName: 'Task 1',
         taskDescription: 'Complete the initial setup.',
         deadline: new Date(),
-        assigned: {
-            teamID: 301,
-            teamName: 'Team Alpha',
-            teamDescription: 'Alpha team description.',
-            teamMembers: dummyTeamMembers,
-        }, 
+        assigned: dummyTeams[0], 
         isSubmitted: true,
         submittedBy: dummyTeamMembers[0],
         approvalWorkflow: [{
                 approvalRequestID: Math.random(), 
                 comments: [], 
                 status: 'Pending',
-                assigned: dummyTeams[0],
+                assigned: dummyTeams[1],
+                reviewedBy: null,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+        },{
+            approvalRequestID: Math.random(), 
+                comments: [], 
+                status: 'Pending',
+                assigned: dummyTeams[2],
                 reviewedBy: null,
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -106,19 +166,14 @@ export const dummyTasks: Task[] = [
         taskName: 'Task 2',
         taskDescription: 'Develop the core module.',
         deadline: new Date(),
-        assigned: {
-            teamID: 301,
-            teamName: 'Team Alpha',
-            teamDescription: 'Alpha team description.',
-            teamMembers: dummyTeamMembers,
-        }, 
+        assigned: dummyTeams[1], 
         isSubmitted: false,
         submittedBy: null,
         approvalWorkflow: [{
                 approvalRequestID: Math.random(), 
                 comments: [], 
                 status: 'Pending',
-                assigned: dummyTeams[0],
+                assigned: dummyTeams[2],
                 reviewedBy: null,
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -132,25 +187,25 @@ export const dummyInvitations: Invitation[] = [
     {
         invitationID: 401,
         projectId: 101,
-        memberId: dummyTeamMembers[0].userID,
+        memberId: dummyTeamMembers[1].userID,
         project: dummyProjects[0],
-        member: dummyTeamMembers[0],
+        member: dummyTeamMembers[1],
         invitedBy: dummyProjects[0].createdBy,
         status: 'Pending',
     },
     {
         invitationID: 402,
-        projectId: 102,
-        memberId: dummyTeamMembers[1].userID,
-        project: dummyProjects[1],
-        member: dummyTeamMembers[1],
-        invitedBy: dummyProjects[1].createdBy,
+        projectId: 101,
+        memberId: dummyTeamMembers[3].userID,
+        project: dummyProjects[0],
+        member: dummyTeamMembers[3],
+        invitedBy: dummyProjects[0].createdBy,
         status: 'Pending',
     },
 ];
 
 // Link invitations to projects
-dummyProjects[0].invitations = [dummyInvitations[0]];
-dummyProjects[1].invitations = [dummyInvitations[1]];
+dummyProjects[0].invitations = [dummyInvitations[0], dummyInvitations[1]];
 // Link tasks to projects after both are declared
 dummyProjects[0].tasks = [dummyTasks[0]];
+dummyProjects[1].tasks = [dummyTasks[1]];

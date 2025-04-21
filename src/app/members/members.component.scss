@@ -53,4 +53,13 @@ label{
     text-align: center;
     margin-right: 0.2em;
 }
-  
+
+.logout-section{
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content:center;
+    width: 100%;
+    position: absolute;
+    bottom: 0px;
+}

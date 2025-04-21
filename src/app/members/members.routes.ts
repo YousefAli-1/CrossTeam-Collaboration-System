@@ -11,48 +11,58 @@ import { Project } from "../app.model";
  
 type ResolveFn<T> = (  route: ActivatedRouteSnapshot,  state: RouterStateSnapshot) => MaybeAsync<T | RedirectCommand>
 const ProjectResolver: ResolveFn<Project>=(route)=>{
-    return inject(MembersService).getProjectByProjectId(Number.parseInt(route.paramMap.get('projectId')!)) || new RedirectCommand(inject(Router).parseUrl('/error404'));
+    return inject(MembersService).getProjectByProjectId(Number.parseInt(route.paramMap.get('projectID')!)) || new RedirectCommand(inject(Router).parseUrl('/404'));
 };
-export const membersAuthGuard: CanActivateFn = () => {
+  export const projectsAuthGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
     const service = inject(MembersService);
     const router = inject(Router);
   
-    const role = service.checkUserRole();
+    const user = service.loggedInUser();
+    const projectIdFromUrl = Number(route.params['projectID']); 
+
+    if (!user || isNaN(projectIdFromUrl)) {
+      return router.navigateByUrl('/unauthorized');
+    }
   
-    if (role === 'TeamMember' ) {
+  
+  
+    if (!user) {
+      return router.navigateByUrl('/unauthorized');
+    }
+  
+    const userProjects = service.getProjectsByUserId(user.userID);
+    const hasAccess = userProjects.some(project => project.projectID === projectIdFromUrl);
+    if (hasAccess) {
       return true;
     }
+  
     return router.navigateByUrl('/unauthorized');
   };
 export const membersRoutes: Routes=[
     {
         pathMatch:'full',
         path: '',
-        redirectTo: 'homepage',
-        canMatch: [membersAuthGuard]
+        redirectTo: 'homepage'
     },
     {
         path: 'homepage',
         component: MembersHomeComponent,
-        canMatch: [membersAuthGuard]
     },
     {
         path: 'invitations',
         component: ProjectInvitationsComponent,
-        canMatch: [membersAuthGuard]
     },
     {
         path:'projects',
         children: [{
                 path: '',
                 component:ProjectsComponent,
-                canMatch: [membersAuthGuard]
             },
             {
-                path: ':projectId',
+                path: ':projectID',
                 component: ProjectDetailsComponent,
                 resolve: {Project: ProjectResolver},
-                canMatch: [membersAuthGuard]
+                canActivate: [projectsAuthGuard]
             },
         ]
     }

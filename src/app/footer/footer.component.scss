@@ -1,3 +1,11 @@
+@use '@angular/material' as mat;
+$orange-color: #f5691eb6;
+ :host{
+  @include mat.form-field-overrides((
+    filled-focus-label-text-color: $orange-color,
+    filled-focus-active-indicator-color: $orange-color
+  ));
+ }
 .footer {
     background: #212121;
     color: white;

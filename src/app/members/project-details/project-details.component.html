@@ -10,7 +10,7 @@
             {{ project()?.projectDescription }}
         </p>
         <ul class="project-members-list">
-            @for (member of project()?.members; track member) {
+            @for (member of project()?.members; track member.userID) {
             <li class="project-member-item"> {{ member.name || 'Unknown Member' }} </li>
             }
         </ul>

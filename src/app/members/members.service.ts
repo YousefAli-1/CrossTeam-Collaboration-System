@@ -20,9 +20,13 @@ export class MembersService {
   private readonly teamMembers = dummyTeamMembers;
   private readonly projects = dummyProjects;
   private tasks = signal<Task[]>(dummyTasks);
-  private loggedInUserWritableSignal = signal<User | null>(this.teamMembers[1]);
+  private loggedInUserWritableSignal = signal<User | null>(null);
   projectsChanged = new Subject<void>()
   loggedInUser = this.loggedInUserWritableSignal.asReadonly();
+
+  logIn(user: User) {
+    this.loggedInUserWritableSignal.set(user);
+  }
 
   getProjectByProjectId(id: number): Project | null {
     return this.projects.find((project) => project.projectID === id) || null;
@@ -49,20 +53,18 @@ export class MembersService {
   }
 
   getSubmissionTasksForLoggedInUser(): Task[] {
-    return this.tasks.filter((task) =>
-      this.isUserAssignedInTask(this.loggedInUser(), task)&&
-    !task.isSubmitted
+    return this.tasks().filter(
+      (task) =>
+        this.isUserAssignedInTask(this.loggedInUser(), task) &&
+        !task.isSubmitted
     );
   }
-  checkUserRole(): 'ProjectManager' | 'TeamMember' | 'User' {
-    const user = this.loggedInUser();
-
-    if (!user) return 'User';
-
-    const isTeamMember = 'canSubmitTask' in user;
-    if (isTeamMember) return 'TeamMember';
-
-    return 'User';
+  isUserLoggedIn(): boolean {
+    if (this.loggedInUser()) {
+      return true;
+    } else {
+      return false;
+    }
   }
   private isUserAssignedReviewerInApprovalWorkflow(
     user: User | null,
@@ -79,7 +81,7 @@ export class MembersService {
       (task) =>
         task.approvalWorkflow.filter((request) =>
           this.isUserAssignedReviewerInApprovalWorkflow(user, request)
-        ).length > 0 && task.isSubmitted
+        ).length > 0 && task.isSubmitted && this.hasAcceptedInvite(user,this.projects.find((project)=>project.projectID===task.project.projectID))
     );
   }
 
@@ -94,15 +96,27 @@ export class MembersService {
     );
   }
 
+  private hasAcceptedInvite(user: User | null, project: Project | undefined){
+    return project?.members.find((member)=>member.userID===user?.userID)?.isInviteAccepted || false;
+  }
+
   private isDependenciesDone(task: Task) {
     return this.getAllDependenciesBeforeLoggedInReviewerOfTask(task).every(
       (request) => request.status === 'Accepted'
     );
   }
 
+  private isDependingOnLoggedInUserTeam(task: Task) {
+    return (
+      this.getPendingApprovalRequest(task)?.assigned.teamMembers.findIndex(
+        (member) => member.userID === this.loggedInUser()?.userID
+      ) !== -1
+    );
+  }
   private isTaskWaitingForReview(task: Task) {
     return (
       this.isDependenciesDone(task) &&
+      this.isDependingOnLoggedInUserTeam(task) &&
       !this.isTaskApprovalWorkflowTotallyFinished(task)
     );
   }
@@ -132,7 +146,10 @@ export class MembersService {
   getInvitationsForUser(userID: number): Invitation[] {
     return this.projects
       .flatMap((project) => project.invitations || [])
-      .filter((invitation) => invitation.member.userID === userID);
+      .filter(
+        (invitation) =>
+          invitation.member.userID === userID && invitation.status === 'Pending'
+      );
   }
 
   updateInvitationStatus(invitationID: number, status: InvitationStatus): void {
@@ -153,7 +170,6 @@ export class MembersService {
         } else {
           invitedUser.Projects = [project];
         }
-
 
         this.projectsChanged.next();
       }
@@ -205,12 +221,12 @@ export class MembersService {
       })
     );
   }
-}
+
   submitTask(taskID: number): void {
     const user = this.loggedInUser();
     if (!user) return;
 
-    const task = this.tasks.find((t) => t.taskID === taskID);
+    const task = this.tasks().find((t) => t.taskID === taskID);
 
     if (!task) {
       console.warn('Task not found');
@@ -223,13 +239,11 @@ export class MembersService {
     }
     task.isSubmitted = true;
     task.submittedBy = user as TeamMember;
-    task.updatedAt = new Date(); 
+    task.updatedAt = new Date();
 
     console.log(`Task ${taskID} submitted by ${user.name}`);
 
-    
     this.projectsChanged.next();
-
   }
   logout(): void {
     this.loggedInUserWritableSignal.set(null);

@@ -10,12 +10,12 @@ export class TeamMemberHttpService {
 
   constructor(private http: HttpClient) {}
 
-  submitTask(taskId: number, userId: number): Observable<void> {
-    const params = new HttpParams()
-      .set('taskId', taskId.toString())
-      .set('userId', userId.toString());
-
-    return this.http.post<void>(`${this.apiUrl}/submitTask`, null, { params });
+  submitTask(taskId: number, userId: number, file: File): Observable<void> {
+    const formData = new FormData();
+    formData.append('taskId', taskId.toString());
+    formData.append('userId', userId.toString());
+    formData.append('file', file);
+  
+    return this.http.post<void>(`${this.apiUrl}/submit-task`, formData);
   }
-
 }

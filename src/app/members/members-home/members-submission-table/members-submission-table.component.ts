@@ -30,8 +30,17 @@ export class MembersSubmissionTableComponent {
       return this.allSubmissionTasks();
     }
   }
+  selectedFiles: { [taskId: number]: File } = {};
+
+onFileSelected(event: Event, taskId: number): void {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    this.selectedFiles[taskId] = input.files[0];
+  }
+}
   submitTask(taskID: any) {
-    this.membersService.submitTask(taskID);
+    const file = this.selectedFiles[taskID];
+    this.membersService.submitTask(taskID,file);
     this.allSubmissionTasks.set(
       this.membersService.getSubmissionTasksForLoggedInUser()
     );

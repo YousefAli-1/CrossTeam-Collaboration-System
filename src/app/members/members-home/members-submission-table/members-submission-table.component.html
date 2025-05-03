@@ -20,6 +20,9 @@
             <td>{{ task.taskDescription }}</td>
             <td>{{ task.deadline }}</td>
             <td>
+              <input type="file" (change)="onFileSelected($event, task.taskID)" />
+            </td>
+            <td>
               <button (click)="submitTask(task.taskID)" class="btn btn-primary">Submit for Approval</button>
             </td>
           </tr>

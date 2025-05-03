@@ -133,7 +133,7 @@ export const dummyProjects: Project[] = [
 export const dummyTasks: Task[] = [
     {
         project: dummyProjects[0],
-        taskID: 201,
+        taskID: 1,
         taskName: 'Task 1',
         taskDescription: 'Complete the initial setup.',
         deadline: new Date(),
@@ -162,7 +162,7 @@ export const dummyTasks: Task[] = [
     },
     {
         project:dummyProjects[1],
-        taskID: 202,
+        taskID: 2,
         taskName: 'Task 2',
         taskDescription: 'Develop the core module.',
         deadline: new Date(),

@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { inject,Injectable, signal } from '@angular/core';
 import { dummyTeamMembers, dummyProjects, dummyTasks } from './dummy-members';
 import { Subject } from 'rxjs';
 import {
@@ -12,6 +12,8 @@ import {
   type InvitationStatus,
   ApprovalRequestStatus,
 } from '../app.model';
+import { TeamMemberHttpService } from './team-member-http.service';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +25,11 @@ export class MembersService {
   private loggedInUserWritableSignal = signal<User | null>(null);
   projectsChanged = new Subject<void>()
   loggedInUser = this.loggedInUserWritableSignal.asReadonly();
+  private teamHttp=inject(TeamMemberHttpService);
+  constructor(private http: HttpClient) {
 
+  }
+  
   logIn(user: User) {
     this.loggedInUserWritableSignal.set(user);
   }
@@ -222,28 +228,25 @@ export class MembersService {
     );
   }
 
-  submitTask(taskID: number): void {
+  submitTask(taskID: number,file:any): void {
     const user = this.loggedInUser();
-    if (!user) return;
-
-    const task = this.tasks().find((t) => t.taskID === taskID);
-
-    if (!task) {
-      console.warn('Task not found');
+    if (!user || !file) {
+      alert('Please select a file before submitting.');
       return;
     }
-    const isAssigned = this.isUserAssignedInTask(user, task);
-    if (!isAssigned) {
-      console.warn('User is not assigned to this task');
-      return;
-    }
-    task.isSubmitted = true;
-    task.submittedBy = user as TeamMember;
-    task.updatedAt = new Date();
-
-    console.log(`Task ${taskID} submitted by ${user.name}`);
-
-    this.projectsChanged.next();
+    console.log("Submitting:", {
+      taskID,
+      userId: user.userID,
+      file
+    });
+    
+    this.teamHttp.submitTask(taskID, user.userID, file).subscribe({
+      next: () => {
+        console.log(`Task ${taskID} submitted successfully.`);
+        this.projectsChanged.next();
+      },
+      error: (err) => console.error('Error submitting task:', err)
+    });
   }
   logout(): void {
     this.loggedInUserWritableSignal.set(null);

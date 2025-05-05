@@ -54,4 +54,7 @@ export class MembersApprovalTableComponent {
       this.allReviewTasks.set(this.membersService.getReviewTasksForLoggedInUser());
     };
   }
+  downloadSub(taskID:number){
+   this.membersService.downloadSubmission(taskID);
+  }
 }

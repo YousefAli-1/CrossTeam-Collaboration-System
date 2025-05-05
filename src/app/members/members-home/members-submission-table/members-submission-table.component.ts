@@ -1,6 +1,7 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, OnInit, signal } from '@angular/core';
 import { MembersService } from '../../members.service';
 import { Task } from '../../../app.model';
+import { map, Observable,pipe } from 'rxjs';
 @Component({
   selector: 'app-members-submission-table',
   standalone: true,
@@ -8,28 +9,34 @@ import { Task } from '../../../app.model';
   templateUrl: './members-submission-table.component.html',
   styleUrl: './members-submission-table.component.scss',
 })
-export class MembersSubmissionTableComponent {
+export class MembersSubmissionTableComponent implements OnInit {
   private membersService = inject(MembersService);
-  private allSubmissionTasks = signal(
-    this.membersService.getSubmissionTasksForLoggedInUser()
-  );
+  private allSubmissionTasks = signal<Task[]>([]);
 
   filterProjectName = input<String>('');
 
-  submissionTasks = computed<Task[]>(() => {
-    this.allSubmissionTasks();
-    return this.applyFilter(this.filterProjectName());
+  // Computed signal that applies the filter
+  submissionTasks = computed(() => {
+    const filter = this.filterProjectName().trim();
+    const tasks = this.allSubmissionTasks();
+    return filter
+      ? tasks.filter((task) => task.project.projectName === filter)
+      : tasks;
   });
-
-  private applyFilter(filterProjectName: String) {
-    if (filterProjectName !== '') {
-      return this.allSubmissionTasks().filter(
-        (task) => task.project.projectName === filterProjectName
-      );
-    } else {
-      return this.allSubmissionTasks();
+  ngOnInit(): void {
+    const user = this.membersService.loggedInUser();
+    if (user) {
+      this.membersService.fetchTasksForSub(user.userID).subscribe({
+        next: (tasks) => {
+          this.allSubmissionTasks.set(tasks); 
+        },
+        error: (error) => {
+          console.error('Failed to fetch tasks:', error);
+        }
+      });
     }
   }
+  
   selectedFiles: { [taskId: number]: File } = {};
 
 onFileSelected(event: Event, taskId: number): void {
@@ -41,8 +48,16 @@ onFileSelected(event: Event, taskId: number): void {
   submitTask(taskID: any) {
     const file = this.selectedFiles[taskID];
     this.membersService.submitTask(taskID,file);
-    this.allSubmissionTasks.set(
-      this.membersService.getSubmissionTasksForLoggedInUser()
-    );
+    const user = this.membersService.loggedInUser();
+    if (user) {
+      this.membersService.fetchTasksForSub(user.userID).subscribe({
+        next: (tasks) => {
+          this.allSubmissionTasks.set(tasks); 
+        },
+        error: (error) => {
+          console.error('Failed to fetch tasks:', error);
+        }
+      });
+    }
   }
 }

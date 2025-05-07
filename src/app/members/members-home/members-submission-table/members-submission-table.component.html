@@ -8,19 +8,18 @@
             <th>Project</th>
             <th>Title</th>
             <th>Description</th>
-            <th>Due Date</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          @for (task of submissionTasks(); track task.taskID) {
+          @for (task of submissionTasks(); track task.taskId) {
           <tr>
-            <td>{{ task.project.projectName }}</td>
+            <td>{{ task.projectName }}</td>
             <td>{{ task.taskName }}</td>
-            <td>{{ task.taskDescription }}</td>
-            <td>{{ task.deadline }}</td>
+            <td>{{ task.description }}</td>
             <td>
-              <button (click)="submitTask(task.taskID)" class="btn btn-primary">Submit for Approval</button>
+              <input type="file" (change)="onFileSelected($event, task.taskId)" />
+              <button (click)="submitTask(task.taskId)" class="btn btn-primary">Submit for Approval</button>
             </td>
           </tr>
           } @empty {

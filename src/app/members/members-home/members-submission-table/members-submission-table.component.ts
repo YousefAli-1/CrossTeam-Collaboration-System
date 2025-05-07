@@ -13,7 +13,7 @@ export class MembersSubmissionTableComponent implements OnInit {
   private membersService = inject(MembersService);
   private allSubmissionTasks = signal<Task[]>([]);
 
-  filterProjectName = input<String>('');
+  filterProjectId = input<number>(0);
 
   // Computed signal that applies the filter
   submissionTasks = computed(() => {

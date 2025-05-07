@@ -11,18 +11,18 @@ import { ApprovalRequestStatus, Task } from '../../../app.model';
 export class MembersApprovalTableComponent {
   private membersService=inject(MembersService);
    private allReviewTasks=signal(this.membersService.getReviewTasksForLoggedInUser());
-   filterProjectName= input<String>('');
+   filterProjectId= input<number>(0);
  
    reviewTasks=computed<Task[]>(()=>{
     this.allReviewTasks()
-    return this.applyFilter(this.filterProjectName())
+    return this.applyFilter(this.filterProjectId())
   });
  
  
-   private applyFilter(filterProjectName: String) {
-     if (filterProjectName!=='') {
+   private applyFilter(filterProjectId: number) {
+     if (filterProjectId!==0) {
        return this.allReviewTasks().filter(task =>
-         task.project.projectName === filterProjectName
+         task.project.projectID === filterProjectId
        );
      } else {
        return this.allReviewTasks();

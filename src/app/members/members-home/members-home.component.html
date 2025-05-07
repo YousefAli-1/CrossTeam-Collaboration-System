@@ -25,21 +25,5 @@
   </div>
 </div>
 
-<ul class="nav nav-tabs mt-4">
-  <li class="nav-item">
-    <a class="nav-link" [class.active]="activeTab === 'submission'" (click)="activeTab = 'submission'">Tasks</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" [class.active]="activeTab === 'approval'" (click)="activeTab = 'approval'">Reviews</a>
-  </li>
-</ul>
-
-
-<div class="tab-content mt-3">
-  @if (activeTab === 'submission') {
-    <app-members-submission-table />
-  }
-  @if (activeTab === 'approval') {
-    <app-members-approval-table />
-  }
-</div>
+<app-members-submission-table />
+<app-members-approval-table />

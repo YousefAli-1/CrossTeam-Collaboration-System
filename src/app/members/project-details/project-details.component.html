@@ -1,26 +1,48 @@
 <div class="sidebar">
-    <div class="profile-box">
-        <h1 class="project-title">
-            {{ project()?.projectName }}
-        </h1>
-        <p class="project-description">
-           Created By: {{ project()?.createdBy?.name }}
-        </p>
-        <p class="project-description">
-            {{ project()?.projectDescription }}
-        </p>
-        <ul class="project-members-list">
-            @for (member of project()?.members; track member.userID) {
-            <li class="project-member-item"> {{ member.name || 'Unknown Member' }} </li>
-            }
-        </ul>
-    </div>
+  <div class="profile-box">
+    <h1 class="project-title">
+      {{ project()?.projectName }}
+    </h1>
+    <p class="project-description">
+      Created By: {{ project()?.createdBy?.name }}
+    </p>
+    <p class="project-description">
+      {{ project()?.projectDescription }}
+    </p>
+    <ul class="project-members-list">
+      @for (member of project()?.members; track member.userID) {
+      <li class="project-member-item">{{ member.name || "Unknown Member" }}</li>
+      }
+    </ul>
+  </div>
 </div>
 
-@if (hasSubmissionAuthority())  {
-    <app-members-submission-table  [filterProjectName]="project()?.projectName || ''" />
-}
+<ul class="nav nav-tabs mt-4">
+  @if (hasSubmissionAuthority()) {
+  <li class="nav-item">
+    <a
+      class="nav-link"
+      [class.active]="activeTab === 'submission'"
+      (click)="activeTab = 'submission'"
+      >Submission Tasks</a
+    >
+  </li>
+  } @if (hasApprovalAuthority()) {
+  <li class="nav-item">
+    <a
+      class="nav-link"
+      [class.active]="activeTab === 'approval'"
+      (click)="activeTab = 'approval'"
+      >Review Tasks</a
+    >
+  </li>
+  }
+</ul>
 
-@if (hasApprovalAuthority()) {
-    <app-members-approval-table  [filterProjectName]="project()?.projectName || ''" />
-}
+<div class="tab-content mt-3">
+  @if (activeTab === 'submission') {
+  <app-members-submission-table [filterProjectId]="project()?.projectID || 0" />
+  } @if (activeTab === 'approval') {
+  <app-members-approval-table [filterProjectId]="project()?.projectID || 0" />
+  }
+</div>

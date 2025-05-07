@@ -52,47 +52,6 @@ export class ProjectManagerService {
     );
   }
 
-  private isUserAssignedReviewerInApprovalWorkflow(
-    user: User | null,
-    request: ApprovalRequest
-  ): boolean {
-    return request.assigned.teamMembers.some(
-      (teamMember) =>
-        teamMember.userID === user?.userID && teamMember.canAcceptOrRejectTask
-    );
-  }
 
-  private getAllReviewerTasks(user: User | null): Task[] {
-    return this.tasks.filter(
-      (task) =>
-        task.approvalWorkflow.filter((request) =>
-          this.isUserAssignedReviewerInApprovalWorkflow(user, request)
-        ).length > 0 && task.isSubmitted
-    );
-  }
 
-  private filterTasksWaitingForReviewerDecision(
-    userTasks: Task[],
-    reviewer: User | null
-  ): Task[] {
-    return userTasks.filter((task) => {
-      let subWorkflow = task.approvalWorkflow.slice(
-        0,
-        task.approvalWorkflow.findIndex((request) =>
-          request.assigned.teamMembers.some(
-            (teamMember) => teamMember.userID === reviewer?.userID
-          )
-        )
-      );
-      return subWorkflow.every((request) => request.status === 'Accepted');
-    });
-  }
-  getReviewTasksForLoggedInUser(): Task[] {
-    const userTasks: Task[] = this.getAllReviewerTasks(this.loggedInUser());
-
-    return this.filterTasksWaitingForReviewerDecision(
-      userTasks,
-      this.loggedInUser()
-    );
-  }
 }

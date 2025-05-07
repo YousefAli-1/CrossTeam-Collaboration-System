@@ -14,17 +14,17 @@ export class MembersSubmissionTableComponent {
     this.membersService.getSubmissionTasksForLoggedInUser()
   );
 
-  filterProjectName = input<String>('');
+  filterProjectId = input<number>(0);
 
   submissionTasks = computed<Task[]>(() => {
     this.allSubmissionTasks();
-    return this.applyFilter(this.filterProjectName());
+    return this.applyFilter(this.filterProjectId());
   });
 
-  private applyFilter(filterProjectName: String) {
-    if (filterProjectName !== '') {
+  private applyFilter(filterProjectId: number) {
+    if (filterProjectId !== 0) {
       return this.allSubmissionTasks().filter(
-        (task) => task.project.projectName === filterProjectName
+        (task) => task.project.projectID === filterProjectId
       );
     } else {
       return this.allSubmissionTasks();

@@ -99,7 +99,7 @@ export const dummyTeams:Team[] = [
 // Dummy data for Projects
 export const dummyProjects: Project[] = [
     {
-        projectID: 101,
+        projectID: 1,
         invitations: [],
         projectName: 'Project Alpha',
         projectDescription: 'A top-secret project.',
@@ -111,7 +111,7 @@ export const dummyProjects: Project[] = [
         updatedAt: new Date(),
     },
     {
-        projectID: 102,
+        projectID: 2,
         invitations: [],
         projectName: 'Project Beta',
         projectDescription: 'A secondary project for testing.',

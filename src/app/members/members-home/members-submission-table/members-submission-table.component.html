@@ -1,6 +1,11 @@
 <div class="team-member-home">
   <div class="tasks-section">
     <h2>Your Tasks</h2>
+    @if(isLoading()){
+    <div class="loading-message">
+      <h2>Loading tasks...</h2>
+    </div>
+  }@else{
     <div class="task-table-container">
       <table class="task-table">
         <thead>
@@ -28,5 +33,6 @@
         </tbody>
       </table>
     </div>
+  }
   </div>
 </div>

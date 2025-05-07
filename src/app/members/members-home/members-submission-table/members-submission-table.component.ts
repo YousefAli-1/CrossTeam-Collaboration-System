@@ -14,14 +14,14 @@ export class MembersSubmissionTableComponent implements OnInit {
   private allSubmissionTasks = signal<Task[]>([]);
 
   filterProjectId = input<number>(0);
-
+  isLoading = signal(true);
   // Computed signal that applies the filter
   submissionTasks = computed(() => {
-    const filter = this.filterProjectName().trim();
+    const filter = this.filterProjectId();
     const tasks = this.allSubmissionTasks();
     return filter
-      ? tasks.filter((task) => task.project.projectName === filter)
-      : tasks;
+    ? tasks.filter((task) => task.projectID === filter)
+    : tasks;
   });
   ngOnInit(): void {
     const user = this.membersService.loggedInUser();
@@ -29,9 +29,11 @@ export class MembersSubmissionTableComponent implements OnInit {
       this.membersService.fetchTasksForSub(user.userID).subscribe({
         next: (tasks) => {
           this.allSubmissionTasks.set(tasks); 
+          this.isLoading.set(false);
         },
         error: (error) => {
           console.error('Failed to fetch tasks:', error);
+          this.isLoading.set(false);
         }
       });
     }

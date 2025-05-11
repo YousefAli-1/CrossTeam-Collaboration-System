@@ -10,7 +10,7 @@ import { ApprovalRequestStatus, Task } from '../../../app.model';
 })
 export class MembersApprovalTableComponent {
   private membersService=inject(MembersService);
-   private allReviewTasks=signal(this.membersService.getReviewTasksForLoggedInUser());
+   private allReviewTasks=this.membersService.ReviewTasks;
    filterProjectId= input<number>(0);
  
    reviewTasks=computed<Task[]>(()=>{
@@ -22,7 +22,7 @@ export class MembersApprovalTableComponent {
    private applyFilter(filterProjectId: number) {
      if (filterProjectId!==0) {
        return this.allReviewTasks().filter(task =>
-         task.project.projectID === filterProjectId
+         task.projectID === filterProjectId
        );
      } else {
        return this.allReviewTasks();
@@ -44,14 +44,12 @@ export class MembersApprovalTableComponent {
   acceptTask(taskId: number){
     if(confirm("Are you sure you want to accept this Task? \nThis action is irreversable!")){
       this.membersService.acceptTask(taskId);
-      this.allReviewTasks.set(this.membersService.getReviewTasksForLoggedInUser());
     };
   }
 
   rejectTask(taskId: number){
     if(confirm("Are you sure you want to reject this Task? \nThis action is irreversable!")){
       this.membersService.rejectTask(taskId);
-      this.allReviewTasks.set(this.membersService.getReviewTasksForLoggedInUser());
     };
   }
 }

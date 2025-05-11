@@ -30,7 +30,7 @@ const ProjectResolver: ResolveFn<Project>=(route)=>{
       return router.navigateByUrl('/unauthorized');
     }
   
-    const userProjects = service.getProjectsByUserId(user.userID);
+    const userProjects = service.projects();
     const hasAccess = userProjects.some(project => project.projectID === projectIdFromUrl);
     if (hasAccess) {
       return true;

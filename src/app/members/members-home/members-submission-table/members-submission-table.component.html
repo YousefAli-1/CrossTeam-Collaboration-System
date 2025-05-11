@@ -15,7 +15,7 @@
         <tbody>
           @for (task of submissionTasks(); track task.taskID) {
           <tr>
-            <td>{{ task.project.projectName }}</td>
+            <td>{{ task.projectName }}</td>
             <td>{{ task.taskName }}</td>
             <td>{{ task.taskDescription }}</td>
             <td>{{ task.deadline }}</td>

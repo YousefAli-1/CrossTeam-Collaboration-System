@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { MembersService } from '../../members.service';
 import { Task } from '../../../app.model';
 @Component({
@@ -10,9 +10,7 @@ import { Task } from '../../../app.model';
 })
 export class MembersSubmissionTableComponent {
   private membersService = inject(MembersService);
-  private allSubmissionTasks = signal(
-    this.membersService.getSubmissionTasksForLoggedInUser()
-  );
+  private allSubmissionTasks = this.membersService.submissionTasks;
 
   filterProjectId = input<number>(0);
 
@@ -24,7 +22,7 @@ export class MembersSubmissionTableComponent {
   private applyFilter(filterProjectId: number) {
     if (filterProjectId !== 0) {
       return this.allSubmissionTasks().filter(
-        (task) => task.project.projectID === filterProjectId
+        (task) => task.projectID === filterProjectId
       );
     } else {
       return this.allSubmissionTasks();
@@ -32,8 +30,5 @@ export class MembersSubmissionTableComponent {
   }
   submitTask(taskID: any) {
     this.membersService.submitTask(taskID);
-    this.allSubmissionTasks.set(
-      this.membersService.getSubmissionTasksForLoggedInUser()
-    );
   }
 }

@@ -11,7 +11,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { NavbarComponent } from '../../navbar/navbar.component';
 import { dummyTeamMembers } from '../../members/dummy-members';
-import { TeamMember } from '../../app.model';
+import { UserEssentials } from '../../app.model';
 
 function passwordMatchValidator(control: AbstractControl) {
   const password = control.get('password')?.value;
@@ -85,18 +85,14 @@ export class SignupComponent {
       const email = formValue.email ?? '';
       const name = formValue.name ?? '';
   
-      const newUser: TeamMember = {
+      const newUser: UserEssentials = {
         userID: Math.floor(Math.random() * 10000),
         name: name,
-        email: email,
-        Projects: [],
-        canSubmitTask: false,
-        canReviewTask: false,
-        canAcceptOrRejectTask: false
+        email: email
       };
   
       if (this.userType === 'member') {
-        dummyTeamMembers.push(newUser);
+        dummyTeamMembers.push({...newUser, canSubmitTask: false, canAcceptOrRejectTask: false});
       }
       console.log('array:' ,dummyTeamMembers);
       console.log('New user created:', newUser);

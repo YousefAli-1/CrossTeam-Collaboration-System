@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, computed } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet,Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -14,31 +14,11 @@ import { Subscription } from 'rxjs';
   templateUrl: './members.component.html',
   styleUrl: './members.component.scss'
 })
-export class MembersComponent implements OnInit, OnDestroy {
+export class MembersComponent {
   private membersService = inject(MembersService);
   isOpened: boolean = false;
-  userProjects: Project[] = [];
-  private subscription: Subscription | null = null;
+  userProjects= computed<Project[]>(()=>this.membersService.projects());
   
-  ngOnInit(): void {
-    this.loadProjects();
-    
-    this.subscription = this.membersService.projectsChanged.subscribe(() => {
-      this.loadProjects();
-    });
-  }
-  
-  ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-  }
-  
-  private loadProjects(): void {
-    this.userProjects = this.membersService.getProjectsByUserId(
-      this.membersService.loggedInUser()?.userID || -1
-    );
-  }
   private router=inject(Router);
   logout() {
     this.membersService.logout(); 

@@ -58,7 +58,8 @@ export class TeamMemberHttpService {
         map((reposnse: any) => {
           return reposnse;
         }),
-        map(this.mapper.mapInvitations)
+        map(this.mapper.mapInvitations),
+        take(1)
       );
   }
 

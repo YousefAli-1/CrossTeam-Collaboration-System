@@ -17,14 +17,6 @@ import { map, take } from 'rxjs';
   providedIn: 'root',
 })
 export class BackendAdapterImp implements BackendAdapter {
-  mapComment(responseComment: any): Comment {
-    return {
-      commentID: responseComment.commentId,
-      commentText: responseComment.commentText,
-      createdAt: responseComment.createdAt,
-    };
-  }
-
   private static mapComments(responseComments: any[]): Comment[] {
     return responseComments.flatMap((responseComment: any) => {
       return {
@@ -35,7 +27,7 @@ export class BackendAdapterImp implements BackendAdapter {
     });
   }
 
-  mapApprovalWorkflow(responseApprovalRequest: any) {
+  private static mapApprovalWorkflow(responseApprovalRequest: any) {
     const approvalWorkflow: ApprovalRequest[] = [];
 
     while (responseApprovalRequest.nextRequest != null) {
@@ -43,40 +35,10 @@ export class BackendAdapterImp implements BackendAdapter {
         approvalRequestID: responseApprovalRequest.approvalRequestId,
         status: responseApprovalRequest.status,
         assigned: {
-          teamID: 0,
-          teamName: '',
-          teamDescription: '',
-          teamMembers: [],
-        },
-        reviewedBy:
-          responseApprovalRequest.approaver != null
-            ? this.mapTeamMember(responseApprovalRequest.approaver)
-            : null,
-        comments: BackendAdapterImp.mapComments(
-          responseApprovalRequest.comments
-        ),
-        createdAt: new Date(responseApprovalRequest.createdAt),
-        updatedAt: new Date(responseApprovalRequest.updatedAt),
-      };
-
-      approvalWorkflow.push(approvalRequest);
-    }
-
-    return approvalWorkflow;
-  }
-
-  static staticMapApprovalWorkflow(responseApprovalRequest: any) {
-    const approvalWorkflow: ApprovalRequest[] = [];
-
-    while (responseApprovalRequest.nextRequest != null) {
-      let approvalRequest: ApprovalRequest = {
-        approvalRequestID: responseApprovalRequest.approvalRequestId,
-        status: responseApprovalRequest.status,
-        assigned: {
-          teamID: 0,
-          teamName: '',
-          teamDescription: '',
-          teamMembers: [],
+          teamID: responseApprovalRequest.approvingTeam.teamId,
+          teamName: responseApprovalRequest.approvingTeam.teamName,
+          teamDescription: responseApprovalRequest.approvingTeam.description,
+          teamMembers: BackendAdapterImp.mapMembers(responseApprovalRequest.approvingTeam.teamMembers),
         },
         reviewedBy:
           responseApprovalRequest.approaver != null
@@ -100,7 +62,7 @@ export class BackendAdapterImp implements BackendAdapter {
     return approvalWorkflow;
   }
 
-  mapPermissions(responsePermissions: any[]): UserPermissions {
+  mapPermissions(responsePermissions: any[]): UserPermissions | any {
     return {
       canSubmitTask:
         responsePermissions.find((Permission) => Permission == 'submitTask') !==
@@ -109,54 +71,6 @@ export class BackendAdapterImp implements BackendAdapter {
         responsePermissions.find(
           (Permission) => Permission == 'approaveRejectTask'
         ) !== undefined,
-    };
-  }
-
-  mapTeam(responseTeam: any): Team {
-    return {
-      teamID: responseTeam.teamId,
-      teamName: responseTeam.teamName,
-      teamDescription: responseTeam.description,
-      teamMembers: BackendAdapterImp.mapMembers(responseTeam.teamMembers),
-    };
-  }
-
-  mapTeamMember(responseTeamMember: any): UserEssentials {
-    return {
-      userID: responseTeamMember.userId,
-      name: responseTeamMember.name,
-      email: responseTeamMember.email,
-    };
-  }
-
-  mapTask(responseTask: any, projectID: number, projectName: string): Task {
-    return {
-      projectID: projectID,
-      projectName: projectName,
-      taskID: responseTask.taskId,
-      taskName: responseTask.taskName,
-      taskDescription: responseTask.description,
-      deadline: new Date(responseTask.deadline),
-      assigned: {
-        teamID: 0,
-        teamName: '',
-        teamDescription: '',
-        teamMembers: [],
-      },
-      isSubmitted: responseTask.isSubmitted,
-      submittedBy:
-        responseTask.submittedBy != null
-          ? {
-              userID: responseTask.submittedBy.userId,
-              name: responseTask.submittedBy.name,
-              email: responseTask.submittedBy.email,
-            }
-          : null,
-      approvalWorkflow: this.mapApprovalWorkflow(
-        responseTask.responseApprovalRequest
-      ),
-      createdAt: new Date(responseTask.createdAt),
-      updatedAt: new Date(responseTask.updatedAt),
     };
   }
 
@@ -188,7 +102,7 @@ export class BackendAdapterImp implements BackendAdapter {
                 email: responseTask.submittedBy.email,
               }
             : null,
-        approvalWorkflow: BackendAdapterImp.staticMapApprovalWorkflow(
+        approvalWorkflow: BackendAdapterImp.mapApprovalWorkflow(
           responseTask.firstApprovalRequest
         ),
         createdAt: new Date(responseTask.createdAt),
@@ -248,6 +162,11 @@ export class BackendAdapterImp implements BackendAdapter {
   }
 
   mapInvitations(responseInvitations: any[]): Invitation[] {
+    //Handling if response has error
+    if (typeof responseInvitations[0] === 'string') {
+      return responseInvitations;
+    }
+
     return responseInvitations.flatMap<Invitation>((responseInvitation)=>{
         return {
           memberId: responseInvitation.user.userId,

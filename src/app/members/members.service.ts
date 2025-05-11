@@ -9,8 +9,10 @@ import {
   ApprovalRequestStatus,
   UserEssentials,
   UserInProject,
+  UserPermissions,
 } from '../app.model';
 import { TeamMemberHttpService } from './team-member-http.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -83,19 +85,9 @@ export class MembersService {
     );
   }
 
-  getloggedInUserwithPermissions(projectId: number): UserInProject | null {
-    if (this.loggedInUser() === null) {
-      return null;
-    }
-
-    var userWithPermissions = null;
-    this.httpService
-      .getUserPermissions(projectId, this.loggedInUser()?.userID || 0)
-      .subscribe((userPermissions) => {
-        userWithPermissions = { ...this.loggedInUser(), userPermissions };
-      });
-
-    return userWithPermissions;
+  getloggedInUserPermissions(projectId: number): Observable<UserPermissions> {
+    return this.httpService
+      .getUserPermissions(projectId, this.loggedInUser()?.userID || 0);
   }
 
   private isUserAssignedInTask(user: User | null, task: Task): boolean {
@@ -140,7 +132,7 @@ export class MembersService {
   isTaskApprovalWorkflowTotallyFinished(task: Task): boolean {
     return task.approvalWorkflow.at(-1)?.status === 'Accepted';
   }
-  
+
   private deleteInvitationLocally(invitation: Invitation): void {
     this.projectsInvitationsSignal.set(this.projectsInvitations().filter((invitationElement)=>{
       return invitationElement.projectId!==invitation.projectId && invitationElement.memberId!==invitation.memberId

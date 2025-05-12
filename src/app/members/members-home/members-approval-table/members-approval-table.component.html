@@ -18,15 +18,21 @@
             <td>{{ task.projectName }}</td>
             <td>{{ task.taskName }}</td>
             <td>{{ task.taskDescription }}</td>
-            <td>{{ task.submittedBy?.name}}</td>
+            <td>{{ task.submittedBy?.name }}</td>
             <td>
               @if (DoesNeedAction(task)) {
-                <button (click)="acceptTask(task.taskID)" class="btn btn-success">Approve</button>
-                <button (click)="rejectTask(task.taskID)" class="btn btn-primary">Reject</button>
-                <button class="btn btn-info">Download Submitted Files</button>
-              }
-              @else {
-                {{currentTeamReviewing(task)}} Team has {{currentTaskStatus(task)?.toLowerCase()}} the task
+              <button (click)="acceptTask(task)" class="btn btn-success">
+                Approve
+              </button>
+              <button (click)="rejectTask(task)" class="btn btn-primary">
+                Reject
+              </button>
+              <button class="btn btn-info">Download Submitted Files</button>
+              } @else if (isTaskReviewFinished(task)) {
+              <button class="btn btn-info">Download Submitted Files</button>
+              Task submission is <span style="color: green"> approved </span>
+              } @else{
+              {{ getTaskInfoMessage(task) }}
               }
             </td>
           </tr>

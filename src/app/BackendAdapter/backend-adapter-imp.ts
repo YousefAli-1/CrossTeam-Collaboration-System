@@ -30,7 +30,7 @@ export class BackendAdapterImp implements BackendAdapter {
   private static mapApprovalWorkflow(responseApprovalRequest: any) {
     const approvalWorkflow: ApprovalRequest[] = [];
 
-    while (responseApprovalRequest.nextRequest != null) {
+    do {
       let approvalRequest: ApprovalRequest = {
         approvalRequestID: responseApprovalRequest.approvalRequestId,
         status: responseApprovalRequest.status,
@@ -57,7 +57,7 @@ export class BackendAdapterImp implements BackendAdapter {
 
       approvalWorkflow.push(approvalRequest);
       responseApprovalRequest=responseApprovalRequest.nextRequest;
-    }
+    } while (responseApprovalRequest != null);  
 
     return approvalWorkflow;
   }

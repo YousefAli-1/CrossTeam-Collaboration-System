@@ -18,8 +18,11 @@ export class MembersApprovalTableComponent {
     return this.applyFilter(this.filterProjectId())
   });
  
- 
-   private applyFilter(filterProjectId: number) {
+  isTaskReviewFinished(task: Task) : boolean{
+    return this.membersService.getPendingApprovalRequest(task) === undefined
+  }
+
+  private applyFilter(filterProjectId: number) {
      if (filterProjectId!==0) {
        return this.allReviewTasks().filter(task =>
          task.projectID === filterProjectId
@@ -29,8 +32,12 @@ export class MembersApprovalTableComponent {
      }
    }
 
+   private isLoggedInUserEnrolledInCurrentReviewTeam(task: Task): boolean{
+    return this.membersService.getPendingApprovalRequest(task)?.assigned.teamMembers.find((member)=>member.userID===this.membersService.loggedInUser()?.userID) !== undefined
+   }
+
    DoesNeedAction(task: Task): boolean{
-    return this.membersService.getPendingApprovalRequest(task)?.status==='Pending';
+    return this.currentTaskStatus(task) === 'Pending' && this.isLoggedInUserEnrolledInCurrentReviewTeam(task);
   }
 
   currentTaskStatus(task: Task): ApprovalRequestStatus | undefined{
@@ -41,15 +48,19 @@ export class MembersApprovalTableComponent {
     return this.membersService.getPendingApprovalRequest(task)?.assigned.teamName;
   }
 
-  acceptTask(taskId: number){
+  getTaskInfoMessage(task: Task){
+    return `${this.currentTeamReviewing(task)} Team ${(this.currentTaskStatus(task) === 'Pending') ? 'is currrently reviewing' : 'has'+this.currentTaskStatus(task)?.toLowerCase() } the task submission.`
+  }
+
+  acceptTask(task: Task){
     if(confirm("Are you sure you want to accept this Task? \nThis action is irreversable!")){
-      this.membersService.acceptTask(taskId);
+      this.membersService.acceptTask(task);
     };
   }
 
-  rejectTask(taskId: number){
+  rejectTask(task: Task){
     if(confirm("Are you sure you want to reject this Task? \nThis action is irreversable!")){
-      this.membersService.rejectTask(taskId);
+      this.membersService.rejectTask(task);
     };
   }
 }

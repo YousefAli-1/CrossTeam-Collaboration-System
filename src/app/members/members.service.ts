@@ -86,8 +86,10 @@ export class MembersService {
   }
 
   getloggedInUserPermissions(projectId: number): Observable<UserPermissions> {
-    return this.httpService
-      .getUserPermissions(projectId, this.loggedInUser()?.userID || 0);
+    return this.httpService.getUserPermissions(
+      projectId,
+      this.loggedInUser()?.userID || 0
+    );
   }
 
   private isUserAssignedInTask(user: User | null, task: Task): boolean {
@@ -112,31 +114,21 @@ export class MembersService {
     );
   }
 
-  private getAllDependenciesBeforeLoggedInReviewerOfTask(task: Task) {
-    return task.approvalWorkflow.slice(
-      0,
-      task.approvalWorkflow.findIndex((request) =>
-        request.assigned.teamMembers.some(
-          (teamMember) => teamMember.userID === this.loggedInUser()?.userID
-        )
-      )
-    );
-  }
-
   getPendingApprovalRequest(task: Task): ApprovalRequest | undefined {
     return task.approvalWorkflow.find(
       (request) => request.status !== 'Accepted'
     );
   }
 
-  isTaskApprovalWorkflowTotallyFinished(task: Task): boolean {
-    return task.approvalWorkflow.at(-1)?.status === 'Accepted';
-  }
-
   private deleteInvitationLocally(invitation: Invitation): void {
-    this.projectsInvitationsSignal.set(this.projectsInvitations().filter((invitationElement)=>{
-      return invitationElement.projectId!==invitation.projectId && invitationElement.memberId!==invitation.memberId
-    }))
+    this.projectsInvitationsSignal.set(
+      this.projectsInvitations().filter((invitationElement) => {
+        return (
+          invitationElement.projectId !== invitation.projectId &&
+          invitationElement.memberId !== invitation.memberId
+        );
+      })
+    );
   }
 
   rejectInvitation(invitation: Invitation): void {
@@ -179,28 +171,42 @@ export class MembersService {
     };
   }
 
-  acceptTask(taskId: number) {
-    this.tasksSignal.set(
-      this.tasksSignal().map((task) => {
-        if (task.taskID !== taskId) {
-          return task;
-        }
+  acceptTask(task: Task) {
+    this.httpService
+      .acceptApprovalRequest(
+        this.getPendingApprovalRequest(task)?.approvalRequestID || 0,
+        this.loggedInUser()?.userID || 0
+      )
+      .subscribe(() => {
+        this.tasksSignal.set(
+          this.tasksSignal().map((taskElement) => {
+            if (taskElement.taskID !== task.taskID) {
+              return taskElement;
+            }
 
-        return this.updateApprovalRequestStatus(task, 'Accepted');
-      })
-    );
+            return this.updateApprovalRequestStatus(task, 'Accepted');
+          })
+        );
+      });
   }
 
-  rejectTask(taskId: number) {
-    this.tasksSignal.set(
-      this.tasksSignal().map((task) => {
-        if (task.taskID !== taskId) {
-          return task;
-        }
+  rejectTask(task: Task) {
+    this.httpService
+      .rejectApprovalRequest(
+        this.getPendingApprovalRequest(task)?.approvalRequestID || 0,
+        this.loggedInUser()?.userID || 0
+      )
+      .subscribe(() => {
+        this.tasksSignal.set(
+          this.tasksSignal().map((taskElement) => {
+            if (taskElement.taskID !== task.taskID) {
+              return taskElement;
+            }
 
-        return this.updateApprovalRequestStatus(task, 'Rejected');
-      })
-    );
+            return this.updateApprovalRequestStatus(task, 'Rejected');
+          })
+        );
+      });
   }
 
   submitTask(taskID: number): void {
@@ -224,6 +230,7 @@ export class MembersService {
 
     console.log(`Task ${taskID} submitted by ${user.name}`);
   }
+
   logout(): void {
     this.loggedInUserWritableSignal.set(null);
   }

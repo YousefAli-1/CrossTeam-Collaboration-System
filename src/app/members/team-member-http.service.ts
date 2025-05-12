@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { map, Observable, take, tap } from 'rxjs';
-import { Invitation, Project, Task, UserPermissions } from '../app.model';
+import { map, Observable, take } from 'rxjs';
+import { Invitation, Project, UserPermissions } from '../app.model';
 import { BackendAdapterImp } from '../BackendAdapter/backend-adapter-imp';
 
 @Injectable({
@@ -68,9 +68,11 @@ export class TeamMemberHttpService {
       .set('projectId', projectId)
       .set('userId', userId);
 
-    return this.http.post<void>(`${this.apiUrl}/acceptInvitation`, null, {
-      params,
-    });
+    return this.http
+      .post<void>(`${this.apiUrl}/acceptInvitation`, null, {
+        params,
+      })
+      .pipe(take(1));
   }
 
   rejectProjectInvitation(projectId: number, userId: number): Observable<void> {
@@ -78,8 +80,40 @@ export class TeamMemberHttpService {
       .set('projectId', projectId)
       .set('userId', userId);
 
-    return this.http.delete<void>(`${this.apiUrl}/rejectInvitation`, {
-      params,
-    });
+    return this.http
+      .delete<void>(`${this.apiUrl}/rejectInvitation`, {
+        params,
+      })
+      .pipe(take(1));
+  }
+
+  acceptApprovalRequest(
+    approvalRequestId: number,
+    userId: number
+  ): Observable<void> {
+    const params = new HttpParams()
+      .set('approvalRequestId', approvalRequestId)
+      .set('userId', userId);
+
+    return this.http
+      .post<void>(`${this.apiUrl}/acceptApprovalRequest`, null, {
+        params,
+      })
+      .pipe(take(1));
+  }
+
+  rejectApprovalRequest(
+    approvalRequestId: number,
+    userId: number
+  ): Observable<void> {
+    const params = new HttpParams()
+      .set('approvalRequestId', approvalRequestId)
+      .set('userId', userId);
+
+    return this.http
+      .post<void>(`${this.apiUrl}/rejectApprovalRequest`, null, {
+        params,
+      })
+      .pipe(take(1));
   }
 }

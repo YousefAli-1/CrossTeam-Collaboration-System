@@ -190,11 +190,12 @@ export class MembersService {
       });
   }
 
-  rejectTask(task: Task) {
+  rejectTask(task: Task, comment: string | null) {
     this.httpService
       .rejectApprovalRequest(
         this.getPendingApprovalRequest(task)?.approvalRequestID || 0,
-        this.loggedInUser()?.userID || 0
+        this.loggedInUser()?.userID || 0,
+        comment
       )
       .subscribe(() => {
         this.tasksSignal.set(

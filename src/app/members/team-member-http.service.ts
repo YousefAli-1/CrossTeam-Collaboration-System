@@ -104,11 +104,13 @@ export class TeamMemberHttpService {
 
   rejectApprovalRequest(
     approvalRequestId: number,
-    userId: number
+    userId: number,
+    comment: string | null
   ): Observable<void> {
     const params = new HttpParams()
       .set('approvalRequestId', approvalRequestId)
-      .set('userId', userId);
+      .set('userId', userId)
+      .set('comment', comment || '');
 
     return this.http
       .post<void>(`${this.apiUrl}/rejectApprovalRequest`, null, {

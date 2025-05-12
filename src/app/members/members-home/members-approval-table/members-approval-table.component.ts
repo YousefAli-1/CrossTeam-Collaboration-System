@@ -49,7 +49,7 @@ export class MembersApprovalTableComponent {
   }
 
   getTaskInfoMessage(task: Task){
-    return `${this.currentTeamReviewing(task)} Team ${(this.currentTaskStatus(task) === 'Pending') ? 'is currrently reviewing' : 'has'+this.currentTaskStatus(task)?.toLowerCase() } the task submission.`
+    return `${this.currentTeamReviewing(task)} Team ${(this.currentTaskStatus(task) === 'Pending') ? 'is currrently reviewing' : 'has rejected' } the task submission.`
   }
 
   acceptTask(task: Task){
@@ -60,7 +60,8 @@ export class MembersApprovalTableComponent {
 
   rejectTask(task: Task){
     if(confirm("Are you sure you want to reject this Task? \nThis action is irreversable!")){
-      this.membersService.rejectTask(task);
+      let comment=window.prompt('Add your comment here (optional)');
+      this.membersService.rejectTask(task,comment);
     };
   }
 }

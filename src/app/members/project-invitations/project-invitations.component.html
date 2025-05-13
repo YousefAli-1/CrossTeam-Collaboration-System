@@ -1,11 +1,10 @@
 <div class="project-invitations">
     <h1>Project Invitations</h1>
     <p>Below is the list of your project invitations:</p>
-    @for (invitation of userInvitations(); track invitation.invitationID) {
-    <app-invitations [invitation]="invitation"></app-invitations>
+    @for (invitation of userInvitations(); track $index) {
+        <app-invitations [invitation]="invitation" />
     }
     @empty {
-    <div class="no-projects">No Invitations found</div>
+        <div class="no-projects">No Invitations found</div>
     }
 </div>
-

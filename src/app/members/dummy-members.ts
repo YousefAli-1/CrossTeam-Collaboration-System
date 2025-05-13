@@ -1,4 +1,4 @@
-import { type TeamMember,type Project,type Task,type Team, Invitation,User,ProjectManager} from "../app.model"
+import {type Project,type Task,type Team, Invitation,User,ProjectManager, UserEssentials, UserInProject} from "../app.model"
 // Dummy data for Team Members
 const dummyUsers: User[] =[
     {
@@ -27,29 +27,25 @@ const dummyUsers: User[] =[
     }
 ];
 
-export const dummyTeamMembers: TeamMember[] = [
+export const dummyTeamMembers: UserInProject[] = [
     {
         ...dummyUsers[0],
         canSubmitTask: true,
-        canReviewTask: false,
         canAcceptOrRejectTask: false,
     },
     {
         ...dummyUsers[1],
         canSubmitTask: false,
-        canReviewTask: false,
         canAcceptOrRejectTask: true,
     },
     {
         ...dummyUsers[2],
         canSubmitTask: true,
-        canReviewTask: false,
         canAcceptOrRejectTask: true,
     },
     {
         ...dummyUsers[3],
         canSubmitTask: false,
-        canReviewTask: false,
         canAcceptOrRejectTask: true,
     },
 ];
@@ -100,29 +96,26 @@ export const dummyTeams:Team[] = [
 export const dummyProjects: Project[] = [
     {
         projectID: 1,
-        invitations: [],
         projectName: 'Project Alpha',
         projectDescription: 'A top-secret project.',
         createdBy: dummyProjectManager[0],
         tasks: [], 
-        members: [{ ...dummyTeamMembers[0], isInviteAccepted: true },{ ...dummyTeamMembers[2], isInviteAccepted: true }],
+        members: [{ ...dummyTeamMembers[0] },{ ...dummyTeamMembers[2] }],
         teams: [dummyTeams[0],dummyTeams[1],dummyTeams[3]],
         createdAt: new Date(),
         updatedAt: new Date(),
     },
     {
         projectID: 2,
-        invitations: [],
         projectName: 'Project Beta',
         projectDescription: 'A secondary project for testing.',
         createdBy: {
             userID: 6,
             name: 'Charlie Brown',
-            email: 'charlie.brown@example.com',
-            Projects: [],
+            email: 'charlie.brown@example.com'
         },
         tasks: [],
-        members: [{ ...dummyTeamMembers[0], isInviteAccepted: true },{ ...dummyTeamMembers[1], isInviteAccepted: true },{ ...dummyTeamMembers[2], isInviteAccepted: true },{ ...dummyTeamMembers[3], isInviteAccepted: true}],
+        members: [{ ...dummyTeamMembers[0] },{ ...dummyTeamMembers[1] },{ ...dummyTeamMembers[2] },{ ...dummyTeamMembers[3] }],
         teams: [dummyTeams[0],dummyTeams[1],dummyTeams[3]],
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -132,8 +125,10 @@ export const dummyProjects: Project[] = [
 // Dummy data for Tasks
 export const dummyTasks: Task[] = [
     {
-        project: dummyProjects[0],
-        taskId: 1,
+
+        projectID: dummyProjects[0].projectID,
+        projectName: dummyProjects[0].projectName,
+        taskID: 201,
         taskName: 'Task 1',
         description: 'Complete the initial setup.',
         deadline: new Date(),
@@ -161,8 +156,9 @@ export const dummyTasks: Task[] = [
         updatedAt: new Date()
     },
     {
-        project:dummyProjects[1],
-        taskId: 2,
+        projectID: dummyProjects[1].projectID,
+        projectName: dummyProjects[1].projectName,
+        taskID: 202,
         taskName: 'Task 2',
         description: 'Develop the core module.',
         deadline: new Date(),
@@ -185,27 +181,19 @@ export const dummyTasks: Task[] = [
 // Dummy data for Invitations
 export const dummyInvitations: Invitation[] = [
     {
-        invitationID: 401,
         projectId: 101,
         memberId: dummyTeamMembers[1].userID,
-        project: dummyProjects[0],
-        member: dummyTeamMembers[1],
         invitedBy: dummyProjects[0].createdBy,
         status: 'Pending',
     },
     {
-        invitationID: 402,
         projectId: 101,
         memberId: dummyTeamMembers[3].userID,
-        project: dummyProjects[0],
-        member: dummyTeamMembers[3],
         invitedBy: dummyProjects[0].createdBy,
         status: 'Pending',
     },
 ];
 
-// Link invitations to projects
-dummyProjects[0].invitations = [dummyInvitations[0], dummyInvitations[1]];
 // Link tasks to projects after both are declared
 dummyProjects[0].tasks = [dummyTasks[0]];
 dummyProjects[1].tasks = [dummyTasks[1]];

@@ -16,7 +16,7 @@
     <h2>
         Your projects
     </h2>
-    @for (project of userProjects; track project.projectID) {
+    @for (project of userProjects(); track project.projectID) {
       <a [routerLink]='"/teamMember/projects/"+project.projectID' routerLinkActive="active" class="horizontal-link" mat-button>
         <label>
           {{project.projectName}}

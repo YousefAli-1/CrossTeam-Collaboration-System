@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { MembersService } from '../../members.service';
 import { Task } from '../../../app.model';
 @Component({
@@ -8,9 +8,11 @@ import { Task } from '../../../app.model';
   templateUrl: './members-submission-table.component.html',
   styleUrl: './members-submission-table.component.scss',
 })
-export class MembersSubmissionTableComponent implements OnInit {
+export class MembersSubmissionTableComponent {
   private membersService = inject(MembersService);
-  private allSubmissionTasks = signal<Task[]>([]);
+
+  private allSubmissionTasks = this.membersService.submissionTasks;
+
 
   filterProjectId = input<number>(0);
   isLoading = signal(true);
@@ -22,19 +24,17 @@ export class MembersSubmissionTableComponent implements OnInit {
     ? tasks.filter((task) => task.projectID === filter)
     : tasks;
   });
-  ngOnInit(): void {
-    const user = this.membersService.loggedInUser();
-    if (user) {
-      this.membersService.fetchTasksForSub(user.userID).subscribe({
-        next: (tasks) => {
-          this.allSubmissionTasks.set(tasks); 
-          this.isLoading.set(false);
-        },
-        error: (error) => {
-          console.error('Failed to fetch tasks:', error);
-          this.isLoading.set(false);
-        }
-      });
+
+
+  private applyFilter(filterProjectId: number) {
+    if (filterProjectId !== 0) {
+                this.isLoading.set(false);
+      return this.allSubmissionTasks().filter(
+        (task) => task.projectID === filterProjectId
+      );
+    } else {
+       this.isLoading.set(false);
+      return this.allSubmissionTasks();
     }
   }
   

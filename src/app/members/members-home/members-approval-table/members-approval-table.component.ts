@@ -12,10 +12,14 @@ export class MembersApprovalTableComponent {
   private membersService=inject(MembersService);
    private allReviewTasks=this.membersService.ReviewTasks;
    filterProjectId= input<number>(0);
- 
-   reviewTasks=computed<Task[]>(()=>{
-    this.allReviewTasks()
-    return this.applyFilter(this.filterProjectId())
+   isLoading = signal(true);
+   // Computed signal that applies the filter
+   reviewTasks = computed(() => {
+    const filter = this.filterProjectId();
+    const tasks = this.allReviewTasks();
+    return filter
+    ? tasks.filter((task) => task.projectID === filter)
+    : tasks;
   });
  
   isTaskReviewFinished(task: Task) : boolean{
@@ -24,13 +28,16 @@ export class MembersApprovalTableComponent {
 
   private applyFilter(filterProjectId: number) {
      if (filterProjectId!==0) {
+        this.isLoading.set(false);
        return this.allReviewTasks().filter(task =>
          task.projectID === filterProjectId
        );
      } else {
+        this.isLoading.set(false);
        return this.allReviewTasks();
      }
    }
+
 
    private isLoggedInUserEnrolledInCurrentReviewTeam(task: Task): boolean{
     return this.membersService.getPendingApprovalRequest(task)?.assigned.teamMembers.find((member)=>member.userID===this.membersService.loggedInUser()?.userID) !== undefined
@@ -63,5 +70,8 @@ export class MembersApprovalTableComponent {
       let comment=window.prompt('Add your comment here (optional)');
       this.membersService.rejectTask(task,comment);
     };
+  }
+  downloadSub(taskID:number){
+   this.membersService.downloadSubmission(taskID);
   }
 }

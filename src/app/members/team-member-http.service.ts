@@ -4,6 +4,7 @@ import { map, Observable, take } from 'rxjs';
 import { Invitation, Project, UserPermissions } from '../app.model';
 import { BackendAdapterImp } from '../BackendAdapter/backend-adapter-imp';
 
+
 @Injectable({
   providedIn: 'root',
 })
@@ -12,12 +13,28 @@ export class TeamMemberHttpService {
   private readonly mapper = inject(BackendAdapterImp);
   private http = inject(HttpClient);
 
-  submitTask(taskId: number, userId: number): Observable<void> {
-    const params = new HttpParams()
-      .set('taskId', taskId.toString())
-      .set('userId', userId.toString());
+  submitTask(taskId: number, userId: number, file: File): Observable<void> {
+    const formData = new FormData();
+    formData.append('taskId', taskId.toString());
+    formData.append('userId', userId.toString());
+    formData.append('file', file);
 
-    return this.http.post<void>(`${this.apiUrl}/submitTask`, null, { params });
+    return this.http.post<void>(`${this.apiUrl}/submit-task?userId=${userId}`, formData);
+  }
+  getAllTasks(userId: number): Observable<Task[]> {
+      return this.http.get<Task[]>(`${this.apiUrl}/getAllTasks?userId=${userId}`);
+  }
+  getUserTasksForSubmission(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/submitted-task?userId=${userId}`);
+  }
+  getUserTasksForReview(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/review-task?userId=${userId}`);
+  }
+  downloadSubmission(taskId: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/download-submission`, {
+      params: new HttpParams().set('taskId', taskId.toString()),
+      responseType: 'blob'
+    });
   }
 
   getProjects(userId: number): Observable<Project[]> {
@@ -118,4 +135,5 @@ export class TeamMemberHttpService {
       })
       .pipe(take(1));
   }
+
 }

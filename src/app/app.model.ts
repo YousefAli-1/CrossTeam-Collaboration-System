@@ -27,6 +27,7 @@ export type Project = {
   updatedAt: Date;
 };
 
+
 export type Task = {
   projectID: number;
   projectName: String;
@@ -41,6 +42,7 @@ export type Task = {
   createdAt: Date;
   updatedAt: Date;
 };
+
 
 export type Team = {
   readonly teamID: number;

@@ -125,11 +125,12 @@ export const dummyProjects: Project[] = [
 // Dummy data for Tasks
 export const dummyTasks: Task[] = [
     {
+
         projectID: dummyProjects[0].projectID,
         projectName: dummyProjects[0].projectName,
         taskID: 201,
         taskName: 'Task 1',
-        taskDescription: 'Complete the initial setup.',
+        description: 'Complete the initial setup.',
         deadline: new Date(),
         assigned: dummyTeams[0], 
         isSubmitted: true,
@@ -159,7 +160,7 @@ export const dummyTasks: Task[] = [
         projectName: dummyProjects[1].projectName,
         taskID: 202,
         taskName: 'Task 2',
-        taskDescription: 'Develop the core module.',
+        description: 'Develop the core module.',
         deadline: new Date(),
         assigned: dummyTeams[1], 
         isSubmitted: false,

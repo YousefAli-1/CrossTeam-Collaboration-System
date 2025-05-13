@@ -1,7 +1,6 @@
-import { Component, computed, effect, inject, input, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { MembersService } from '../../members.service';
 import { Task } from '../../../app.model';
-import { map, Observable,pipe } from 'rxjs';
 @Component({
   selector: 'app-members-submission-table',
   standalone: true,
@@ -47,19 +46,33 @@ onFileSelected(event: Event, taskId: number): void {
     this.selectedFiles[taskId] = input.files[0];
   }
 }
-  submitTask(taskID: any) {
-    const file = this.selectedFiles[taskID];
-    this.membersService.submitTask(taskID,file);
-    const user = this.membersService.loggedInUser();
-    if (user) {
-      this.membersService.fetchTasksForSub(user.userID).subscribe({
-        next: (tasks) => {
-          this.allSubmissionTasks.set(tasks); 
-        },
-        error: (error) => {
-          console.error('Failed to fetch tasks:', error);
-        }
-      });
-    }
+submitTask(taskID: number): void {
+  const file = this.selectedFiles[taskID];
+  if (!file) {
+    console.warn('No file selected for task:', taskID);
+    return;
   }
+
+  this.membersService.submitTask(taskID, file).subscribe({
+    next: () => {
+      // Refresh task list only after successful submission
+      const user = this.membersService.loggedInUser();
+      if (user) {
+        this.membersService.fetchTasksForSub(user.userID).subscribe({
+          next: (tasks) => {
+            this.allSubmissionTasks.set(tasks);
+            delete this.selectedFiles[taskID]; // Clear file input (optional)
+          },
+          error: (error) => {
+            console.error('Failed to refresh tasks:', error);
+          }
+        });
+      }
+    },
+    error: (error) => {
+      console.error('Failed to submit task:', error);
+    }
+  });
+}
+
 }

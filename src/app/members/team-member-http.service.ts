@@ -17,13 +17,16 @@ export class TeamMemberHttpService {
     formData.append('userId', userId.toString());
     formData.append('file', file);
 
-    return this.http.post<void>(`${this.apiUrl}/${userId}/submit-task`, formData);
+    return this.http.post<void>(`${this.apiUrl}/submit-task?userId=${userId}`, formData);
   }
   getAllTasks(userId: number): Observable<Task[]> {
-    return this.http.get<Task[]>(`${this.apiUrl}/${userId}/getAllTasks`);
+      return this.http.get<Task[]>(`${this.apiUrl}/getAllTasks?userId=${userId}`);
   }
   getUserTasksForSubmission(userId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/${userId}/submitted-task`);
+    return this.http.get<any[]>(`${this.apiUrl}/submitted-task?userId=${userId}`);
+  }
+  getUserTasksForReview(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/review-task?userId=${userId}`);
   }
   downloadSubmission(taskId: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/download-submission`, {

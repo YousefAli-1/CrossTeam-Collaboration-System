@@ -15,18 +15,18 @@
         <tbody>
           @for (task of reviewTasks(); track task.taskId) {
           <tr>
-            <td>{{ task.project.projectName }}</td>
+            <td>{{ task.projectName }}</td>
             <td>{{ task.taskName }}</td>
             <td>{{ task.description }}</td>
             <td>{{ task.submittedBy?.name}}</td>
             <td>
               @if (DoesNeedAction(task)) {
-                <button (click)="acceptTask(task.taskId)" class="btn btn-success">Approve</button>
-                <button (click)="rejectTask(task.taskId)" class="btn btn-primary">Reject</button>
-                <button (click)="downloadSub(task.taskId)"class="btn btn-info">Download Submitted Files</button>
+              <button (click)="acceptTask(task.taskId)" class="btn btn-success">Approve</button>
+              <button (click)="rejectTask(task.taskId)" class="btn btn-primary">Reject</button>
+              <button (click)="downloadSub(task.taskId)" class="btn btn-info">Download Submitted Files</button>
               }
               @else {
-                {{currentTeamReviewing(task)}} Team has {{currentTaskStatus(task)?.toLowerCase()}} the task
+              {{currentTeamReviewing(task)}} Team has {{currentTaskStatus(task)?.toLowerCase()}} the task
               }
             </td>
           </tr>

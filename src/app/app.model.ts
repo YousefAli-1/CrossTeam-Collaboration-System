@@ -8,7 +8,7 @@ export type ProjectMember = TeamMember & {isInviteAccepted: boolean};
 
 export type Project= {readonly projectID: number, projectName: String, projectDescription: String, createdBy: ProjectManager,invitations: Invitation[], tasks: Task[], members: ProjectMember[], teams: Team[], createdAt: Date, updatedAt: Date};
 
-export type Task={readonly taskId: number, taskName: String, description: String, deadline: Date, assigned: Team, isSubmitted: boolean, submittedBy: TeamMember | null, approvalWorkflow: ApprovalRequest[], project: Project,projectName?:String,projectID?:number, createdAt: Date, updatedAt: Date};
+export type Task={readonly taskId: number, taskName: String, description: String, deadline: Date, assigned: Team, isSubmitted: boolean, submittedBy: TeamMember | null, approvalWorkflow: ApprovalRequest[], project: Project,projectName?:String,projectID?:number, createdAt: Date, updatedAt: Date,filePath?:string,fileName?:string, fileType?:string, fileSize?:number};
 
 export type Team={readonly teamID: number, teamName: String, teamDescription: String, teamMembers: TeamMember[]};
 

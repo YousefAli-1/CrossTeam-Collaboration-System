@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { dummyTeamMembers, dummyProjects, dummyTasks } from './dummy-members';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, tap, throwError } from 'rxjs';
 import {
   type TeamMember,
   type User,
@@ -229,48 +229,25 @@ export class MembersService {
     );
   }
 
-  submitTask(taskID: number, file: any): void {
+  submitTask(taskID: number, file: File): Observable<any> {
     const user = this.loggedInUser();
     if (!user || !file) {
-      alert('Please select a file before submitting.');
-      return;
+      return throwError(() => new Error('Missing file or user'));
     }
   
-    console.log("Submitting:", {
-      taskID,
-      userId: user.userID,
-      file
-    });
-  
-    this.teamHttp.submitTask(taskID, user.userID, file).subscribe({
-      next: () => {
-        console.log(`Task ${taskID} submitted successfully.`);
-  
+    return this.teamHttp.submitTask(taskID, user.userID, file).pipe(
+      tap(() => {
         const task = this.tasks().find((t) => t.taskId === taskID);
-        if (!task) {
-          console.warn('Task not found');
-          return;
+        if (task) {
+          task.isSubmitted = true;
+          task.submittedBy = user as TeamMember;
+          task.updatedAt = new Date();
+          this.projectsChanged.next();
         }
-  
-        const isAssigned = this.isUserAssignedInTask(user, task);
-        if (!isAssigned) {
-          console.warn('User is not assigned to this task');
-          return;
-        }
-  
-        task.isSubmitted = true;
-        task.submittedBy = user as TeamMember;
-        task.updatedAt = new Date();
-  
-        console.log(`Task ${taskID} submitted by ${user.name}`);
-        this.projectsChanged.next();
-      },
-      error: (error) => {
-        console.error('Error submitting task:', error);
-        alert('Submission failed. Please try again later.');
-      }
-    });
+      })
+    );
   }
+  
   fetchTasksForUser(userID: number) {
     this.teamHttp.getAllTasks(userID).subscribe({
       next: (tasks) => this.tasksSignal.set(tasks),
@@ -281,7 +258,11 @@ export class MembersService {
   fetchTasksForSub(userID: number) : Observable<Task[]>{
     return this.teamHttp.getUserTasksForSubmission(userID);
   }
-  
+  fetchTasksForRev(userID: number) : Observable<Task[]>{
+    const user=this.loggedInUser;
+    
+    return this.teamHttp.getUserTasksForReview(userID);
+  }
   getTasksSignal() {
     return this.tasksSignal;
   }
@@ -289,15 +270,40 @@ export class MembersService {
   logout(): void {
     this.loggedInUserWritableSignal.set(null);
   }
-  downloadSubmission(taskId:number){
-    this.teamHttp.downloadSubmission(taskId).subscribe(blob => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `task_${taskId}_submission`; // Optional filename
-      a.click();
-      window.URL.revokeObjectURL(url);
+  downloadSubmission(taskID: number): void {
+    const userId = this.loggedInUser()?.userID || 0;
+  
+    // First fetch tasks asynchronously
+    this.fetchTasksForRev(userId).subscribe(tasks => {
+      const task = tasks.find(t => t.taskId === taskID);
+  
+      if (!task) {
+        console.error('Task not found');
+        return;
+      }
+  
+      console.log('Task:', task);
+      console.log('File path:', task.filePath);
+  
+      this.teamHttp.downloadSubmission(taskID).subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+  
+          // Optional: Extract filename from filePath if needed
+          const filename = task.fileName?.split('/').pop() || 'submission.zip';
+          a.download = filename;
+  
+          a.click();
+          window.URL.revokeObjectURL(url);
+        },
+        error: (err) => {
+          console.error('Download failed', err);
+          alert('Failed to download file.');
+        }
+      });
     });
-    
   }
+  
 }

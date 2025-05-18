@@ -1,0 +1,13 @@
+services:
+  cross_team_collabration_frontend_server:
+    build:
+      context: .
+    environment:
+      NODE_ENV: production
+    ports:
+      - 4200:4200
+    networks:
+      - cross_team_collabration_network
+networks:
+  cross_team_collabration_network:
+    driver: bridge

@@ -1,4 +1,4 @@
-<!-- <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
   <label>
     Task Name:
     <input formControlName="taskName" />
@@ -38,34 +38,4 @@
   </label>
 
   <button type="submit">Create Task</button>
-</form> -->
-
-<div class="tasks-page">
-  <div class="header">
-    <h1>Tasks</h1>
-    <button class="btn create-btn" (click)="onCreateTask()">+ Create Task</button>
-  </div>
-
-  <table class="tasks-table">
-    <thead>
-      <tr>
-        <th>Task Name</th>
-        <th>Deadline</th>
-        <th>Assigned To</th>
-        <th class="actions-column">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let task of tasks">
-        <td>{{ task.taskName }}</td>
-        <td>{{ task.deadline }}</td>
-        <td>{{ task.assigned }}</td>
-        <td class="actions">
-          <!-- Add edit/delete buttons if needed -->
-          <button class="btn edit-btn">Edit</button>
-          <button class="btn delete-btn">Delete</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+</form>

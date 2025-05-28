@@ -1,6 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 import { dummyTeamMembers, dummyProjects, dummyTasks } from '../members/dummy-members';
 import { dummyProjectManager } from '../members/dummy-members';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import {
   type TeamMember,
   type User,
@@ -13,7 +15,7 @@ import {
   providedIn: 'root',
 })
 export class ProjectManagerService {
-  private readonly teamMembers = dummyTeamMembers;
+  constructor(private http: HttpClient) {}
   private readonly projectManagers = dummyProjectManager;
   private readonly projects = dummyProjects;
   private readonly tasks = dummyTasks;
@@ -21,37 +23,25 @@ export class ProjectManagerService {
   private loggedInUserWritableSignal = signal<User | null>(null);
   loggedInUser = this.loggedInUserWritableSignal.asReadonly();
 
-  getProjectByProjectId(id: number) {
-    return this.projects.find((project) => project.projectID === id);
-  }
+// getProjectByProjectId(id: number): Observable<Project> {
+//   return this.http.get<Project>(`http://localhost:8060/ProjectManager/getProject?id=${id}`);
+// }
+//   getAllProjects(): Observable<Project[]> {
+//   return this.http.get<Project[]>(`http://localhost:8060/project/getAll`);
+// }
+//   logIn(user: User){
+//     this.loggedInUserWritableSignal.set(user);
+//   }
 
-  getProjectsByUserId(userId: number): Project[] {
-    return this.projects.filter((project) =>
-      project.createdBy.userID
-    );
-    //
+ isUserLoggedIn(): boolean {
+    if (this.loggedInUser()) {
+      return true;
+    } else {
+      return false;
+    }
   }
-  logIn(user: User){
-    this.loggedInUserWritableSignal.set(user);
+    logout(): void {
+    this.loggedInUserWritableSignal.set(null);
   }
-  getMembersByProjectId(id: number): TeamMember[] {
-    return (
-      this.projects.find((project) => project.projectID === id)?.members || []
-    );
-  }
-
-  private isUserAssignedInTask(user: User | null, task: Task): boolean {
-    return task.assigned.teamMembers.some(
-      (member) => member.userID === user?.userID
-    );
-  }
-
-  getSubmissionTasksForLoggedInUser(): Task[] {
-    return this.tasks.filter((task) =>
-      this.isUserAssignedInTask(this.loggedInUser(), task)
-    );
-  }
-
-
 
 }

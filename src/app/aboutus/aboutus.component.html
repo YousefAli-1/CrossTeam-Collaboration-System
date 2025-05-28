@@ -1,0 +1,36 @@
+<app-navbar></app-navbar>
+<div class="about-container">
+    <section class="hero-section">
+      <h1>About Our Collaborative Platform</h1>
+      <p class="tagline">Where teams connect, communicate, and create together</p>
+    </section>
+  
+    <section class="mission-section">
+      <h2>Our Mission</h2>
+      <div class="mission-content">
+        <p>In today's complex work environment, teams often struggle with siloed information, miscommunication, and inefficient workflows. Our mission is to break down these barriers by providing intuitive tools that foster genuine collaboration.</p>
+        
+        <p>We believe that when teams can work together seamlessly - regardless of department, location, or timezone - they achieve extraordinary results. Our platform is designed to:</p>
+        
+        <ul>
+          <li>Simplify cross-team communication with centralized channels</li>
+          <li>Make project visibility effortless for all stakeholders</li>
+          <li>Reduce redundant work through smart task management</li>
+          <li>Provide analytics to help teams identify collaboration patterns</li>
+        </ul>
+        
+        <p>Founded in 2020, we've helped over 500 teams improve their collaboration efficiency by an average of 40%. Our approach combines cutting-edge technology with proven team psychology principles.</p>
+      </div>
+    </section>
+    <section class="values-section">
+      <h2>Our Core Principles</h2>
+      <p class="section-intro">These values guide every decision we make about our product and company culture:</p>
+      
+      <div class="values-grid">
+        <div class="value-card" *ngFor="let value of companyValues">
+          <h3>{{value.title}}</h3>
+          <p>{{value.description}}</p>
+        </div>
+      </div>
+    </section>
+  </div>

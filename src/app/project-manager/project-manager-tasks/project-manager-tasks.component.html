@@ -1,0 +1,41 @@
+<form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+  <label>
+    Task Name:
+    <input formControlName="taskName" />
+  </label>
+
+  <label>
+    Task Description:
+    <textarea formControlName="taskDescription"></textarea>
+  </label>
+
+  <label>
+    Deadline:
+    <input type="date" formControlName="deadline" />
+  </label>
+
+  <label>
+    Assigned Team:
+    <input formControlName="assigned" />
+  </label>
+
+  <label>
+    Submitted By (if applicable):
+    <input formControlName="submittedBy" />
+  </label>
+
+  <div formArrayName="approvalWorkflow" class="form-array">
+    <label>Approval Workflow:</label>
+    <div *ngFor="let approval of approvalWorkflow.controls; let i = index">
+      <input [formControlName]="i" placeholder="Approval Request" />
+    </div>
+    <button type="button" (click)="addApprovalRequest()" class="add-button">+ Add Approval Request</button>
+  </div>
+
+  <label>
+    Project:
+    <input formControlName="project" />
+  </label>
+
+  <button type="submit">Create Task</button>
+</form>

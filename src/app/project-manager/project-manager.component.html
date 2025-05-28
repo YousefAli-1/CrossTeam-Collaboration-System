@@ -1,0 +1,53 @@
+<mat-drawer-container hasBackdrop="false">
+    <mat-drawer class="drawer" mode="side" position="start" [opened]="isOpened">
+      <h3>
+          Tabs
+      </h3>
+      <a routerLink="homepage" routerLinkActive="active" mat-button>
+        <span class="material-icons"> home </span>
+        <label>
+          Homepage
+        </label>
+      </a>
+      <a routerLink="projects" routerLinkActive="active" mat-button>
+          <span class="material-icons">
+              workspaces`
+          </span>
+          <label>
+              Projects
+          </label>
+      </a>
+      <a routerLink="tasks" routerLinkActive="active" mat-button>
+        <span class="material-icons">
+            workspaces
+        </span>
+        <label>
+            Tasks
+        </label>
+    </a>
+    <a routerLink="teams" routerLinkActive="active" mat-button>
+        <span class="material-icons">
+            workspaces
+        </span>
+        <label>
+            Teams
+        </label>
+    </a>
+      <hr>
+      <h3>
+          Your projects
+      </h3>
+    
+     
+    </mat-drawer>
+    <mat-drawer-content>
+      <button mat-icon-button (click)="toggleDrawer()" [class]="{'isOpened': isOpened,'isClosed': !isOpened}">
+          <span class="material-icons">
+              double_arrow
+          </span>    
+      </button>
+      <router-outlet />
+    </mat-drawer-content>
+  </mat-drawer-container>
+  
+  

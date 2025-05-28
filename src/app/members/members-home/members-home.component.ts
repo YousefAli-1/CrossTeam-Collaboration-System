@@ -12,6 +12,5 @@ import { MembersApprovalTableComponent } from './members-approval-table/members-
 })
 export class MembersHomeComponent {
   private membersService = inject(MembersService);
-  
   currentUser = computed<User | null>(()=>this.membersService.loggedInUser()); 
 }

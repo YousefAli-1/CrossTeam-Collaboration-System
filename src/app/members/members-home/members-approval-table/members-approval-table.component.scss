@@ -171,7 +171,6 @@
 .no-tasks-message {
     color: #666;
     text-align: center;
-    margin: 2em auto;
     padding: 1em;
     background-color: #f9f9f9;
     border: 1px solid #ddd;
@@ -179,7 +178,7 @@
     box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
     width: 70vh;
     position: absolute;
-    top: 86%;
+    margin-bottom: 2em;
     left: 50%;
     transform: translate(-50%, 2em);
 }

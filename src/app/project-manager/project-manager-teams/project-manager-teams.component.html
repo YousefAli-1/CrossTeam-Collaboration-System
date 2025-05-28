@@ -1,0 +1,28 @@
+<form [formGroup]="teamForm" (ngSubmit)="onSubmit()">
+  <label>
+    Team Name:
+    <input formControlName="teamName" />
+  </label>
+
+  <label>
+    Team Description:
+    <textarea formControlName="teamDescription"></textarea>
+  </label>
+
+  <div formArrayName="teamMembers" class="form-array">
+    <label>Team Members:</label>
+    <div *ngFor="let member of teamMembers.controls; let i = index" [formGroupName]="i">
+      <label>
+        Member ID:
+        <input formControlName="memberID" />
+      </label>
+      <label>
+        Member Name:
+        <input formControlName="memberName" />
+      </label>
+    </div>
+    <button type="button" (click)="addMember()" class="add-button">+ Add Member</button>
+  </div>
+
+  <button type="submit">Create Team</button>
+</form>

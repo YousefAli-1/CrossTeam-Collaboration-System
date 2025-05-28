@@ -1,0 +1,42 @@
+<form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+  <label>
+    Project Name:
+    <input formControlName="projectName" />
+  </label>
+
+  <label>
+    Description:
+    <textarea formControlName="projectDescription"></textarea>
+  </label>
+
+  <label>
+    Created By (Manager ID or Name):
+    <input formControlName="createdBy" />
+  </label>
+
+  <div formArrayName="tasks" class="form-array">
+    <label>Tasks:</label>
+    <div *ngFor="let task of tasks.controls; let i = index">
+      <input [formControlName]="i" placeholder="Task Name or ID" />
+    </div>
+    <button type="button" (click)="addTask()" class="add-button">+ Add Task</button>
+  </div>
+
+  <div formArrayName="members" class="form-array">
+    <label>Members:</label>
+    <div *ngFor="let member of members.controls; let i = index">
+      <input [formControlName]="i" placeholder="Member ID or Name" />
+    </div>
+    <button type="button" (click)="addMember()" class="add-button">+ Add Member</button>
+  </div>
+
+  <div formArrayName="teams" class="form-array">
+    <label>Teams:</label>
+    <div *ngFor="let team of teams.controls; let i = index">
+      <input [formControlName]="i" placeholder="Team ID or Name" />
+    </div>
+    <button type="button" (click)="addTeam()" class="add-button">+ Add Team</button>
+  </div>
+
+  <button type="submit">Create Project</button>
+</form>

@@ -1,4 +1,4 @@
-import { Component, computed, inject,input, signal,OnInit } from '@angular/core';
+import { Component, computed, inject,input, signal } from '@angular/core';
 import { MembersService } from '../../members.service';
 import { ApprovalRequestStatus, Task } from '../../../app.model';
 @Component({
@@ -8,18 +8,15 @@ import { ApprovalRequestStatus, Task } from '../../../app.model';
   templateUrl: './members-approval-table.component.html',
   styleUrl: './members-approval-table.component.scss'
 })
-export class MembersApprovalTableComponent implements OnInit {
+export class MembersApprovalTableComponent {
   private membersService=inject(MembersService);
    private allReviewTasks=this.membersService.ReviewTasks;
    filterProjectId= input<number>(0);
    isLoading = signal(true);
    // Computed signal that applies the filter
    reviewTasks = computed(() => {
-    const filter = this.filterProjectId();
-    const tasks = this.allReviewTasks();
-    return filter
-    ? tasks.filter((task) => task.projectID === filter)
-    : tasks;
+    this.allReviewTasks()
+    return this.applyFilter(this.filterProjectId())
   });
  
   isTaskReviewFinished(task: Task) : boolean{

@@ -13,7 +13,12 @@ export type UserPermissions = {
 
 export type UserInProject = UserEssentials & UserPermissions;
 
-export type ProjectManager = User;
+export type User = UserEssentials & { Projects: Project[] };
+
+export type UserPermissions = {
+  canSubmitTask: boolean;
+  canAcceptOrRejectTask: boolean;
+};
 
 export type Project = {
   readonly projectID: number;
@@ -26,6 +31,7 @@ export type Project = {
   createdAt: Date;
   updatedAt: Date;
 };
+
 
 export type Task = {
   projectID: number;
@@ -40,7 +46,10 @@ export type Task = {
   approvalWorkflow: ApprovalRequest[];
   createdAt: Date;
   updatedAt: Date;
+  filePath?:String;
+  fileName?:String;
 };
+
 
 export type Team = {
   readonly teamID: number;

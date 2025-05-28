@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable, take } from 'rxjs';
-import { Invitation, Project, UserPermissions } from '../app.model';
+import { Invitation, Project, UserPermissions,Task } from '../app.model';
 import { BackendAdapterImp } from '../BackendAdapter/backend-adapter-imp';
 
 @Injectable({
@@ -19,15 +19,6 @@ export class TeamMemberHttpService {
     formData.append('file', file);
 
     return this.http.post<void>(`${this.apiUrl}/submit-task?userId=${userId}`, formData);
-  }
-  getAllTasks(userId: number): Observable<Task[]> {
-      return this.http.get<Task[]>(`${this.apiUrl}/getAllTasks?userId=${userId}`);
-  }
-  getUserTasksForSubmission(userId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/submitted-task?userId=${userId}`);
-  }
-  getUserTasksForReview(userId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/review-task?userId=${userId}`);
   }
   downloadSubmission(taskId: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/download-submission`, {

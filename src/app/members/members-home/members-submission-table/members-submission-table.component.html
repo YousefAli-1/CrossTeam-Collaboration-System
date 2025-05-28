@@ -1,7 +1,7 @@
 <div class="team-member-home">
   <div class="tasks-section">
     <h2>Your Tasks</h2>
-    @if(isLoading()){
+    @if(isLoading()) {
     <div class="loading-message">
       <h2>Loading tasks...</h2>
     </div>
@@ -17,14 +17,14 @@
           </tr>
         </thead>
         <tbody>
-          @for (task of submissionTasks(); track task.taskId) {
+          @for (task of submissionTasks(); track task.taskID) {
           <tr>
             <td>{{ task.projectName }}</td>
             <td>{{ task.taskName }}</td>
-            <td>{{ task.description }}</td>
+            <td>{{ task.taskDescription }}</td>
             <td>
-              <input type="file" (change)="onFileSelected($event, task.taskId)" />
-              <button (click)="submitTask(task.taskId)" class="btn btn-primary">Submit for Approval</button>
+              <input type="file" (change)="onFileSelected($event, task.taskID)" />
+              <button (click)="submitTask(task.taskID)" class="btn btn-primary">Submit for Approval</button>
             </td>
           </tr>
           } @empty {

@@ -12,7 +12,8 @@ import {
   UserPermissions,
 } from '../app.model';
 import { TeamMemberHttpService } from './team-member-http.service';
-import { Observable } from 'rxjs'
+
+import { Observable, tap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +23,7 @@ export class MembersService {
   private readonly projectsSignal = signal<Project[]>([]);
   private tasksSignal = signal<Task[]>([]);
   private projectsInvitationsSignal = signal<Invitation[]>([]);
+  private tasks = signal<Task[]>([]);
   private loggedInUserWritableSignal = signal<User | null>(null);
   ReviewTasks = computed<Task[]>(() => {
     return this.tasksSignal().filter(
@@ -44,9 +46,32 @@ export class MembersService {
   projectsInvitations = this.projectsInvitationsSignal.asReadonly();
   projects = this.projectsSignal.asReadonly();
   loggedInUser = this.loggedInUserWritableSignal.asReadonly();
-  private teamHttp = inject(TeamMemberHttpService);
-  constructor(private http: HttpClient) {
 
+  getProjectsInvitations(): void {
+    this.httpService
+      .getProjectsInvitations(this.loggedInUser()?.userID || 0)
+      .subscribe((value) => {
+        this.projectsInvitationsSignal.set(value);
+      });
+  }
+
+  private getTasks() {
+    var tasks: Task[] = [];
+
+    this.projectsSignal().forEach((project) => {
+      tasks = tasks.concat(project.tasks);
+    });
+
+    this.tasksSignal.set(tasks);
+  }
+
+  private getProjects() {
+    this.httpService
+      .getProjects(this.loggedInUser()?.userID || 0)
+      .subscribe((responseProjects) => {
+        this.projectsSignal.set(responseProjects);
+        this.getTasks();
+      });
   }
 
   getProjectsInvitations(): void {
@@ -118,6 +143,17 @@ export class MembersService {
     );
   }
 
+
+  private getAllDependenciesBeforeLoggedInReviewerOfTask(task: Task) {
+    return task.approvalWorkflow.slice(
+      0,
+      task.approvalWorkflow.findIndex((request) =>
+        request.assigned.teamMembers.some(
+          (teamMember) => teamMember.userID === this.loggedInUser()?.userID
+        )
+      )
+    );
+  }
   getPendingApprovalRequest(task: Task): ApprovalRequest | undefined {
     return task.approvalWorkflow.find(
       (request) => request.status !== 'Accepted'
@@ -206,7 +242,6 @@ export class MembersService {
             if (taskElement.taskID !== task.taskID) {
               return taskElement;
             }
-
             return this.updateApprovalRequestStatus(task, 'Rejected');
           })
         );
@@ -223,54 +258,56 @@ export class MembersService {
       console.warn('Task not found');
       return;
     }
-    const isAssigned = this.isUserAssignedInTask(user, task);
-    if (!isAssigned) {
-      console.warn('User is not assigned to this task');
-      return;
-    }
-    task.isSubmitted = true;
-    task.submittedBy = user as UserEssentials;
-    task.updatedAt = new Date();
+  
+    return this.httpService.submitTask(taskID, user.userID, file).pipe(
+      tap(() => {
+        const task = this.tasks().find((t) => t.taskID === taskID);
+        if (task) {
+          task.isSubmitted = true;
+          task.submittedBy = user;
+          task.updatedAt = new Date();
+          this.tasksSignal.set([...this.tasksSignal()]);
+        }
+      })
+    );
+  }
 
-    console.log(`Task ${taskID} submitted by ${user.name}`);
+  getTasksSignal() {
+    return this.tasksSignal;
   }
 
   logout(): void {
     this.loggedInUserWritableSignal.set(null);
   }
   downloadSubmission(taskID: number): void {
-    const userId = this.loggedInUser()?.userID || 0;
+    // Get tasks directly from computed
+    const tasks = this.ReviewTasks();
+    const task = tasks.find((t) => t.taskID === taskID);
   
-    // First fetch tasks asynchronously
-    this.fetchTasksForRev(userId).subscribe(tasks => {
-      const task = tasks.find(t => t.taskId === taskID);
+    if (!task) {
+      console.error('Task not found:', taskID);
+      return;
+    }
   
-      if (!task) {
-        console.error('Task not found');
-        return;
+    console.log('Task:', task);
+    console.log('File path:', task.filePath);
+  
+    this.httpService.downloadSubmission(taskID).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+  
+        const filename = task.fileName?.split('/').pop() || 'submission.zip';
+        a.download = filename;
+  
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Download failed', err);
+        alert('Failed to download file.');
       }
-  
-      console.log('Task:', task);
-      console.log('File path:', task.filePath);
-  
-      this.teamHttp.downloadSubmission(taskID).subscribe({
-        next: (blob) => {
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-  
-          // Optional: Extract filename from filePath if needed
-          const filename = task.fileName?.split('/').pop() || 'submission.zip';
-          a.download = filename;
-  
-          a.click();
-          window.URL.revokeObjectURL(url);
-        },
-        error: (err) => {
-          console.error('Download failed', err);
-          alert('Failed to download file.');
-        }
-      });
     });
   }
   

@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-project-form',
-  imports:[ReactiveFormsModule] ,
+  imports:[ReactiveFormsModule, NgFor] ,
   templateUrl: './project-manager-projects.component.html',
   styleUrls: ['./project-manager-projects.component.scss'] 
 

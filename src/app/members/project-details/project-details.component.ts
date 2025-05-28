@@ -15,6 +15,8 @@ export class ProjectDetailsComponent implements OnInit{
   private membersService = inject(MembersService);
   private destroyRef=inject(DestroyRef);
 
+  activeTab: 'submission' | 'approval' | undefined;
+
   currentProjectId= signal<number>(-1);
   project = computed<Project | null>(()=>this.membersService.getProjectByProjectId(this.currentProjectId()));
   currentUser = signal<User | null>(this.membersService.loggedInUser()); 
@@ -26,8 +28,15 @@ export class ProjectDetailsComponent implements OnInit{
       this.destroyRef.onDestroy(()=>{
         subscribtion.unsubscribe();
       });
-  }
 
+    if(this.hasSubmissionAuthority()){
+      this.activeTab='submission';
+    }
+    else if (this.hasApprovalAuthority()){
+      this.activeTab='approval'
+    }
+  }
+  
   hasSubmissionAuthority() : boolean{
     return this.project()?.members.find((teamMember)=>teamMember.userID===this.currentUser()?.userID)?.canSubmitTask || false;
   }

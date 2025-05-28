@@ -1,4 +1,4 @@
-import { Component, computed, inject,input, signal } from '@angular/core';
+import { Component, computed, inject,input, signal,OnInit } from '@angular/core';
 import { MembersService } from '../../members.service';
 import { ApprovalRequestStatus, Task } from '../../../app.model';
 @Component({
@@ -8,26 +8,34 @@ import { ApprovalRequestStatus, Task } from '../../../app.model';
   templateUrl: './members-approval-table.component.html',
   styleUrl: './members-approval-table.component.scss'
 })
-export class MembersApprovalTableComponent {
+export class MembersApprovalTableComponent implements OnInit {
   private membersService=inject(MembersService);
    private allReviewTasks=signal(this.membersService.getReviewTasksForLoggedInUser());
-   filterProjectName= input<String>('');
- 
-   reviewTasks=computed<Task[]>(()=>{
-    this.allReviewTasks()
-    return this.applyFilter(this.filterProjectName())
+   filterProjectId= input<number>(0);
+   isLoading = signal(true);
+   // Computed signal that applies the filter
+   reviewTasks = computed(() => {
+    const filter = this.filterProjectId();
+    const tasks = this.allReviewTasks();
+    return filter
+    ? tasks.filter((task) => task.projectID === filter)
+    : tasks;
   });
- 
- 
-   private applyFilter(filterProjectName: String) {
-     if (filterProjectName!=='') {
-       return this.allReviewTasks().filter(task =>
-         task.project.projectName === filterProjectName
-       );
-     } else {
-       return this.allReviewTasks();
-     }
-   }
+  ngOnInit(): void {
+    const user = this.membersService.loggedInUser();
+    if (user) {
+      this.membersService.fetchTasksForRev(user.userID).subscribe({
+        next: (tasks) => {
+          this.allReviewTasks.set(tasks); 
+          this.isLoading.set(false);
+        },
+        error: (error) => {
+          console.error('Failed to fetch tasks:', error);
+          this.isLoading.set(false);
+        }
+      });
+    }
+  }
 
    DoesNeedAction(task: Task): boolean{
     return this.membersService.getPendingApprovalRequest(task)?.status==='Pending';
@@ -53,5 +61,8 @@ export class MembersApprovalTableComponent {
       this.membersService.rejectTask(taskId);
       this.allReviewTasks.set(this.membersService.getReviewTasksForLoggedInUser());
     };
+  }
+  downloadSub(taskID:number){
+   this.membersService.downloadSubmission(taskID);
   }
 }

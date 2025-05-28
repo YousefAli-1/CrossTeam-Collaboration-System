@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { MembersService } from '../../members.service';
 import { Task } from '../../../app.model';
 @Component({
@@ -8,32 +8,71 @@ import { Task } from '../../../app.model';
   templateUrl: './members-submission-table.component.html',
   styleUrl: './members-submission-table.component.scss',
 })
-export class MembersSubmissionTableComponent {
+export class MembersSubmissionTableComponent implements OnInit {
   private membersService = inject(MembersService);
-  private allSubmissionTasks = signal(
-    this.membersService.getSubmissionTasksForLoggedInUser()
-  );
+  private allSubmissionTasks = signal<Task[]>([]);
 
-  filterProjectName = input<String>('');
-
-  submissionTasks = computed<Task[]>(() => {
-    this.allSubmissionTasks();
-    return this.applyFilter(this.filterProjectName());
+  filterProjectId = input<number>(0);
+  isLoading = signal(true);
+  // Computed signal that applies the filter
+  submissionTasks = computed(() => {
+    const filter = this.filterProjectId();
+    const tasks = this.allSubmissionTasks();
+    return filter
+    ? tasks.filter((task) => task.projectID === filter)
+    : tasks;
   });
-
-  private applyFilter(filterProjectName: String) {
-    if (filterProjectName !== '') {
-      return this.allSubmissionTasks().filter(
-        (task) => task.project.projectName === filterProjectName
-      );
-    } else {
-      return this.allSubmissionTasks();
+  ngOnInit(): void {
+    const user = this.membersService.loggedInUser();
+    if (user) {
+      this.membersService.fetchTasksForSub(user.userID).subscribe({
+        next: (tasks) => {
+          this.allSubmissionTasks.set(tasks); 
+          this.isLoading.set(false);
+        },
+        error: (error) => {
+          console.error('Failed to fetch tasks:', error);
+          this.isLoading.set(false);
+        }
+      });
     }
   }
-  submitTask(taskID: any) {
-    this.membersService.submitTask(taskID);
-    this.allSubmissionTasks.set(
-      this.membersService.getSubmissionTasksForLoggedInUser()
-    );
+  
+  selectedFiles: { [taskId: number]: File } = {};
+
+onFileSelected(event: Event, taskId: number): void {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    this.selectedFiles[taskId] = input.files[0];
   }
+}
+submitTask(taskID: number): void {
+  const file = this.selectedFiles[taskID];
+  if (!file) {
+    console.warn('No file selected for task:', taskID);
+    return;
+  }
+
+  this.membersService.submitTask(taskID, file).subscribe({
+    next: () => {
+      // Refresh task list only after successful submission
+      const user = this.membersService.loggedInUser();
+      if (user) {
+        this.membersService.fetchTasksForSub(user.userID).subscribe({
+          next: (tasks) => {
+            this.allSubmissionTasks.set(tasks);
+            delete this.selectedFiles[taskID]; // Clear file input (optional)
+          },
+          error: (error) => {
+            console.error('Failed to refresh tasks:', error);
+          }
+        });
+      }
+    },
+    error: (error) => {
+      console.error('Failed to submit task:', error);
+    }
+  });
+}
+
 }

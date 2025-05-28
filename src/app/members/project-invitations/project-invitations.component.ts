@@ -11,6 +11,6 @@ import { InvitationsComponent } from './invitations/invitations.component';
 export class ProjectInvitationsComponent {
   private membersService = inject(MembersService);
 
-  userInvitations = signal<Invitation[]>(this.membersService.getInvitationsForUser(this.membersService.loggedInUser()?.userID || -1));
+  userInvitations = this.membersService.projectsInvitations;
 }
 

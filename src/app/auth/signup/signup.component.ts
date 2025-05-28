@@ -6,8 +6,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { NavbarComponent } from '../../navbar/navbar.component';
 import { dummyTeamMembers } from '../../members/dummy-members';
@@ -25,6 +23,7 @@ function passwordMatchValidator(control: AbstractControl) {
     return null;
   }
 }
+
 @Component({
   standalone: true,
   imports: [
@@ -34,10 +33,9 @@ function passwordMatchValidator(control: AbstractControl) {
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
     NavbarComponent,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RouterLink
   ],
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss']
@@ -55,9 +53,6 @@ export class SignupComponent {
       Validators.email,
       Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)
     ]),
-    dob: new FormControl<Date | null>(null, [
-      Validators.required
-    ]),
     password: new FormControl('', [
       Validators.required,
       Validators.minLength(8),
@@ -68,17 +63,18 @@ export class SignupComponent {
     ]),
     userType: new FormControl<'member' | 'manager'>('member', Validators.required)
   }, { validators: passwordMatchValidator });
+
   hidePassword = true;
   hideConfirmPassword = true;
-  minDate = new Date(1900, 0, 1);
-  maxDate = new Date(new Date().setFullYear(new Date().getFullYear() - 16));
   userType: 'member' | 'manager' = 'member';
+
   get name() { return this.signupForm.get('name'); }
   get email() { return this.signupForm.get('email'); }
   get password() { return this.signupForm.get('password'); }
   get confirmPassword() { return this.signupForm.get('confirmPassword'); }
-  get dob() { return this.signupForm.get('dob'); }
-  private router=inject(Router);
+
+  private router = inject(Router);
+
   onSubmit() {
     if (this.signupForm.valid) {
       const formValue = this.signupForm.value;
@@ -103,9 +99,9 @@ export class SignupComponent {
       this.router.navigate(['/login']);
     }
   }
+
   toggleUserType() {
     this.userType = this.userType === 'member' ? 'manager' : 'member';
     this.signupForm.patchValue({ userType: this.userType });
   }
-
 }

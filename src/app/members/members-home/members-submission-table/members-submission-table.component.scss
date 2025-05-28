@@ -182,3 +182,17 @@
     left: 50%;
     transform: translate(-50%, 2em);
 }
+.loading-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2em;
+    color: #666;
+    font-size: 1.1em;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
+    margin: 2em 0;
+    font-weight: bolder;
+}

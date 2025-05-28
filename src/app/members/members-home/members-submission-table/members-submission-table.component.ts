@@ -8,15 +8,19 @@ import { Task } from '../../../app.model';
   templateUrl: './members-submission-table.component.html',
   styleUrl: './members-submission-table.component.scss',
 })
-export class MembersSubmissionTableComponent {
+export class MembersSubmissionTableComponent implements OnInit {
   private membersService = inject(MembersService);
   private allSubmissionTasks = this.membersService.submissionTasks;
 
   filterProjectId = input<number>(0);
-
-  submissionTasks = computed<Task[]>(() => {
-    this.allSubmissionTasks();
-    return this.applyFilter(this.filterProjectId());
+  isLoading = signal(true);
+  // Computed signal that applies the filter
+  submissionTasks = computed(() => {
+    const filter = this.filterProjectId();
+    const tasks = this.allSubmissionTasks();
+    return filter
+    ? tasks.filter((task) => task.projectID === filter)
+    : tasks;
   });
 
   private applyFilter(filterProjectId: number) {
@@ -31,4 +35,27 @@ export class MembersSubmissionTableComponent {
   submitTask(taskID: any) {
     this.membersService.submitTask(taskID);
   }
+
+  this.membersService.submitTask(taskID, file).subscribe({
+    next: () => {
+      // Refresh task list only after successful submission
+      const user = this.membersService.loggedInUser();
+      if (user) {
+        this.membersService.fetchTasksForSub(user.userID).subscribe({
+          next: (tasks) => {
+            this.allSubmissionTasks.set(tasks);
+            delete this.selectedFiles[taskID]; // Clear file input (optional)
+          },
+          error: (error) => {
+            console.error('Failed to refresh tasks:', error);
+          }
+        });
+      }
+    },
+    error: (error) => {
+      console.error('Failed to submit task:', error);
+    }
+  });
+}
+
 }

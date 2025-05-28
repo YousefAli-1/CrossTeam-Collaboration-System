@@ -12,7 +12,7 @@ import {
   UserPermissions,
 } from '../app.model';
 import { TeamMemberHttpService } from './team-member-http.service';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs'
 
 @Injectable({
   providedIn: 'root',
@@ -44,6 +44,10 @@ export class MembersService {
   projectsInvitations = this.projectsInvitationsSignal.asReadonly();
   projects = this.projectsSignal.asReadonly();
   loggedInUser = this.loggedInUserWritableSignal.asReadonly();
+  private teamHttp = inject(TeamMemberHttpService);
+  constructor(private http: HttpClient) {
+
+  }
 
   getProjectsInvitations(): void {
     this.httpService
@@ -170,7 +174,6 @@ export class MembersService {
       }),
     };
   }
-
   acceptTask(task: Task) {
     this.httpService
       .acceptApprovalRequest(
@@ -210,7 +213,7 @@ export class MembersService {
       });
   }
 
-  submitTask(taskID: number): void {
+  submitTask(taskID: number, file: File): Observable<any> {
     const user = this.loggedInUser();
     if (!user) return;
 
@@ -235,4 +238,40 @@ export class MembersService {
   logout(): void {
     this.loggedInUserWritableSignal.set(null);
   }
+  downloadSubmission(taskID: number): void {
+    const userId = this.loggedInUser()?.userID || 0;
+  
+    // First fetch tasks asynchronously
+    this.fetchTasksForRev(userId).subscribe(tasks => {
+      const task = tasks.find(t => t.taskId === taskID);
+  
+      if (!task) {
+        console.error('Task not found');
+        return;
+      }
+  
+      console.log('Task:', task);
+      console.log('File path:', task.filePath);
+  
+      this.teamHttp.downloadSubmission(taskID).subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+  
+          // Optional: Extract filename from filePath if needed
+          const filename = task.fileName?.split('/').pop() || 'submission.zip';
+          a.download = filename;
+  
+          a.click();
+          window.URL.revokeObjectURL(url);
+        },
+        error: (err) => {
+          console.error('Download failed', err);
+          alert('Failed to download file.');
+        }
+      });
+    });
+  }
+  
 }

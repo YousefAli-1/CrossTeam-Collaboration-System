@@ -12,7 +12,6 @@ import { LandingPageComponent } from './landing-page/landing-page.component';
 import { inject } from '@angular/core';
 import { MembersService } from './members/members.service';
 import { AboutusComponent } from './aboutus/aboutus.component';
-import { ProjectManagerService } from './project-manager/project-manager.service';
 
 export const membersAuthGuard: CanActivateFn = () => {
     const service = inject(MembersService);
@@ -21,18 +20,9 @@ export const membersAuthGuard: CanActivateFn = () => {
     if (service.isUserLoggedIn()) {
       return true;
     }
-
     
     return router.navigateByUrl('/unauthorized');
   };
-  export const projectManagerAuth: CanActivateFn= ()=>{
-    const service = inject(ProjectManagerService);
-    const router = inject(Router);
-    if (service.isUserLoggedIn()){
-        return true;
-    }
-    return router.navigateByUrl('/unauthorized');
-  }
 export const routes: Routes = [
     {
         path: 'teamMember',
@@ -43,7 +33,6 @@ export const routes: Routes = [
     {
         path:'projectManager',
         component: ProjectManagerComponent,
-        canActivate:[projectManagerAuth],
         children:ProjectManagerRoutes},
     { 
         path: 'login', 

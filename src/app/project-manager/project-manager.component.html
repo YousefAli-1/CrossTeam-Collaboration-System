@@ -1,4 +1,4 @@
-<!-- <mat-drawer-container hasBackdrop="false">
+<mat-drawer-container hasBackdrop="false">
     <mat-drawer class="drawer" mode="side" position="start" [opened]="isOpened">
       <h3>
           Tabs
@@ -48,50 +48,6 @@
       </button>
       <router-outlet />
     </mat-drawer-content>
-    <div class="logout-section">
-      <button mat-button class="horizontal-link logout-btn" (click)="logout()">
-        <span class="material-icons icon">logout</span>
-        <label>Logout</label>
-      </button>
-    </div>
-    <router-outlet />
   </mat-drawer-container>
   
-   -->
-  <mat-drawer-container  hasBackdrop="false">
-  <mat-drawer style="width: 22%;" class="drawer" mode="side" position="start" [opened]="isOpened">
-    <a routerLink="/projectManager/homepage" routerLinkActive="active" mat-button class="horizontal-link">
-      <span class="material-icons icon">home</span>
-      <label>Homepage</label>
-    </a>
-
-    <a routerLink="/projectManager/projects" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active" mat-button class="horizontal-link">
-      <span class="material-icons icon">workspaces</span>
-      <label>Projects</label>
-    </a>
-    <a routerLink="/projectManager/tasks" routerLinkActive="active" mat-button class="horizontal-link">
-      <span class="material-icons icon">workspaces</span>
-      <label>Tasks</label>
-    </a>
-    <a routerLink="/projectManager/teams" routerLinkActive="active" mat-button class="horizontal-link">
-      <span class="material-icons icon">workspaces</span>
-      <label>Teams</label>
-    </a>
-    
-    
-    <div class="logout-section">
-      <button mat-button class="horizontal-link logout-btn" (click)="logout()">
-        <span class="material-icons icon">logout</span>
-        <label>Logout</label>
-      </button>
-    </div>
-  </mat-drawer>
-  <mat-drawer-content style="overflow-y: hidden;">
-    <button mat-icon-button (click)="toggleDrawer()" [class]="{'isOpened': isOpened,'isClosed': !isOpened}">
-        <span class="material-icons">
-            double_arrow
-        </span>    
-    </button>
-    <router-outlet />
-  </mat-drawer-content>
-</mat-drawer-container>
+  

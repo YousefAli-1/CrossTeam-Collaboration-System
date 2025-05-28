@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { MembersService } from '../../members.service';
 import { Task } from '../../../app.model';
 @Component({
@@ -10,7 +10,7 @@ import { Task } from '../../../app.model';
 })
 export class MembersSubmissionTableComponent implements OnInit {
   private membersService = inject(MembersService);
-  private allSubmissionTasks = signal<Task[]>([]);
+  private allSubmissionTasks = this.membersService.submissionTasks;
 
   filterProjectId = input<number>(0);
   isLoading = signal(true);
@@ -22,35 +22,18 @@ export class MembersSubmissionTableComponent implements OnInit {
     ? tasks.filter((task) => task.projectID === filter)
     : tasks;
   });
-  ngOnInit(): void {
-    const user = this.membersService.loggedInUser();
-    if (user) {
-      this.membersService.fetchTasksForSub(user.userID).subscribe({
-        next: (tasks) => {
-          this.allSubmissionTasks.set(tasks); 
-          this.isLoading.set(false);
-        },
-        error: (error) => {
-          console.error('Failed to fetch tasks:', error);
-          this.isLoading.set(false);
-        }
-      });
+
+  private applyFilter(filterProjectId: number) {
+    if (filterProjectId !== 0) {
+      return this.allSubmissionTasks().filter(
+        (task) => task.projectID === filterProjectId
+      );
+    } else {
+      return this.allSubmissionTasks();
     }
   }
-  
-  selectedFiles: { [taskId: number]: File } = {};
-
-onFileSelected(event: Event, taskId: number): void {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    this.selectedFiles[taskId] = input.files[0];
-  }
-}
-submitTask(taskID: number): void {
-  const file = this.selectedFiles[taskID];
-  if (!file) {
-    console.warn('No file selected for task:', taskID);
-    return;
+  submitTask(taskID: any) {
+    this.membersService.submitTask(taskID);
   }
 
   this.membersService.submitTask(taskID, file).subscribe({

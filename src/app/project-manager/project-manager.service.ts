@@ -2,11 +2,11 @@ import { Injectable, signal } from '@angular/core';
 import { dummyTeamMembers, dummyProjects, dummyTasks } from '../members/dummy-members';
 import { dummyProjectManager } from '../members/dummy-members';
 import {
-  type TeamMember,
   type User,
   type Project,
   type Task,
   ApprovalRequest,
+  UserEssentials,
 } from '../app.model';
 
 @Injectable({
@@ -34,7 +34,7 @@ export class ProjectManagerService {
   logIn(user: User){
     this.loggedInUserWritableSignal.set(user);
   }
-  getMembersByProjectId(id: number): TeamMember[] {
+  getMembersByProjectId(id: number): UserEssentials[] {
     return (
       this.projects.find((project) => project.projectID === id)?.members || []
     );

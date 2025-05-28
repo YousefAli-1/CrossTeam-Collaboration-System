@@ -59,7 +59,7 @@ export class LoginComponent {
       );
       if (user) {
         console.log('Login successful:', user);
-        this.memberservice.logIn(user);
+        this.memberservice.logIn({...user, Projects: []});
         this.router.navigate(['/teamMember']);
       }else if(manager){
         console.log('Login successful:', manager);

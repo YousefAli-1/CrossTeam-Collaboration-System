@@ -1,4 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
+
 import {
   type User,
   type Project,
@@ -19,11 +20,13 @@ import { Observable, tap, throwError } from 'rxjs';
   providedIn: 'root',
 })
 export class MembersService {
+
   private httpService = inject(TeamMemberHttpService);
   private readonly projectsSignal = signal<Project[]>([]);
   private tasksSignal = signal<Task[]>([]);
   private projectsInvitationsSignal = signal<Invitation[]>([]);
   private tasks = signal<Task[]>([]);
+
   private loggedInUserWritableSignal = signal<User | null>(null);
   ReviewTasks = computed<Task[]>(() => {
     return this.tasksSignal().filter(
@@ -46,33 +49,6 @@ export class MembersService {
   projectsInvitations = this.projectsInvitationsSignal.asReadonly();
   projects = this.projectsSignal.asReadonly();
   loggedInUser = this.loggedInUserWritableSignal.asReadonly();
-
-  getProjectsInvitations(): void {
-    this.httpService
-      .getProjectsInvitations(this.loggedInUser()?.userID || 0)
-      .subscribe((value) => {
-        this.projectsInvitationsSignal.set(value);
-      });
-  }
-
-  private getTasks() {
-    var tasks: Task[] = [];
-
-    this.projectsSignal().forEach((project) => {
-      tasks = tasks.concat(project.tasks);
-    });
-
-    this.tasksSignal.set(tasks);
-  }
-
-  private getProjects() {
-    this.httpService
-      .getProjects(this.loggedInUser()?.userID || 0)
-      .subscribe((responseProjects) => {
-        this.projectsSignal.set(responseProjects);
-        this.getTasks();
-      });
-  }
 
   getProjectsInvitations(): void {
     this.httpService
@@ -144,16 +120,6 @@ export class MembersService {
   }
 
 
-  private getAllDependenciesBeforeLoggedInReviewerOfTask(task: Task) {
-    return task.approvalWorkflow.slice(
-      0,
-      task.approvalWorkflow.findIndex((request) =>
-        request.assigned.teamMembers.some(
-          (teamMember) => teamMember.userID === this.loggedInUser()?.userID
-        )
-      )
-    );
-  }
   getPendingApprovalRequest(task: Task): ApprovalRequest | undefined {
     return task.approvalWorkflow.find(
       (request) => request.status !== 'Accepted'
@@ -210,6 +176,7 @@ export class MembersService {
       }),
     };
   }
+  
   acceptTask(task: Task) {
     this.httpService
       .acceptApprovalRequest(
@@ -250,13 +217,8 @@ export class MembersService {
 
   submitTask(taskID: number, file: File): Observable<any> {
     const user = this.loggedInUser();
-    if (!user) return;
-
-    const task = this.tasksSignal().find((t) => t.taskID === taskID);
-
-    if (!task) {
-      console.warn('Task not found');
-      return;
+    if (!user || !file) {
+      return throwError(() => new Error('Missing file or user'));
     }
   
     return this.httpService.submitTask(taskID, user.userID, file).pipe(

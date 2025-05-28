@@ -13,7 +13,12 @@ export type UserPermissions = {
 
 export type UserInProject = UserEssentials & UserPermissions;
 
-export type ProjectManager = User;
+export type User = UserEssentials & { Projects: Project[] };
+
+export type UserPermissions = {
+  canSubmitTask: boolean;
+  canAcceptOrRejectTask: boolean;
+};
 
 export type Project = {
   readonly projectID: number;

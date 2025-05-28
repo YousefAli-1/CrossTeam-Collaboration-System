@@ -12,13 +12,11 @@ import { Task } from '../../../app.model';
 export class MembersSubmissionTableComponent {
   private membersService = inject(MembersService);
   private allSubmissionTasks = this.membersService.submissionTasks;
-  
   filterProjectId = input<number>(0);
   isLoading = signal(false);
   
   // Computed signal that applies the filter
   submissionTasks = computed(() => this.applyFilter(this.filterProjectId()));
-  
   private applyFilter(filterProjectId: number) {
     if (filterProjectId !== 0) {
       return this.allSubmissionTasks().filter(

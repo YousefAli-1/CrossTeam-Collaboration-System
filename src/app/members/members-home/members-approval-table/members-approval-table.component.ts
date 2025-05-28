@@ -33,7 +33,6 @@ export class MembersApprovalTableComponent {
      }
    }
 
-
    private isLoggedInUserEnrolledInCurrentReviewTeam(task: Task): boolean{
     return this.membersService.getPendingApprovalRequest(task)?.assigned.teamMembers.find((member)=>member.userID===this.membersService.loggedInUser()?.userID) !== undefined
    }

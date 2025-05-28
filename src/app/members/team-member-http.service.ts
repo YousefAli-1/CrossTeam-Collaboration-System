@@ -4,7 +4,6 @@ import { map, Observable, take } from 'rxjs';
 import { Invitation, Project, UserPermissions,Task } from '../app.model';
 import { BackendAdapterImp } from '../BackendAdapter/backend-adapter-imp';
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -126,5 +125,4 @@ export class TeamMemberHttpService {
       })
       .pipe(take(1));
   }
-
 }

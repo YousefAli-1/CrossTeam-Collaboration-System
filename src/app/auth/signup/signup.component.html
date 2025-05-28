@@ -62,15 +62,6 @@
             Passwords don't match
           </mat-error>
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Date of Birth</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="dob"
-                [min]="minDate" [max]="maxDate">
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-          <mat-error *ngIf="dob?.hasError('required')">Date of birth is required</mat-error>
-          <mat-hint>Must be at least 16 years old</mat-hint>
-        </mat-form-field>
         <div class="user-type-toggle">
           <span [class.active]="userType === 'member'">Team Member</span>
           <button mat-button-toggle 
@@ -86,7 +77,7 @@
         </div>
         <a class="login" routerLink="/login">
           Already have an account?
-          </a>
+        </a>
         <button mat-raised-button class="login-button" type="submit"
                 [disabled]="!signupForm.valid">
           SIGN UP

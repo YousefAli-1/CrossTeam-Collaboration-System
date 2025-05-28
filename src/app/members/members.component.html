@@ -42,3 +42,20 @@
     <router-outlet />
   </mat-drawer-content>
 </mat-drawer-container>
+<!-- Popups -->
+  <div *ngIf="membersService.showPopup()">
+    <div class="popup-overlay">
+      <div class="popup">
+        <p>{{membersService.message()}}</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="membersService.showPopup2()">
+    <div class="popup-overlay">
+      <div class="popup2">
+        <p>{{membersService.message()}}</p>
+      </div>
+    </div>
+  </div>
+

@@ -272,5 +272,21 @@ export class MembersService {
       }
     });
   }
-  
+   private _showPopup = signal(false);
+  private _showPopup2 = signal(false);
+  private _message = signal('');
+
+  showPopup = () => this._showPopup();
+  showPopup2 = () => this._showPopup2();
+  message = () => this._message();
+  triggerError(message: string) {
+    this._message.set(message);
+    this._showPopup2.set(true);
+    setTimeout(() => this._showPopup2.set(false), 1000); 
+  }
+  trigger(message: string) {
+    this._message.set(message);
+    this._showPopup.set(true);
+    setTimeout(() => this._showPopup.set(false), 1000); 
+  }
 }

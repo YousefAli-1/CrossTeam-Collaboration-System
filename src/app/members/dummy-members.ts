@@ -125,6 +125,7 @@ export const dummyProjects: Project[] = [
 // Dummy data for Tasks
 export const dummyTasks: Task[] = [
     {
+
         projectID: dummyProjects[0].projectID,
         projectName: dummyProjects[0].projectName,
         taskID: 201,

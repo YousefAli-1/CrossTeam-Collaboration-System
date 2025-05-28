@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable, take } from 'rxjs';
-import { Invitation, Project, UserPermissions } from '../app.model';
+import { Invitation, Project, UserPermissions,Task } from '../app.model';
 import { BackendAdapterImp } from '../BackendAdapter/backend-adapter-imp';
 
 

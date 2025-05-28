@@ -14,7 +14,7 @@ import {
 } from '../app.model';
 import { TeamMemberHttpService } from './team-member-http.service';
 
-import { Observable } from 'rxjs';
+import { Observable, tap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -25,9 +25,7 @@ export class MembersService {
   private readonly projectsSignal = signal<Project[]>([]);
   private tasksSignal = signal<Task[]>([]);
   private projectsInvitationsSignal = signal<Invitation[]>([]);
-  private readonly teamMembers = dummyTeamMembers;
-  private readonly projects = dummyProjects;
-  private tasks = signal<Task[]>(dummyTasks);
+  private tasks = signal<Task[]>([]);
 
   private loggedInUserWritableSignal = signal<User | null>(null);
   ReviewTasks = computed<Task[]>(() => {
@@ -51,9 +49,6 @@ export class MembersService {
   projectsInvitations = this.projectsInvitationsSignal.asReadonly();
   projects = this.projectsSignal.asReadonly();
   loggedInUser = this.loggedInUserWritableSignal.asReadonly();
-  constructor(private http: HttpClient) {
-
-  }
 
   getProjectsInvitations(): void {
     this.httpService
@@ -120,21 +115,10 @@ export class MembersService {
     request: ApprovalRequest
   ): boolean {
     return request.assigned.teamMembers.some(
-
       (teamMember) => teamMember.userID === user?.userID
-      (teamMember) =>
-        teamMember.userID === user?.userID && teamMember.canAcceptOrRejectTask
     );
   }
 
-  private getAllReviewerTasks(user: User | null): Task[] {
-    return this.tasks().filter(
-      (task) =>
-        task.approvalWorkflow.filter((request) =>
-          this.isUserAssignedReviewerInApprovalWorkflow(user, request)
-        ).length > 0 && task.isSubmitted && this.hasAcceptedInvite(user, this.projects.find((project) => project.projectID === task.project.projectID))
-    );
-  }
 
   private getAllDependenciesBeforeLoggedInReviewerOfTask(task: Task) {
     return task.approvalWorkflow.slice(
@@ -144,16 +128,6 @@ export class MembersService {
           (teamMember) => teamMember.userID === this.loggedInUser()?.userID
         )
       )
-    );
-  }
-
-  private hasAcceptedInvite(user: User | null, project: Project | undefined) {
-    return project?.members.find((member) => member.userID === user?.userID)?.isInviteAccepted || false;
-  }
-
-  private isDependenciesDone(task: Task) {
-    return this.getAllDependenciesBeforeLoggedInReviewerOfTask(task).every(
-      (request) => request.status === 'Accepted'
     );
   }
 
@@ -258,33 +232,33 @@ export class MembersService {
       return throwError(() => new Error('Missing file or user'));
     }
   
-    return this.teamHttp.submitTask(taskID, user.userID, file).pipe(
+    return this.httpService.submitTask(taskID, user.userID, file).pipe(
       tap(() => {
-        const task = this.tasks().find((t) => t.taskId === taskID);
+        const task = this.tasks().find((t) => t.taskID === taskID);
         if (task) {
           task.isSubmitted = true;
-          task.submittedBy = user as TeamMember;
+          task.submittedBy = user;
           task.updatedAt = new Date();
-          this.projectsChanged.next();
+          this.tasksSignal.set([...this.tasksSignal()]);
         }
       })
     );
   }
   
   fetchTasksForUser(userID: number) {
-    this.teamHttp.getAllTasks(userID).subscribe({
+    this.httpService.getAllTasks(userID).subscribe({
       next: (tasks) => this.tasksSignal.set(tasks),
       error: (err) => console.error('Failed to fetch tasks:', err),
     });
   }
 
   fetchTasksForSub(userID: number) : Observable<Task[]>{
-    return this.teamHttp.getUserTasksForSubmission(userID);
+    return this.httpService.getUserTasksForSubmission(userID);
   }
   fetchTasksForRev(userID: number) : Observable<Task[]>{
     const user=this.loggedInUser;
     
-    return this.teamHttp.getUserTasksForReview(userID);
+    return this.httpService.getUserTasksForReview(userID);
   }
   getTasksSignal() {
     return this.tasksSignal;
@@ -294,38 +268,34 @@ export class MembersService {
     this.loggedInUserWritableSignal.set(null);
   }
   downloadSubmission(taskID: number): void {
-    const userId = this.loggedInUser()?.userID || 0;
+    // Get tasks directly from computed
+    const tasks = this.ReviewTasks();
+    const task = tasks.find((t) => t.taskID === taskID);
   
-    // First fetch tasks asynchronously
-    this.fetchTasksForRev(userId).subscribe(tasks => {
-      const task = tasks.find(t => t.taskId === taskID);
+    if (!task) {
+      console.error('Task not found:', taskID);
+      return;
+    }
   
-      if (!task) {
-        console.error('Task not found');
-        return;
+    console.log('Task:', task);
+    console.log('File path:', task.filePath);
+  
+    this.httpService.downloadSubmission(taskID).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+  
+        const filename = task.fileName?.split('/').pop() || 'submission.zip';
+        a.download = filename;
+  
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Download failed', err);
+        alert('Failed to download file.');
       }
-  
-      console.log('Task:', task);
-      console.log('File path:', task.filePath);
-  
-      this.teamHttp.downloadSubmission(taskID).subscribe({
-        next: (blob) => {
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-  
-          // Optional: Extract filename from filePath if needed
-          const filename = task.fileName?.split('/').pop() || 'submission.zip';
-          a.download = filename;
-  
-          a.click();
-          window.URL.revokeObjectURL(url);
-        },
-        error: (err) => {
-          console.error('Download failed', err);
-          alert('Failed to download file.');
-        }
-      });
     });
   }
   

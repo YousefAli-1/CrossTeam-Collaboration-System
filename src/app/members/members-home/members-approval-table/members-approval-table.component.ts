@@ -15,11 +15,8 @@ export class MembersApprovalTableComponent {
    isLoading = signal(true);
    // Computed signal that applies the filter
    reviewTasks = computed(() => {
-    const filter = this.filterProjectId();
-    const tasks = this.allReviewTasks();
-    return filter
-    ? tasks.filter((task) => task.projectID === filter)
-    : tasks;
+    this.allReviewTasks()
+    return this.applyFilter(this.filterProjectId())
   });
  
   isTaskReviewFinished(task: Task) : boolean{
@@ -28,12 +25,10 @@ export class MembersApprovalTableComponent {
 
   private applyFilter(filterProjectId: number) {
      if (filterProjectId!==0) {
-        this.isLoading.set(false);
        return this.allReviewTasks().filter(task =>
          task.projectID === filterProjectId
        );
      } else {
-        this.isLoading.set(false);
        return this.allReviewTasks();
      }
    }

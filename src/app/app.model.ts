@@ -41,6 +41,8 @@ export type Task = {
   approvalWorkflow: ApprovalRequest[];
   createdAt: Date;
   updatedAt: Date;
+  filePath?:String;
+  fileName?:String;
 };
 
 

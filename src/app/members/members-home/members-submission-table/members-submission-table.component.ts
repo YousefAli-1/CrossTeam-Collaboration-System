@@ -1,6 +1,7 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { MembersService } from '../../members.service';
 import { Task } from '../../../app.model';
+
 @Component({
   selector: 'app-members-submission-table',
   standalone: true,
@@ -10,69 +11,75 @@ import { Task } from '../../../app.model';
 })
 export class MembersSubmissionTableComponent {
   private membersService = inject(MembersService);
-
   private allSubmissionTasks = this.membersService.submissionTasks;
-
-
+  
   filterProjectId = input<number>(0);
-  isLoading = signal(true);
+  isLoading = signal(false);
+  
   // Computed signal that applies the filter
-  submissionTasks = computed(() => {
-    const filter = this.filterProjectId();
-    const tasks = this.allSubmissionTasks();
-    return filter
-    ? tasks.filter((task) => task.projectID === filter)
-    : tasks;
-  });
-
-
+  submissionTasks = computed(() => this.applyFilter(this.filterProjectId()));
+  
   private applyFilter(filterProjectId: number) {
     if (filterProjectId !== 0) {
-                this.isLoading.set(false);
       return this.allSubmissionTasks().filter(
         (task) => task.projectID === filterProjectId
       );
     } else {
-       this.isLoading.set(false);
       return this.allSubmissionTasks();
     }
   }
   
   selectedFiles: { [taskId: number]: File } = {};
-
-onFileSelected(event: Event, taskId: number): void {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    this.selectedFiles[taskId] = input.files[0];
-  }
-}
-submitTask(taskID: number): void {
-  const file = this.selectedFiles[taskID];
-  if (!file) {
-    console.warn('No file selected for task:', taskID);
-    return;
-  }
-
-  this.membersService.submitTask(taskID, file).subscribe({
-    next: () => {
-      // Refresh task list only after successful submission
-      const user = this.membersService.loggedInUser();
-      if (user) {
-        this.membersService.fetchTasksForSub(user.userID).subscribe({
-          next: (tasks) => {
-            this.allSubmissionTasks.set(tasks);
-            delete this.selectedFiles[taskID]; // Clear file input (optional)
-          },
-          error: (error) => {
-            console.error('Failed to refresh tasks:', error);
-          }
-        });
-      }
-    },
-    error: (error) => {
-      console.error('Failed to submit task:', error);
+  
+  onFileSelected(event: Event, taskId: number): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFiles[taskId] = input.files[0];
     }
-  });
-}
-
+  }
+  
+  submitTask(taskID: number): void {
+    const file = this.selectedFiles[taskID];
+    if (!file) {
+      console.warn('No file selected for task:', taskID);
+      return;
+    }
+    
+    this.isLoading.set(true);
+    
+    // To ensure the task immediately disappears without flickering,
+    // we'll remove it from the local UI before the request finishes
+    const tasksSignal = this.membersService.getTasksSignal();
+    const updatedTasks = tasksSignal().map(task => {
+      if (task.taskID === taskID) {
+        // Create a new task object with isSubmitted set to true
+        return { ...task, isSubmitted: true };
+      }
+      return task;
+    });
+    
+    // Update the signal immediately to remove task from UI
+    tasksSignal.set(updatedTasks);
+    
+    this.membersService.submitTask(taskID, file).subscribe({
+      next: () => {
+        // Clear the selected file after successful submission
+        delete this.selectedFiles[taskID];
+        this.isLoading.set(false);
+      },
+      error: (error) => {
+        // If submission fails, revert the local change
+        this.isLoading.set(false);
+        
+        // Revert the task back to unsubmitted state in case of error
+        const revertedTasks = tasksSignal().map(task => {
+          if (task.taskID === taskID) {
+            return { ...task, isSubmitted: false };
+          }
+          return task;
+        });
+        tasksSignal.set(revertedTasks);
+      }
+    });
+  }
 }

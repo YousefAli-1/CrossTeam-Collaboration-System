@@ -107,6 +107,8 @@ export class BackendAdapterImp implements BackendAdapter {
         ),
         createdAt: new Date(responseTask.createdAt),
         updatedAt: new Date(responseTask.updatedAt),
+        fileName:responseTask.fileName,
+        filePath:responseTask.filePath
       };
     });
   }

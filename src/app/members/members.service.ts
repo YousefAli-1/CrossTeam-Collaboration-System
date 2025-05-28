@@ -244,22 +244,7 @@ export class MembersService {
       })
     );
   }
-  
-  fetchTasksForUser(userID: number) {
-    this.httpService.getAllTasks(userID).subscribe({
-      next: (tasks) => this.tasksSignal.set(tasks),
-      error: (err) => console.error('Failed to fetch tasks:', err),
-    });
-  }
 
-  fetchTasksForSub(userID: number) : Observable<Task[]>{
-    return this.httpService.getUserTasksForSubmission(userID);
-  }
-  fetchTasksForRev(userID: number) : Observable<Task[]>{
-    const user=this.loggedInUser;
-    
-    return this.httpService.getUserTasksForReview(userID);
-  }
   getTasksSignal() {
     return this.tasksSignal;
   }

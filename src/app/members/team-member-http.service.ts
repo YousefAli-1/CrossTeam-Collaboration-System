@@ -21,15 +21,6 @@ export class TeamMemberHttpService {
 
     return this.http.post<void>(`${this.apiUrl}/submit-task?userId=${userId}`, formData);
   }
-  getAllTasks(userId: number): Observable<Task[]> {
-      return this.http.get<Task[]>(`${this.apiUrl}/getAllTasks?userId=${userId}`);
-  }
-  getUserTasksForSubmission(userId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/submitted-task?userId=${userId}`);
-  }
-  getUserTasksForReview(userId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/review-task?userId=${userId}`);
-  }
   downloadSubmission(taskId: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/download-submission`, {
       params: new HttpParams().set('taskId', taskId.toString()),

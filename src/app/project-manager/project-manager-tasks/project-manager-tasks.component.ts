@@ -1,39 +1,49 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
-import { CommonModule, NgFor, NgIf } from '@angular/common';
-import { Task } from '../../app.model';
-import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
-import { CreateTasksComponent } from './create-tasks/create-tasks.component';
-
 
 
 @Component({
   selector: 'app-task-creation',
-  imports:[ReactiveFormsModule, NgFor, RouterLink, RouterLinkActive, NgIf, CommonModule, CreateTasksComponent],
+  imports:[ReactiveFormsModule],
   templateUrl: './project-manager-tasks.component.html',
-  styleUrls: ['./project-manager-tasks.component.scss'],
-  standalone: true,
+  styleUrls: ['./project-manager-tasks.component.scss']
 })
 export class ProjectManagerTasksComponent {
+  taskForm: FormGroup;
 
-tasks: Task[] = []; // assume fetched from service/localStorage
-constructor(private router: Router) {}
+  constructor(private fb: FormBuilder) {
+    this.taskForm = this.fb.group({
+      taskName: ['', Validators.required],
+      taskDescription: [''],
+      deadline: ['', Validators.required],
+      assigned: ['', Validators.required],
+      isSubmitted: [false],
+      submittedBy: [null],
+      approvalWorkflow: this.fb.array([]),
+      project: ['', Validators.required],
+      createdAt: [new Date()],
+      updatedAt: [new Date()],
+    });
+  }
 
-onCreateTask() {
-this.router.navigate(['projectManager/createTasks'])
-}
-onTaskCreated(task: any){
-  this.tasks.push(task);
-}
+  get approvalWorkflow() {
+    return this.taskForm.get('approvalWorkflow') as FormArray;
+  }
 
-onEditTask(task: Task) {
-  // open edit form
-}
+  addApprovalRequest() {
+    this.approvalWorkflow.push(this.fb.control(''));
+  }
 
-onDeleteTask(taskID: number) {
-this.tasks = this.tasks.filter(t => t.taskID !== taskID);
-}
-
+  onSubmit() {
+    if (this.taskForm.valid) {
+      const task = this.taskForm.value;
+      console.log(task); 
+  
+      this.taskForm.reset();
+    } else {
+      console.error('Form is invalid');
+    }
+  }
   
 }

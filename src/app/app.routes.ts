@@ -25,8 +25,6 @@ export const routes: Routes = [
         canActivate: [authGuard],
         children: ProjectManagerRoutes
     },
-    
-    // Public routes (no auth guard needed)
     { 
         path: 'login', 
         component: LoginComponent,

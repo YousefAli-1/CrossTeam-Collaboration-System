@@ -87,7 +87,7 @@ export class LoginComponent {
         },
         error: (error) => {
           console.error('Login failed:', error);
-          this.toastService.error(error.message || 'Login failed. Please check your credentials.');
+          this.toastService.error('Login failed. Please check your credentials.');
         },
         complete: () => {
           this.isLoading = false;

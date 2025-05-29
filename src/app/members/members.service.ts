@@ -1,64 +1,108 @@
-import { Injectable, signal } from '@angular/core';
-import { dummyTeamMembers, dummyProjects, dummyTasks } from './dummy-members';
-import { Subject } from 'rxjs';
+import { computed, inject, Injectable, signal } from '@angular/core';
+
 import {
-  type TeamMember,
   type User,
   type Project,
   type Task,
   type ApprovalRequest,
   type Invitation,
-  ProjectMember,
   type InvitationStatus,
   ApprovalRequestStatus,
+  UserEssentials,
+  UserInProject,
+  UserPermissions,
 } from '../app.model';
+import { TeamMemberHttpService } from './team-member-http.service';
+
+import { Observable, tap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MembersService {
-  private readonly teamMembers = dummyTeamMembers;
-  private readonly projects = dummyProjects;
-  private tasks = signal<Task[]>(dummyTasks);
+
+  private httpService = inject(TeamMemberHttpService);
+  private readonly projectsSignal = signal<Project[]>([]);
+  private tasksSignal = signal<Task[]>([]);
+  private projectsInvitationsSignal = signal<Invitation[]>([]);
+  private tasks = signal<Task[]>([]);
+
   private loggedInUserWritableSignal = signal<User | null>(null);
-  projectsChanged = new Subject<void>()
+  ReviewTasks = computed<Task[]>(() => {
+    return this.tasksSignal().filter(
+      (task) =>
+        task.approvalWorkflow.filter((request) =>
+          this.isUserAssignedReviewerInApprovalWorkflow(
+            this.loggedInUser(),
+            request
+          )
+        ).length > 0 && task.isSubmitted
+    );
+  });
+  submissionTasks = computed<Task[]>(() => {
+    return this.tasksSignal().filter(
+      (task) =>
+        this.isUserAssignedInTask(this.loggedInUser(), task) &&
+        !task.isSubmitted
+    );
+  });
+  projectsInvitations = this.projectsInvitationsSignal.asReadonly();
+  projects = this.projectsSignal.asReadonly();
   loggedInUser = this.loggedInUserWritableSignal.asReadonly();
+
+  getProjectsInvitations(): void {
+    this.httpService
+      .getProjectsInvitations(this.loggedInUser()?.userID || 0)
+      .subscribe((value) => {
+        this.projectsInvitationsSignal.set(value);
+      });
+  }
+
+  private getTasks() {
+    var tasks: Task[] = [];
+
+    this.projectsSignal().forEach((project) => {
+      tasks = tasks.concat(project.tasks);
+    });
+
+    this.tasksSignal.set(tasks);
+  }
+
+  private getProjects() {
+    this.httpService
+      .getProjects(this.loggedInUser()?.userID || 0)
+      .subscribe((responseProjects) => {
+        this.projectsSignal.set(responseProjects);
+        this.getTasks();
+      });
+  }
 
   logIn(user: User) {
     this.loggedInUserWritableSignal.set(user);
+
+    this.getProjects();
+    this.getProjectsInvitations();
   }
 
   getProjectByProjectId(id: number): Project | null {
-    return this.projects.find((project) => project.projectID === id) || null;
-  }
-
-  getProjectsByUserId(userId: number): Project[] {
-    return this.projects.filter((project) =>
-      project.members.some(
-        (member) => member.userID === userId && member.isInviteAccepted
-      )
+    return (
+      this.projectsSignal().find((project) => project.projectID === id) || null
     );
   }
 
-  getMembersByProjectId(id: number): TeamMember[] {
-    return (
-      this.projects.find((project) => project.projectID === id)?.members || []
+  getloggedInUserPermissions(projectId: number): Observable<UserPermissions> {
+    return this.httpService.getUserPermissions(
+      projectId,
+      this.loggedInUser()?.userID || 0
     );
   }
 
   private isUserAssignedInTask(user: User | null, task: Task): boolean {
     return task.assigned.teamMembers.some(
-      (member) => member.userID === user?.userID && member.canSubmitTask
+      (member) => member.userID === user?.userID
     );
   }
 
-  getSubmissionTasksForLoggedInUser(): Task[] {
-    return this.tasks().filter(
-      (task) =>
-        this.isUserAssignedInTask(this.loggedInUser(), task) &&
-        !task.isSubmitted
-    );
-  }
   isUserLoggedIn(): boolean {
     if (this.loggedInUser()) {
       return true;
@@ -71,67 +115,10 @@ export class MembersService {
     request: ApprovalRequest
   ): boolean {
     return request.assigned.teamMembers.some(
-      (teamMember) =>
-        teamMember.userID === user?.userID && teamMember.canAcceptOrRejectTask
+      (teamMember) => teamMember.userID === user?.userID
     );
   }
 
-  private getAllReviewerTasks(user: User | null): Task[] {
-    return this.tasks().filter(
-      (task) =>
-        task.approvalWorkflow.filter((request) =>
-          this.isUserAssignedReviewerInApprovalWorkflow(user, request)
-        ).length > 0 && task.isSubmitted && this.hasAcceptedInvite(user,this.projects.find((project)=>project.projectID===task.project.projectID))
-    );
-  }
-
-  private getAllDependenciesBeforeLoggedInReviewerOfTask(task: Task) {
-    return task.approvalWorkflow.slice(
-      0,
-      task.approvalWorkflow.findIndex((request) =>
-        request.assigned.teamMembers.some(
-          (teamMember) => teamMember.userID === this.loggedInUser()?.userID
-        )
-      )
-    );
-  }
-
-  private hasAcceptedInvite(user: User | null, project: Project | undefined){
-    return project?.members.find((member)=>member.userID===user?.userID)?.isInviteAccepted || false;
-  }
-
-  private isDependenciesDone(task: Task) {
-    return this.getAllDependenciesBeforeLoggedInReviewerOfTask(task).every(
-      (request) => request.status === 'Accepted'
-    );
-  }
-
-  private isDependingOnLoggedInUserTeam(task: Task) {
-    return (
-      this.getPendingApprovalRequest(task)?.assigned.teamMembers.findIndex(
-        (member) => member.userID === this.loggedInUser()?.userID
-      ) !== -1
-    );
-  }
-  private isTaskWaitingForReview(task: Task) {
-    return (
-      this.isDependenciesDone(task) &&
-      this.isDependingOnLoggedInUserTeam(task) &&
-      !this.isTaskApprovalWorkflowTotallyFinished(task)
-    );
-  }
-
-  private filterTasksWaitingForReviewerDecision(userTasks: Task[]): Task[] {
-    return userTasks.filter((task) => {
-      return this.isTaskWaitingForReview(task);
-    });
-  }
-
-  getReviewTasksForLoggedInUser(): Task[] {
-    const userTasks: Task[] = this.getAllReviewerTasks(this.loggedInUser());
-
-    return this.filterTasksWaitingForReviewerDecision(userTasks);
-  }
 
   getPendingApprovalRequest(task: Task): ApprovalRequest | undefined {
     return task.approvalWorkflow.find(
@@ -139,41 +126,36 @@ export class MembersService {
     );
   }
 
-  isTaskApprovalWorkflowTotallyFinished(task: Task): boolean {
-    return task.approvalWorkflow.at(-1)?.status === 'Accepted';
+  private deleteInvitationLocally(invitation: Invitation): void {
+    this.projectsInvitationsSignal.set(
+      this.projectsInvitations().filter((invitationElement) => {
+        return (
+          invitationElement.projectId !== invitation.projectId &&
+          invitationElement.memberId !== invitation.memberId
+        );
+      })
+    );
   }
 
-  getInvitationsForUser(userID: number): Invitation[] {
-    return this.projects
-      .flatMap((project) => project.invitations || [])
-      .filter(
-        (invitation) =>
-          invitation.member.userID === userID && invitation.status === 'Pending'
-      );
+  rejectInvitation(invitation: Invitation): void {
+    this.httpService
+      .rejectProjectInvitation(invitation.projectId, invitation.memberId)
+      .subscribe({
+        complete: () => {
+          this.deleteInvitationLocally(invitation);
+        },
+      });
   }
 
-  updateInvitationStatus(invitationID: number, status: InvitationStatus): void {
-    const invitation = this.projects
-      .flatMap((project) => project.invitations || [])
-      .find((invitation) => invitation.invitationID === invitationID);
-
-    if (invitation) {
-      invitation.status = status;
-      if (status === 'Accepted') {
-        const project = invitation.project;
-        const invitedUser = invitation.member as ProjectMember;
-        invitedUser.isInviteAccepted = true;
-        project.members.push(invitedUser);
-
-        if (invitedUser.Projects) {
-          invitedUser.Projects.push(project);
-        } else {
-          invitedUser.Projects = [project];
-        }
-
-        this.projectsChanged.next();
-      }
-    }
+  acceptInvitation(invitation: Invitation): void {
+    this.httpService
+      .acceptProjectInvitation(invitation.projectId, invitation.memberId)
+      .subscribe({
+        complete: () => {
+          this.deleteInvitationLocally(invitation);
+          this.getProjects();
+        },
+      });
   }
 
   updateApprovalRequestStatus(task: Task, newStatus: ApprovalRequestStatus) {
@@ -189,63 +171,106 @@ export class MembersService {
         return {
           ...request,
           status: newStatus,
-          reviewedBy:
-            task.project.members.find(
-              (teamMember) => teamMember.userID === this.loggedInUser()?.userID
-            ) || null,
+          reviewedBy: this.loggedInUser(),
         };
       }),
     };
   }
+  
+  acceptTask(task: Task) {
+    this.httpService
+      .acceptApprovalRequest(
+        this.getPendingApprovalRequest(task)?.approvalRequestID || 0,
+        this.loggedInUser()?.userID || 0
+      )
+      .subscribe(() => {
+        this.tasksSignal.set(
+          this.tasksSignal().map((taskElement) => {
+            if (taskElement.taskID !== task.taskID) {
+              return taskElement;
+            }
 
-  acceptTask(taskId: number) {
-    this.tasks.set(
-      this.tasks().map((task) => {
-        if (task.taskID !== taskId) {
-          return task;
-        }
-
-        return this.updateApprovalRequestStatus(task, 'Accepted');
-      })
-    );
+            return this.updateApprovalRequestStatus(task, 'Accepted');
+          })
+        );
+      });
   }
 
-  rejectTask(taskId: number) {
-    this.tasks.set(
-      this.tasks().map((task) => {
-        if (task.taskID !== taskId) {
-          return task;
-        }
-
-        return this.updateApprovalRequestStatus(task, 'Rejected');
-      })
-    );
+  rejectTask(task: Task, comment: string | null) {
+    this.httpService
+      .rejectApprovalRequest(
+        this.getPendingApprovalRequest(task)?.approvalRequestID || 0,
+        this.loggedInUser()?.userID || 0,
+        comment
+      )
+      .subscribe(() => {
+        this.tasksSignal.set(
+          this.tasksSignal().map((taskElement) => {
+            if (taskElement.taskID !== task.taskID) {
+              return taskElement;
+            }
+            return this.updateApprovalRequestStatus(task, 'Rejected');
+          })
+        );
+      });
   }
 
-  submitTask(taskID: number): void {
+  submitTask(taskID: number, file: File): Observable<any> {
     const user = this.loggedInUser();
-    if (!user) return;
-
-    const task = this.tasks().find((t) => t.taskID === taskID);
-
-    if (!task) {
-      console.warn('Task not found');
-      return;
+    if (!user || !file) {
+      return throwError(() => new Error('Missing file or user'));
     }
-    const isAssigned = this.isUserAssignedInTask(user, task);
-    if (!isAssigned) {
-      console.warn('User is not assigned to this task');
-      return;
-    }
-    task.isSubmitted = true;
-    task.submittedBy = user as TeamMember;
-    task.updatedAt = new Date();
-
-    console.log(`Task ${taskID} submitted by ${user.name}`);
-
-    this.projectsChanged.next();
+  
+    return this.httpService.submitTask(taskID, user.userID, file).pipe(
+      tap(() => {
+        const task = this.tasks().find((t) => t.taskID === taskID);
+        if (task) {
+          task.isSubmitted = true;
+          task.submittedBy = user;
+          task.updatedAt = new Date();
+          this.tasksSignal.set([...this.tasksSignal()]);
+        }
+      })
+    );
   }
+
+  getTasksSignal() {
+    return this.tasksSignal;
+  }
+
   logout(): void {
     this.loggedInUserWritableSignal.set(null);
   }
+  downloadSubmission(taskID: number): void {
+    // Get tasks directly from computed
+    const tasks = this.ReviewTasks();
+    const task = tasks.find((t) => t.taskID === taskID);
+  
+    if (!task) {
+      console.error('Task not found:', taskID);
+      return;
+    }
+  
+    console.log('Task:', task);
+    console.log('File path:', task.filePath);
+  
+    this.httpService.downloadSubmission(taskID).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+  
+        const filename = task.fileName?.split('/').pop() || 'submission.zip';
+        a.download = filename;
+  
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Download failed', err);
+        alert('Failed to download file.');
+      }
+    });
+  }
+  
 }

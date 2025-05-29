@@ -1,17 +1,17 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl, FormBuilder } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { Router, RouterLink, RouterModule } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { Router, RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../navbar/navbar.component';
-import { dummyTeamMembers } from '../../members/dummy-members';
-import { TeamMember } from '../../app.model';
+import { AuthService } from '../auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 function passwordMatchValidator(control: AbstractControl) {
   const password = control.get('password')?.value;
@@ -25,6 +25,7 @@ function passwordMatchValidator(control: AbstractControl) {
     return null;
   }
 }
+
 @Component({
   standalone: true,
   imports: [
@@ -34,15 +35,15 @@ function passwordMatchValidator(control: AbstractControl) {
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
     NavbarComponent,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RouterLink
   ],
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss']
 })
-
 export class SignupComponent {
   signupForm = new FormGroup({
     name: new FormControl('', [
@@ -55,9 +56,6 @@ export class SignupComponent {
       Validators.email,
       Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)
     ]),
-    dob: new FormControl<Date | null>(null, [
-      Validators.required
-    ]),
     password: new FormControl('', [
       Validators.required,
       Validators.minLength(8),
@@ -68,44 +66,55 @@ export class SignupComponent {
     ]),
     userType: new FormControl<'member' | 'manager'>('member', Validators.required)
   }, { validators: passwordMatchValidator });
+
   hidePassword = true;
   hideConfirmPassword = true;
-  minDate = new Date(1900, 0, 1);
-  maxDate = new Date(new Date().setFullYear(new Date().getFullYear() - 16));
   userType: 'member' | 'manager' = 'member';
+  isLoading = false;
+
   get name() { return this.signupForm.get('name'); }
   get email() { return this.signupForm.get('email'); }
   get password() { return this.signupForm.get('password'); }
   get confirmPassword() { return this.signupForm.get('confirmPassword'); }
-  get dob() { return this.signupForm.get('dob'); }
-  private router=inject(Router);
+
+  private router = inject(Router);
+  private authService = inject(AuthService);
+  private snackBar = inject(MatSnackBar);
+
   onSubmit() {
     if (this.signupForm.valid) {
-      const formValue = this.signupForm.value;
-      const email = formValue.email ?? '';
-      const name = formValue.name ?? '';
-  
-      const newUser: TeamMember = {
-        userID: Math.floor(Math.random() * 10000),
-        name: name,
-        email: email,
-        Projects: [],
-        canSubmitTask: false,
-        canReviewTask: false,
-        canAcceptOrRejectTask: false
+      this.isLoading = true;
+      const userData = {
+        name: this.signupForm.value.name!,
+        email: this.signupForm.value.email!,
+        password: this.signupForm.value.password!,
+        userType: this.signupForm.value.userType!,
+        isProjectManager: this.signupForm.value.userType === 'manager'
       };
-  
-      if (this.userType === 'member') {
-        dummyTeamMembers.push(newUser);
-      }
-      console.log('array:' ,dummyTeamMembers);
-      console.log('New user created:', newUser);
-      this.router.navigate(['/login']);
+
+      this.authService.signup(userData).subscribe({
+        next: (response) => {
+          this.snackBar.open('Signup successful! Please login.', 'Close', {
+            duration: 5000
+          });
+          this.router.navigate(['/login']);
+        },
+        error: (error) => {
+          console.error('Signup failed:', error);
+          this.snackBar.open(error.message || 'Signup failed. Please try again.', 'Close', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        },
+        complete: () => {
+          this.isLoading = false;
+        }
+      });
     }
   }
+
   toggleUserType() {
     this.userType = this.userType === 'member' ? 'manager' : 'member';
     this.signupForm.patchValue({ userType: this.userType });
   }
-
 }

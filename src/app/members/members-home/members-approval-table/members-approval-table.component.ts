@@ -10,27 +10,35 @@ import { ApprovalRequestStatus, Task } from '../../../app.model';
 })
 export class MembersApprovalTableComponent {
   private membersService=inject(MembersService);
-   private allReviewTasks=signal(this.membersService.getReviewTasksForLoggedInUser());
-   filterProjectName= input<String>('');
- 
-   reviewTasks=computed<Task[]>(()=>{
+   private allReviewTasks=this.membersService.ReviewTasks;
+   filterProjectId= input<number>(0);
+   isLoading = signal(true);
+   // Computed signal that applies the filter
+   reviewTasks = computed(() => {
     this.allReviewTasks()
-    return this.applyFilter(this.filterProjectName())
+    return this.applyFilter(this.filterProjectId())
   });
  
- 
-   private applyFilter(filterProjectName: String) {
-     if (filterProjectName!=='') {
+  isTaskReviewFinished(task: Task) : boolean{
+    return this.membersService.getPendingApprovalRequest(task) === undefined
+  }
+
+  private applyFilter(filterProjectId: number) {
+     if (filterProjectId!==0) {
        return this.allReviewTasks().filter(task =>
-         task.project.projectName === filterProjectName
+         task.projectID === filterProjectId
        );
      } else {
        return this.allReviewTasks();
      }
    }
 
+   private isLoggedInUserEnrolledInCurrentReviewTeam(task: Task): boolean{
+    return this.membersService.getPendingApprovalRequest(task)?.assigned.teamMembers.find((member)=>member.userID===this.membersService.loggedInUser()?.userID) !== undefined
+   }
+
    DoesNeedAction(task: Task): boolean{
-    return this.membersService.getPendingApprovalRequest(task)?.status==='Pending';
+    return this.currentTaskStatus(task) === 'Pending' && this.isLoggedInUserEnrolledInCurrentReviewTeam(task);
   }
 
   currentTaskStatus(task: Task): ApprovalRequestStatus | undefined{
@@ -41,17 +49,23 @@ export class MembersApprovalTableComponent {
     return this.membersService.getPendingApprovalRequest(task)?.assigned.teamName;
   }
 
-  acceptTask(taskId: number){
+  getTaskInfoMessage(task: Task){
+    return `${this.currentTeamReviewing(task)} Team ${(this.currentTaskStatus(task) === 'Pending') ? 'is currrently reviewing' : 'has rejected' } the task submission.`
+  }
+
+  acceptTask(task: Task){
     if(confirm("Are you sure you want to accept this Task? \nThis action is irreversable!")){
-      this.membersService.acceptTask(taskId);
-      this.allReviewTasks.set(this.membersService.getReviewTasksForLoggedInUser());
+      this.membersService.acceptTask(task);
     };
   }
 
-  rejectTask(taskId: number){
+  rejectTask(task: Task){
     if(confirm("Are you sure you want to reject this Task? \nThis action is irreversable!")){
-      this.membersService.rejectTask(taskId);
-      this.allReviewTasks.set(this.membersService.getReviewTasksForLoggedInUser());
+      let comment=window.prompt('Add your comment here (optional)');
+      this.membersService.rejectTask(task,comment);
     };
+  }
+  downloadSub(taskID:number){
+   this.membersService.downloadSubmission(taskID);
   }
 }

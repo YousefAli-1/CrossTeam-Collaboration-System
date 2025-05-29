@@ -11,16 +11,15 @@ import { Router } from '@angular/router';
 })
 export class InvitationsComponent {
   private membersService = inject(MembersService);
-  invitation = input.required<Invitation>();
   private router=inject(Router)
+  invitation = input<Invitation>();
+  projectName: String = this.membersService.getProjectByProjectId(this.invitation()?.projectId || 0)?.projectName || "";
   acceptInvitation() {
-    this.membersService.updateInvitationStatus(this.invitation().invitationID, 'Accepted');
-    this.invitation().status='Accepted';
+    this.membersService.acceptInvitation(this.invitation() || {memberId: 0, projectId: 0, invitedBy: {userID: 0, name: '', email: ''}, status: 'Pending'});
     this.router.navigateByUrl('/teamMember/projects');
   }
   rejectInvitation() {
-    this.membersService.updateInvitationStatus(this.invitation().invitationID, 'Rejected');
-    this.invitation().status='Rejected';
+    this.membersService.rejectInvitation(this.invitation() || {memberId: 0, projectId: 0, invitedBy: {userID: 0, name: '', email: ''}, status: 'Pending'});
     this.router.navigateByUrl('/teamMember/homepage');
   }
 }

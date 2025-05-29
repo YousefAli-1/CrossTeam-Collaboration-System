@@ -4,9 +4,9 @@ import { dummyProjectManager } from '../members/dummy-members';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
-  type TeamMember,
   type User,
   ApprovalRequest,
+  UserEssentials,
 } from '../app.model';
 
 export interface Project {
@@ -122,5 +122,25 @@ export class ProjectManagerService {
 
   logout(): void {
     this.loggedInUserWritableSignal.set(null);
+    }
+  getProjectsByUserId(userId: number): Project[] {
+    return this.projects.filter((project) =>
+      project.createdBy.userID
+    );
+    //
+  }
+  logIn(user: User){
+    this.loggedInUserWritableSignal.set(user);
+  }
+  getMembersByProjectId(id: number): UserEssentials[] {
+    return (
+      this.projects.find((project) => project.projectID === id)?.members || []
+    );
+  }
+
+  private isUserAssignedInTask(user: User | null, task: Task): boolean {
+    return task.assigned.teamMembers.some(
+      (member) => member.userID === user?.userID
+    );
   }
 }

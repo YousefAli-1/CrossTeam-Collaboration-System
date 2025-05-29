@@ -44,7 +44,8 @@ export const routes: Routes = [
         path:'projectManager',
         component: ProjectManagerComponent,
         canActivate:[projectManagerAuth],
-        children:ProjectManagerRoutes},
+        children:ProjectManagerRoutes
+    },
     { 
         path: 'login', 
         component: LoginComponent 

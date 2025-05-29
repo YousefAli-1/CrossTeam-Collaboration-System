@@ -58,12 +58,11 @@
     <tbody>
       <tr *ngFor="let task of tasks">
         <td>{{ task.taskName }}</td>
-        <td>{{ task.deadline }}</td>
-        <td>{{ task.assigned }}</td>
+        <td>{{ task.deadline | date:'shortDate' }}</td>
+        <td>{{ task.assignedTeam?.teamName || 'N/A' }}</td>
         <td class="actions">
-          <!-- Add edit/delete buttons if needed -->
-          <button class="btn edit-btn">Edit</button>
-          <button class="btn delete-btn">Delete</button>
+          <!-- <button class="btn edit-btn" (click)="onEditTask(task.taskId)">Edit</button> -->
+          <button class="btn delete-btn" (click)="deleteTask(task.taskId)">Delete</button>
         </td>
       </tr>
     </tbody>

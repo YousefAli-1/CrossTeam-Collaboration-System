@@ -1,41 +1,27 @@
 <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
-  <label>
-    Task Name:
-    <input formControlName="taskName" />
-  </label>
+  <label for="taskName">Task Name</label>
+  <input id="taskName" formControlName="taskName" type="text" required>
 
-  <label>
-    Task Description:
-    <textarea formControlName="taskDescription"></textarea>
-  </label>
+  <label for="description">Description</label>
+  <textarea id="description" formControlName="description"></textarea>
 
-  <label>
-    Deadline:
-    <input type="date" formControlName="deadline" />
-  </label>
+  <label for="deadline">Deadline</label>
+  <input id="deadline" type="date" formControlName="deadline">
 
-  <label>
-    Assigned Team:
-    <input formControlName="assigned" />
-  </label>
+  <label for="projectId">Select Project</label>
+  <select id="projectId" formControlName="projectId">
+    <option *ngFor="let project of projects" [value]="project.projectId">
+      {{ project.projectName }}
+    </option>
+  </select>
 
-  <label>
-    Submitted By (if applicable):
-    <input formControlName="submittedBy" />
-  </label>
-
-  <div formArrayName="approvalWorkflow" class="form-array">
-    <label>Approval Workflow:</label>
-    <div *ngFor="let approval of approvalWorkflow.controls; let i = index">
-      <input [formControlName]="i" placeholder="Approval Request" />
-    </div>
-    <button type="button" (click)="addApprovalRequest()" class="add-button">+ Add Approval Request</button>
-  </div>
-
-  <label>
-    Project:
-    <input formControlName="project" />
-  </label>
+  <label for="teamId">Select Team</label>
+  <select id="teamId" formControlName="teamId">
+    <option *ngFor="let team of teams" [value]="team.teamId">
+      {{ team.teamName }}
+    </option>
+  </select>
 
   <button type="submit">Create Task</button>
+  <button type="button" (click)="onCancel()">Cancel</button>
 </form>

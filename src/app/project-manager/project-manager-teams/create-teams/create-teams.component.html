@@ -1,0 +1,17 @@
+<form [formGroup]="teamForm" (ngSubmit)="onSubmit()">
+  <label for="teamName">Team Name</label>
+  <input id="teamName" formControlName="teamName" type="text" required>
+
+  <label for="description">Description</label>
+  <textarea id="description" formControlName="description"></textarea>
+
+  <label for="members">Assign Members</label>
+  <select id="members" formControlName="memberIds" multiple>
+    <option *ngFor="let member of members" [value]="member.userId">
+      {{ member.name }}
+    </option>
+  </select>
+
+  <button type="submit">Create Team</button>
+  <button type="button" (click)="onCancel()">Cancel</button>
+</form>

@@ -17,7 +17,8 @@ import { ProjectManagerService } from './project-manager.service';
 export class ProjectManagerComponent {
   private membersService=inject(ProjectManagerService);
   isOpened: boolean = false;
-  projects=this.membersService.getProjectsByUserId(this.membersService.loggedInUser()?.userID || -1);
+  private router=inject(Router);
+  // projects=this.membersService.getProjectsByUserId(this.membersService.loggedInUser()?.userID || -1);
   toggleDrawer(): void {
     this.isOpened = !this.isOpened;
 }

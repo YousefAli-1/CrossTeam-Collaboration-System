@@ -1,49 +1,50 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
+import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
+import { CreateTaskComponent } from './create-tasks/create-tasks.component';
+import { ProjectManagerService, Team, Project, Task } from '../project-manager.service';
+
 
 
 @Component({
   selector: 'app-task-creation',
-  imports:[ReactiveFormsModule],
+  imports:[ReactiveFormsModule, NgFor, RouterLink, RouterLinkActive, NgIf, CommonModule, CreateTaskComponent],
   templateUrl: './project-manager-tasks.component.html',
   styleUrls: ['./project-manager-tasks.component.scss']
 })
 export class ProjectManagerTasksComponent {
-  taskForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
-    this.taskForm = this.fb.group({
-      taskName: ['', Validators.required],
-      taskDescription: [''],
-      deadline: ['', Validators.required],
-      assigned: ['', Validators.required],
-      isSubmitted: [false],
-      submittedBy: [null],
-      approvalWorkflow: this.fb.array([]),
-      project: ['', Validators.required],
-      createdAt: [new Date()],
-      updatedAt: [new Date()],
-    });
-  }
+tasks: Task[] = []; // assume fetched from service/localStorage
+constructor(private router: Router, private pmService: ProjectManagerService) {}
 
-  get approvalWorkflow() {
-    return this.taskForm.get('approvalWorkflow') as FormArray;
-  }
+onCreateTask() {
+this.router.navigate(['projectManager/createTasks'])
+}
+onTaskCreated(task: any){
+  this.tasks.push(task);
+}
 
-  addApprovalRequest() {
-    this.approvalWorkflow.push(this.fb.control(''));
-  }
-
-  onSubmit() {
-    if (this.taskForm.valid) {
-      const task = this.taskForm.value;
-      console.log(task); 
-  
-      this.taskForm.reset();
-    } else {
-      console.error('Form is invalid');
-    }
-  }
-  
+onEditTask(task: Task) {
+  // open edit form
+}
+ngOnInit() {
+  this.loadTasks();
+}
+loadTasks() {
+  this.pmService.getAllTasks().subscribe(data => {
+    this.tasks = data;
+  });
+}
+deleteTask(taskId: number) {
+  this.pmService.deleteTask(taskId).subscribe(() => {
+    this.loadTasks(); // Refresh the list after deletion
+  }, error => {
+    console.error('Delete failed', error);
+  });
+}
+onDeleteTask(taskID: number) {
+this.tasks = this.tasks.filter(t => t.taskId !== taskID);
+}
 }

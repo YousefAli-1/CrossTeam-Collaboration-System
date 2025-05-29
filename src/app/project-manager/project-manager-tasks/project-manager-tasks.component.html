@@ -38,4 +38,33 @@
   </label>
 
   <button type="submit">Create Task</button>
-</form>
+</form> -->
+
+<div class="tasks-page">
+  <div class="header">
+    <h1>Tasks</h1>
+    <button class="btn create-btn" (click)="onCreateTask()">+ Create Task</button>
+  </div>
+
+  <table class="tasks-table">
+    <thead>
+      <tr>
+        <th>Task Name</th>
+        <th>Deadline</th>
+        <th>Assigned To</th>
+        <th class="actions-column">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let task of tasks">
+        <td>{{ task.taskName }}</td>
+        <td>{{ task.deadline | date:'shortDate' }}</td>
+        <td>{{ task.assignedTeam?.teamName || 'N/A' }}</td>
+        <td class="actions">
+          <!-- <button class="btn edit-btn" (click)="onEditTask(task.taskId)">Edit</button> -->
+          <button class="btn delete-btn" (click)="deleteTask(task.taskId)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

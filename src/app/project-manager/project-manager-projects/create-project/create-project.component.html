@@ -1,0 +1,17 @@
+<form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+  <label>
+    Project Name:
+    <input formControlName="projectName" />
+  </label>
+  <div *ngIf="projectForm.controls.projectName.invalid && projectForm.controls.projectName.touched" style="color:red;">
+    Project name is required.
+  </div>
+
+  <label>
+    Description:
+    <textarea formControlName="description"></textarea>
+  </label>
+
+  <button type="submit" [disabled]="projectForm.invalid">Create</button>
+  <button type="button" (click)="onCancel()">Cancel</button>
+</form>

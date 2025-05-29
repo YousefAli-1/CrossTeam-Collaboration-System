@@ -1,62 +1,59 @@
 import { Component } from '@angular/core';
+import { ProjectManagerService, Project } from '../project-manager.service';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgFor, NgIf } from '@angular/common';
+import { CreateProjectComponent } from './create-project/create-project.component';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-project-form',
-  imports:[ReactiveFormsModule] ,
+  imports:[ReactiveFormsModule, NgFor, NgIf, CreateProjectComponent] ,
   templateUrl: './project-manager-projects.component.html',
   styleUrls: ['./project-manager-projects.component.scss'] 
 
 })
 export class ProjectManagerProjectsComponent {
-  projectForm: FormGroup;
+  projects: Project[] = [];
+  
+  showCreateForm = false;
 
-  constructor(private fb: FormBuilder) {
-    this.projectForm = this.fb.group({
-      projectName: ['', Validators.required],
-      projectDescription: [''],
-      createdBy: ['', Validators.required], 
-      tasks: this.fb.array([]),
-      members: this.fb.array([]),
-      teams: this.fb.array([]),
-      createdAt: [new Date()],
-      updatedAt: [new Date()],
+  constructor(private projectService: ProjectManagerService, private router: Router) {}
+
+
+  ngOnInit(): void {
+    this.loadProjects();
+  }
+
+  loadProjects() {
+    this.projectService.getAll().subscribe({
+      next: (data) => this.projects = data,
+      error: (err) => console.error('Failed to load projects', err)
     });
   }
 
-  get tasks() {
-    return this.projectForm.get('tasks') as FormArray;
+  openCreateForm() {
+    // this.showCreateForm = true;
+    this.router.navigate(['/projectManager/createProject']);
+
+
   }
 
-  addTask() {
-    this.tasks.push(this.fb.control(''));
+  onProjectCreated(newProject: Project) {
+    this.projects.push(newProject);
+    this.showCreateForm = false;
   }
-
-  get members() {
-    return this.projectForm.get('members') as FormArray;
+  cancelCreate() {
+    this.showCreateForm = false;
   }
-
-  addMember() {
-    this.members.push(this.fb.control(''));
-  }
-
-  get teams() {
-    return this.projectForm.get('teams') as FormArray;
-  }
-
-  addTeam() {
-    this.teams.push(this.fb.control(''));
-  }
-
-   onSubmit() {
-    if (this.projectForm.valid) {
-      const task = this.projectForm.value;
-      console.log(task); 
-  
-      this.projectForm.reset();
-    } else {
-      console.error('Form is invalid');
+  deleteProject(id: number) {
+    if (confirm('Are you sure you want to delete this project?')) {
+      this.projectService.delete(id).subscribe({
+        next: () => this.projects = this.projects.filter(p => p.projectId !== id),
+        error: (err) => console.error('Delete failed', err)
+      });
     }
   }
+
 }

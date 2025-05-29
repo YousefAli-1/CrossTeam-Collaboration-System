@@ -54,8 +54,8 @@ export interface Task {
 })
 export class ProjectManagerService {
   constructor(private http: HttpClient) {}
-  private baseUrl = 'http://localhost:8060/ProjectManager';
-  private api = 'http://localhost:8060/teamMember';
+  private baseUrl = 'http://localhost:8080/ProjectManager';
+  private api = 'http://localhost:8080/teamMember';
 
   private loggedInUserWritableSignal = signal<User | null>(null);
   loggedInUser = this.loggedInUserWritableSignal.asReadonly();
@@ -112,9 +112,6 @@ export class ProjectManagerService {
 
 
 
-  logIn(user: User) {
-    this.loggedInUserWritableSignal.set(user);
-  }
 
   isUserLoggedIn(): boolean {
     return this.loggedInUser() !== null;
@@ -123,24 +120,8 @@ export class ProjectManagerService {
   logout(): void {
     this.loggedInUserWritableSignal.set(null);
     }
-  getProjectsByUserId(userId: number): Project[] {
-    return this.projects.filter((project) =>
-      project.createdBy.userID
-    );
-    //
-  }
+
   logIn(user: User){
     this.loggedInUserWritableSignal.set(user);
-  }
-  getMembersByProjectId(id: number): UserEssentials[] {
-    return (
-      this.projects.find((project) => project.projectID === id)?.members || []
-    );
-  }
-
-  private isUserAssignedInTask(user: User | null, task: Task): boolean {
-    return task.assigned.teamMembers.some(
-      (member) => member.userID === user?.userID
-    );
   }
 }

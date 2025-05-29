@@ -7,13 +7,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
 import { NavbarComponent } from "../../navbar/navbar.component";
 import { MembersService } from '../../members/members.service';
 import { ProjectManagerService } from '../../project-manager/project-manager.service';
 import { AuthService } from '../auth.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   standalone: true,
@@ -27,7 +26,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule,
     NavbarComponent
   ],
   templateUrl: './login.component.html',
@@ -54,7 +52,7 @@ export class LoginComponent {
   private memberService = inject(MembersService);
   private managerService = inject(ProjectManagerService);
   private authService = inject(AuthService);
-  private snackBar = inject(MatSnackBar);
+  private toastService = inject(ToastService);
 
   onSubmit() {
     if (this.loginForm.valid) {
@@ -66,9 +64,8 @@ export class LoginComponent {
 
       this.authService.login(credentials).subscribe({
         next: (user) => {
-          console.log('Login response:', user); // Debug log
+          console.log('Login response:', user);
 
-          // Map backend user to frontend model
           const mappedUser = {
             userID: user.userId,
             name: user.name,
@@ -78,18 +75,17 @@ export class LoginComponent {
 
           if (user.isProjectManager) {
             this.managerService.logIn(mappedUser);
+            this.toastService.success('Welcome back, ' + user.name + '!');
             this.router.navigate(['/projectManager']);
           } else {
             this.memberService.logIn(mappedUser);
+            this.toastService.success('Welcome back, ' + user.name + '!');
             this.router.navigate(['/teamMember']);
           }
         },
         error: (error) => {
           console.error('Login failed:', error);
-          this.snackBar.open(error.message || 'Login failed. Please check your credentials.', 'Close', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.toastService.error(error.message || 'Login failed. Please check your credentials.');
         },
         complete: () => {
           this.isLoading = false;

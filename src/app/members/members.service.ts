@@ -13,6 +13,7 @@ import {
   UserPermissions,
 } from '../app.model';
 import { TeamMemberHttpService } from './team-member-http.service';
+import { ToastService } from '../shared/toast/toast.service';
 
 import { Observable, tap, throwError } from 'rxjs';
 
@@ -22,6 +23,7 @@ import { Observable, tap, throwError } from 'rxjs';
 export class MembersService {
 
   private httpService = inject(TeamMemberHttpService);
+  private toastService = inject(ToastService);
   private readonly projectsSignal = signal<Project[]>([]);
   private tasksSignal = signal<Task[]>([]);
   private projectsInvitationsSignal = signal<Invitation[]>([]);
@@ -272,21 +274,12 @@ export class MembersService {
       }
     });
   }
-   private _showPopup = signal(false);
-  private _showPopup2 = signal(false);
-  private _message = signal('');
 
-  showPopup = () => this._showPopup();
-  showPopup2 = () => this._showPopup2();
-  message = () => this._message();
   triggerError(message: string) {
-    this._message.set(message);
-    this._showPopup2.set(true);
-    setTimeout(() => this._showPopup2.set(false), 1000); 
+    this.toastService.error(message);
   }
+
   trigger(message: string) {
-    this._message.set(message);
-    this._showPopup.set(true);
-    setTimeout(() => this._showPopup.set(false), 1000); 
+    this.toastService.success(message);
   }
 }

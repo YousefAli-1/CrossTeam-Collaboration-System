@@ -7,11 +7,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../navbar/navbar.component';
 import { AuthService } from '../auth.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { ToastService } from '../../shared/toast/toast.service';
 
 function passwordMatchValidator(control: AbstractControl) {
   const password = control.get('password')?.value;
@@ -36,7 +35,6 @@ function passwordMatchValidator(control: AbstractControl) {
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule,
     NavbarComponent,
     ReactiveFormsModule,
     RouterLink
@@ -79,7 +77,7 @@ export class SignupComponent {
 
   private router = inject(Router);
   private authService = inject(AuthService);
-  private snackBar = inject(MatSnackBar);
+  private toastService = inject(ToastService);
 
   onSubmit() {
     if (this.signupForm.valid) {
@@ -94,17 +92,12 @@ export class SignupComponent {
 
       this.authService.signup(userData).subscribe({
         next: (response) => {
-          this.snackBar.open('Signup successful! Please login.', 'Close', {
-            duration: 5000
-          });
+          this.toastService.success('Signup successful! Please login.');
           this.router.navigate(['/login']);
         },
         error: (error) => {
           console.error('Signup failed:', error);
-          this.snackBar.open(error.message || 'Signup failed. Please try again.', 'Close', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.toastService.error(error.message || 'Signup failed. Please try again.');
         },
         complete: () => {
           this.isLoading = false;

@@ -1,28 +1,47 @@
-<form [formGroup]="teamForm" (ngSubmit)="onSubmit()">
-  <label>
-    Team Name:
-    <input formControlName="teamName" />
-  </label>
-
-  <label>
-    Team Description:
-    <textarea formControlName="teamDescription"></textarea>
-  </label>
-
-  <div formArrayName="teamMembers" class="form-array">
-    <label>Team Members:</label>
-    <div *ngFor="let member of teamMembers.controls; let i = index" [formGroupName]="i">
-      <label>
-        Member ID:
-        <input formControlName="memberID" />
-      </label>
-      <label>
-        Member Name:
-        <input formControlName="memberName" />
-      </label>
+  <!-- Teams Display Section -->
+  <div class="teams-page">
+    <div class="header">
+      <h1>Teams</h1>
+      <button class="btn create-btn" (click)="onCreateTeam()">+ Create Team</button>
     </div>
-    <button type="button" (click)="addMember()" class="add-button">+ Add Member</button>
+
+    <div *ngIf="inviteSuccessMessage" class="notification success">
+    {{ inviteSuccessMessage }}
   </div>
 
-  <button type="submit">Create Team</button>
-</form>
+    <table class="teams-table">
+      <thead>
+        <tr>
+          <th>Team Name</th>
+          <th>Description</th>
+          <th>Project Name</th>
+          <th class="actions-column">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let team of teams">
+          <td>{{ team.teamName }}</td>
+          <td>{{ team.description }}</td>
+          <td *ngIf="team.projct?.projectId">{{ getProjectName(team.projct.projectId) }}</td>
+          <td *ngIf="!team.projct?.projectId">No Project</td>
+          <td class="actions">
+            <button class="btn delete-btn" (click)="deleteTeam(team.teamId)">Delete</button>
+
+            <!-- Invite Button -->
+            <button class="btn invite-btn" (click)="toggleInvite(team.teamId)">Invite Project</button>
+
+            <!-- Dropdown and Confirm Button -->
+            <div *ngIf="selectedInviteTeamId === team.teamId" class="invite-section">
+              <select [(ngModel)]="selectedProjectId">
+                <option [ngValue]="null" disabled>Select a project</option>
+                <option *ngFor="let project of projects" [ngValue]="project.projectId">
+                  {{ project.projectName }}
+                </option>
+              </select>
+              <button class="btn confirm-btn" (click)="confirmInvite(team.teamId)">Invite</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>

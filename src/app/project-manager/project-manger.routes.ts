@@ -7,6 +7,9 @@ import { ProjectManagerService } from "./project-manager.service";
 import { ProjectManagerTasksComponent } from "./project-manager-tasks/project-manager-tasks.component";
 import { ProjectManagerTeamsComponent } from "./project-manager-teams/project-manager-teams.component";
 import { ProjectManagerProjectsComponent } from "./project-manager-projects/project-manager-projects.component";
+import { CreateTaskComponent } from "./project-manager-tasks/create-tasks/create-tasks.component";
+import { CreateProjectComponent } from "./project-manager-projects/create-project/create-project.component";
+import { CreateTeamsComponent } from "./project-manager-teams/create-teams/create-teams.component";
   
 
 type ResolveFn<T> = (  route: ActivatedRouteSnapshot,  state: RouterStateSnapshot) => MaybeAsync<T | RedirectCommand>
@@ -35,6 +38,18 @@ export const ProjectManagerRoutes: Routes=[
     {
         path:'teams',
         component:ProjectManagerTeamsComponent
+    },
+    {
+        path:'createTasks',
+        component:CreateTaskComponent
+    },
+    {
+        path:'createProject',
+        component:CreateProjectComponent
+    },
+    {
+        path:'createTeam',
+        component:CreateTeamsComponent
     }
 
 

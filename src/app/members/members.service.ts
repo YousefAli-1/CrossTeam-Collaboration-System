@@ -13,6 +13,7 @@ import {
   UserPermissions,
 } from '../app.model';
 import { TeamMemberHttpService } from './team-member-http.service';
+import { ToastService } from '../shared/toast/toast.service';
 
 import { Observable, tap, throwError } from 'rxjs';
 
@@ -22,6 +23,7 @@ import { Observable, tap, throwError } from 'rxjs';
 export class MembersService {
 
   private httpService = inject(TeamMemberHttpService);
+  private toastService = inject(ToastService);
   private readonly projectsSignal = signal<Project[]>([]);
   private tasksSignal = signal<Task[]>([]);
   private projectsInvitationsSignal = signal<Invitation[]>([]);
@@ -272,5 +274,12 @@ export class MembersService {
       }
     });
   }
-  
+
+  triggerError(message: string) {
+    this.toastService.error(message);
+  }
+
+  trigger(message: string) {
+    this.toastService.success(message);
+  }
 }

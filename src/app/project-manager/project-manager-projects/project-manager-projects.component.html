@@ -1,42 +1,59 @@
-<form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
-  <label>
-    Project Name:
-    <input formControlName="projectName" />
-  </label>
-
-  <label>
-    Description:
-    <textarea formControlName="projectDescription"></textarea>
-  </label>
-
-  <label>
-    Created By (Manager ID or Name):
-    <input formControlName="createdBy" />
-  </label>
-
-  <div formArrayName="tasks" class="form-array">
-    <label>Tasks:</label>
-    <div *ngFor="let task of tasks.controls; let i = index">
-      <input [formControlName]="i" placeholder="Task Name or ID" />
-    </div>
-    <button type="button" (click)="addTask()" class="add-button">+ Add Task</button>
+<!-- Projects Display Section -->
+<div class="teams-page">
+  <div class="header">
+    <h1>Projects</h1>
+    <button class="btn create-btn" (click)="openCreateForm()">+ Create Project</button>
   </div>
 
-  <div formArrayName="members" class="form-array">
-    <label>Members:</label>
-    <div *ngFor="let member of members.controls; let i = index">
-      <input [formControlName]="i" placeholder="Member ID or Name" />
-    </div>
-    <button type="button" (click)="addMember()" class="add-button">+ Add Member</button>
+  <!-- Project Creation Form -->
+  <div *ngIf="showCreateForm" class="form-container">
+    <app-create-project
+      (projectCreated)="onProjectCreated($event)"
+      (cancel)="cancelCreate()"
+    ></app-create-project>
   </div>
 
-  <div formArrayName="teams" class="form-array">
-    <label>Teams:</label>
-    <div *ngFor="let team of teams.controls; let i = index">
-      <input [formControlName]="i" placeholder="Team ID or Name" />
-    </div>
-    <button type="button" (click)="addTeam()" class="add-button">+ Add Team</button>
-  </div>
+  <!-- Projects Table -->
+  <table class="teams-table">
+    <thead>
+      <tr>
+        <th>Project Name</th>
+        <th>Description</th>
+        <th>Teams</th>
+        <th>Members</th>
+        
+        <th class="actions-column">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let project of projects">
+        <td>{{ project.projectName }}</td>
+        <td>{{ project.description }}</td>
 
-  <button type="submit">Create Project</button>
-</form>
+        <!-- Teams List -->
+        <td>
+          <ul *ngIf="project.teams?.length; else noMembers">
+            <li *ngFor="let team of project.teams">
+              {{ team.teamName }}
+            </li>
+          </ul>
+          <ng-template #noMembers>No Teams</ng-template>
+        </td>
+        <!-- Members List -->
+        <td>
+          <ul *ngIf="project.members?.length; else noMembers">
+            <li *ngFor="let member of project.members">
+              {{ member.name }}
+            </li>
+          </ul>
+          <ng-template #noMembers>No members</ng-template>
+        </td>
+
+        <td class="actions">
+          <!-- <button class="btn edit-btn" (click)="onEditProject(project.projectId)">Edit</button> -->
+          <button class="btn delete-btn" (click)="deleteProject(project.projectId)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

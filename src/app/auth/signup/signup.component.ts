@@ -1,15 +1,16 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl, FormBuilder } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Router, RouterLink, RouterModule } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Router, RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../navbar/navbar.component';
-import { dummyTeamMembers } from '../../members/dummy-members';
-import { UserEssentials } from '../../app.model';
+import { AuthService } from '../auth.service';
+import { ToastService } from '../../shared/toast/toast.service';
 
 function passwordMatchValidator(control: AbstractControl) {
   const password = control.get('password')?.value;
@@ -33,6 +34,7 @@ function passwordMatchValidator(control: AbstractControl) {
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     NavbarComponent,
     ReactiveFormsModule,
     RouterLink
@@ -40,7 +42,6 @@ function passwordMatchValidator(control: AbstractControl) {
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss']
 })
-
 export class SignupComponent {
   signupForm = new FormGroup({
     name: new FormControl('', [
@@ -67,6 +68,7 @@ export class SignupComponent {
   hidePassword = true;
   hideConfirmPassword = true;
   userType: 'member' | 'manager' = 'member';
+  isLoading = false;
 
   get name() { return this.signupForm.get('name'); }
   get email() { return this.signupForm.get('email'); }
@@ -74,25 +76,33 @@ export class SignupComponent {
   get confirmPassword() { return this.signupForm.get('confirmPassword'); }
 
   private router = inject(Router);
+  private authService = inject(AuthService);
+  private toastService = inject(ToastService);
 
   onSubmit() {
     if (this.signupForm.valid) {
-      const formValue = this.signupForm.value;
-      const email = formValue.email ?? '';
-      const name = formValue.name ?? '';
-  
-      const newUser: UserEssentials = {
-        userID: Math.floor(Math.random() * 10000),
-        name: name,
-        email: email
+      this.isLoading = true;
+      const userData = {
+        name: this.signupForm.value.name!,
+        email: this.signupForm.value.email!,
+        password: this.signupForm.value.password!,
+        userType: this.signupForm.value.userType!,
+        isProjectManager: this.signupForm.value.userType === 'manager'
       };
-  
-      if (this.userType === 'member') {
-        dummyTeamMembers.push({...newUser, canSubmitTask: false, canAcceptOrRejectTask: false});
-      }
-      console.log('array:' ,dummyTeamMembers);
-      console.log('New user created:', newUser);
-      this.router.navigate(['/login']);
+
+      this.authService.signup(userData).subscribe({
+        next: (response) => {
+          this.toastService.success('Signup successful! Please login.');
+          this.router.navigate(['/login']);
+        },
+        error: (error) => {
+          console.error('Signup failed:', error);
+          this.toastService.error(error.message || 'Signup failed. Please try again.');
+        },
+        complete: () => {
+          this.isLoading = false;
+        }
+      });
     }
   }
 

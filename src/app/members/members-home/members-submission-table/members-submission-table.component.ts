@@ -64,11 +64,15 @@ export class MembersSubmissionTableComponent {
         // Clear the selected file after successful submission
         delete this.selectedFiles[taskID];
         this.isLoading.set(false);
+        this.membersService.trigger("Task submitted successfully!");
       },
       error: (error) => {
-        // If submission fails, revert the local change
         this.isLoading.set(false);
-        
+        // Find the task by ID to check its deadline
+        const task = tasksSignal().find(t => t.taskID === taskID);
+        if (task && task.deadline instanceof Date && task.deadline.getTime() < Date.now()) {
+          this.membersService.triggerError("Task is Overdue!");
+        }
         // Revert the task back to unsubmitted state in case of error
         const revertedTasks = tasksSignal().map(task => {
           if (task.taskID === taskID) {

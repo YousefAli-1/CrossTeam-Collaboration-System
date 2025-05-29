@@ -1,49 +1,44 @@
-import { CanActivateFn, Router, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { MembersComponent } from './members/members.component';
 import { membersRoutes } from './members/members.routes';
 import { ProjectManagerRoutes } from './project-manager/project-manger.routes';
-import { ProjectCardComponent } from './members/projects/project-card/project-card.component';
 import { ProjectManagerComponent } from './project-manager/project-manager.component';
 import { LoginComponent } from './auth/login/login.component';
 import { SignupComponent } from './auth/signup/signup.component';
 import { UnauthorizedComponent } from './auth/unauthorized/unauthorized.component';
 import { NotFoundComponent } from './auth/not-found/not-found.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
-import { inject } from '@angular/core';
-import { MembersService } from './members/members.service';
 import { AboutusComponent } from './aboutus/aboutus.component';
+import { authGuard } from './auth/auth.guard';
 
-export const membersAuthGuard: CanActivateFn = () => {
-    const service = inject(MembersService);
-    const router = inject(Router);
-
-    if (service.isUserLoggedIn()) {
-      return true;
-    }
-    
-    return router.navigateByUrl('/unauthorized');
-  };
 export const routes: Routes = [
+    // Protected routes
     {
         path: 'teamMember',
         component: MembersComponent,
-        canActivate: [membersAuthGuard],
+        canActivate: [authGuard],
         children: membersRoutes
     },
     {
-        path:'projectManager',
+        path: 'projectManager',
         component: ProjectManagerComponent,
-        children:ProjectManagerRoutes},
+        canActivate: [authGuard],
+        children: ProjectManagerRoutes
+    },
     { 
         path: 'login', 
-        component: LoginComponent 
+        component: LoginComponent,
+        canActivate: [authGuard]
     },
     { 
         path: 'signup', 
-        component: SignupComponent 
-    },{
-        path:'aboutus',
-        component:AboutusComponent
+        component: SignupComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'aboutus',
+        component: AboutusComponent,
+        canActivate: [authGuard]
     },
     { 
         path: 'unauthorized', 
@@ -55,10 +50,11 @@ export const routes: Routes = [
     },
     { 
         path: '',  
-        component: LandingPageComponent
+        component: LandingPageComponent,
+        canActivate: [authGuard]
     },
     { 
-        path: '**'
-        , redirectTo: '/404' 
+        path: '**',
+        redirectTo: '/404' 
     }
 ];

@@ -1,5 +1,6 @@
 <div class="unauthorized-container">
     <h1>403 - Access Denied</h1>
     <p>You do not have permission to view this page.</p>
-    <a routerLink="/">Go to Home</a>
+    <a *ngIf="user" (click)="goToDashboard()" style="cursor: pointer;">Back to Dashboard</a>
+    <a *ngIf="!user" routerLink="/">Go Back to Home</a>
 </div>

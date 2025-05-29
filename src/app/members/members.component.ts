@@ -6,7 +6,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { MembersService } from './members.service';
 import { type Project } from '../app.model';
-import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -23,6 +22,7 @@ export class MembersComponent {
   private router=inject(Router);
   logout() {
     this.membersService.logout(); 
+    localStorage.removeItem('currentUser');
     this.router.navigate(['/']); 
   }
   toggleDrawer(): void {

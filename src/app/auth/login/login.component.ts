@@ -76,10 +76,12 @@ export class LoginComponent {
           if (user.isProjectManager) {
             this.managerService.logIn(mappedUser);
             this.toastService.success('Welcome back, ' + user.name + '!');
+            localStorage.setItem('currentUser', JSON.stringify(user));
             this.router.navigate(['/projectManager']);
           } else {
             this.memberService.logIn(mappedUser);
             this.toastService.success('Welcome back, ' + user.name + '!');
+            localStorage.setItem('currentUser', JSON.stringify(user));
             this.router.navigate(['/teamMember']);
           }
         },

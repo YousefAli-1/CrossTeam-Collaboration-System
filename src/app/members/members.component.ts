@@ -7,15 +7,16 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MembersService } from './members.service';
 import { type Project } from '../app.model';
 import { Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-members',
-  imports: [RouterOutlet, MatSidenavModule, MatButtonModule, MatDividerModule, MatMenuModule, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet,CommonModule, MatSidenavModule, MatButtonModule, MatDividerModule, MatMenuModule, RouterLink, RouterLinkActive],
   templateUrl: './members.component.html',
   styleUrl: './members.component.scss'
 })
 export class MembersComponent {
-  private membersService = inject(MembersService);
+  membersService = inject(MembersService);
   isOpened: boolean = false;
   userProjects= computed<Project[]>(()=>this.membersService.projects());
   

@@ -56,6 +56,7 @@ export class MembersApprovalTableComponent {
   acceptTask(task: Task){
     if(confirm("Are you sure you want to accept this Task? \nThis action is irreversable!")){
       this.membersService.acceptTask(task);
+      this.membersService.trigger("The Task submission has been Approved!");
     };
   }
 
@@ -63,6 +64,7 @@ export class MembersApprovalTableComponent {
     if(confirm("Are you sure you want to reject this Task? \nThis action is irreversable!")){
       let comment=window.prompt('Add your comment here (optional)');
       this.membersService.rejectTask(task,comment);
+      this.membersService.triggerError("The Task submission has been Rejected!");
     };
   }
   downloadSub(taskID:number){
